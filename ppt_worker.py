@@ -11,7 +11,6 @@ from pathlib import Path
 
 root = Path(__file__).parent
 class MakeWorkshipPpt(object):
-    bkg_pray_title_jpg = 'pray_title.jpg'
     max_char_per_slide = 65
 
     def __init__(self, date):
@@ -36,12 +35,12 @@ class MakeWorkshipPpt(object):
     def _prepare_content_list(self, attr_str):
         setattr(self, attr_str, [])
         yyyy, mm, dd = self.date.rsplit('-')
-        file = os.path.join(self.content_folder, f'{attr_str}_{mm}-{dd}-{yyyy}.txt')
+        file = os.path.join(self.content_folder, f'{attr_str}_{yyyy}-{mm}-{dd}.txt')
         if not os.path.exists(file):
             print(f'{file} is not existing!')
             return        
         with open(file, 'r', encoding= 'utf8') as f:
-            lines = [each for each in f.readlines() if each!='\n']
+            lines = f.readlines()
             section_index_list = [i for i in range(len(lines)) if lines[i].startswith('#')]+[len(lines)]
             section_index_range = [(section_index_list[i], section_index_list[i+1]) for i in range(len(section_index_list)-1)]
             for i, ix_range in enumerate(section_index_range):
@@ -315,11 +314,30 @@ class MakeWorkshipPpt(object):
             self.make_one_slide(blocks = [title_format,subtitle_format])
 
         script_items = scripts.rsplit('\n')
-        pages = int((len(script_items) - len(script_items)%lines_per_page)/lines_per_page) + int((len(script_items)%lines_per_page)!=0)
-        for i in range(0, len(script_items), lines_per_page):
-            script_format['cont'] = script_items[i:(i+5)]
-            script_footnote_format['cont'] = [f'{tt}{int(i/5+1)}/{pages}']
-            self.make_one_slide(blocks = [script_format, script_footnote_format])
+        if '' in script_items:
+            if script_items[0]!='':
+                script_items = [''] + script_items
+            if script_items[-1]!='':
+                script_items.append('')
+            section_ix_range = []
+            section_ix_pair = []
+            for i, each in enumerate(script_items):
+                if each=='':
+                    section_ix_range.append(i+1)
+            #section_ix_range.append(len(script_items))
+            for i in range(len(section_ix_range)-1):
+                section_ix_pair.append([section_ix_range[i],section_ix_range[i+1]-1])
+            pages = len(section_ix_pair)
+            for i, pair in enumerate(section_ix_pair):
+                script_format['cont'] = script_items[pair[0]:pair[1]]
+                script_footnote_format['cont'] = [f'{tt}{i+1}/{pages}']
+                self.make_one_slide(blocks = [script_format, script_footnote_format])
+        else:
+            pages = int((len(script_items) - len(script_items)%lines_per_page)/lines_per_page) + int((len(script_items)%lines_per_page)!=0)
+            for i in range(0, len(script_items), lines_per_page):
+                script_format['cont'] = script_items[i:(i+5)]
+                script_footnote_format['cont'] = [f'{tt}{int(i/5+1)}/{pages}']
+                self.make_one_slide(blocks = [script_format, script_footnote_format])
 
     def prepare_slides_for_response_scripture(self):
         title = self.scripture_list[1][0]
@@ -463,8 +481,17 @@ class MakeWorkshipPpt(object):
     
 
 if __name__ == '__main__':
-    date = '2023-08-16'
-    ppt_worker = MakeWorkshipPpt(date)
-    ppt_worker.prepare_workship_slides()
-    print(__file__)
+    print("请输入主日崇拜日期，格式为yyyy-mm-dd，比如2023-08-16:")
+    date = input()
+    missing_files = []
+    for each in ['pray_list_', 'preach_list_', 'song_list_', 'scripture_list_','report_list_','worker_list_']:
+        if not os.path.exists(root / 'content' / f'{each}{date}.txt'):
+            missing_files.append(root / 'content' / f'{each}{date}.txt')
+    if len(missing_files)!=0:
+        print('以下文件缺失，请加入后再运行程序。')
+        for each in missing_files:
+            print(each)
+    else:
+        ppt_worker = MakeWorkshipPpt(date)
+        ppt_worker.prepare_workship_slides()
     
