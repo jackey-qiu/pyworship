@@ -456,7 +456,17 @@ class MakeWorkshipPpt(object):
                 p.line_spacing = Pt(float(block['alignment'].rsplit('+')[1]))
                 p.level = eval(block['alignment'].rsplit('+')[4])
                 if superscript_first_char:
-                    txt = txt[0]+'+'+txt[1:]
+                    last_num_ix = 0
+                    while True:
+                        if txt[last_num_ix] not in [str(ii) for ii in range(10)]:
+                            # last_num_ix = last_num_ix - 1
+                            break
+                        else:
+                            last_num_ix = last_num_ix + 1
+                    if last_num_ix == 0:
+                        txt = txt[0]+'+'+txt[1:]
+                    else:
+                        txt = txt[0:last_num_ix]+'+'+txt[last_num_ix:]
                 txt_runs = txt.rsplit('+')
                 for j,txt_run in enumerate(txt_runs):
                     run = p.add_run()
