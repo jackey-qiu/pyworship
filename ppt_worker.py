@@ -1,23 +1,23 @@
-import copy, os
+import os, json
 from pptx import Presentation
 from pptx import Presentation
-from pptx.util import Inches, Pt, Cm
-from pptx.enum.text import PP_ALIGN, PP_PARAGRAPH_ALIGNMENT, MSO_ANCHOR
-from pptx.enum.text import MSO_AUTO_SIZE
-from pptx.oxml.xmlchemy import OxmlElement
+from pptx.util import Pt, Cm
+from pptx.enum.text import PP_PARAGRAPH_ALIGNMENT, MSO_ANCHOR
 from pptx.dml.color import RGBColor
-from pptx.enum.dml import MSO_THEME_COLOR, MSO_COLOR_TYPE
 from pathlib import Path
 
 root = Path(__file__).parent
+
 class MakeWorkshipPpt(object):
     max_char_per_slide = 65
+    use_json_for_extracting_scripture = True
 
     def __init__(self, date):
         self.date = date
         self.src_folder = root / 'src'
         self.content_folder = root / 'content'
         self.ppt_file = root / f'{date}.pptx'
+        self.bible_json = root / 'src' / 'bible' / 'chinese_bible.json'
         self.prs = Presentation()
         self.prepare_slide_contents()
 
@@ -29,7 +29,10 @@ class MakeWorkshipPpt(object):
         self._prepare_content_list('report_list')       
         self._prepare_content_list('pray_list')
         self._prepare_content_list('song_list')
-        self._prepare_content_list('scripture_list')
+        if self.use_json_for_extracting_scripture:
+            self._prepare_scripture_list_from_json()
+        else:
+            self._prepare_content_list('scripture_list')
         self._prepare_content_list('preach_list')
 
     def _prepare_content_list(self, attr_str):
@@ -46,6 +49,68 @@ class MakeWorkshipPpt(object):
             for i, ix_range in enumerate(section_index_range):
                 lf, rt = ix_range
                 getattr(self, attr_str).append([each.rstrip() for each in lines[lf+1:rt]])
+
+    def _prepare_scripture_list_from_json(self, json_file = None):
+        #here you only provide book chapter verse signiture without having to give all scripture in the txt file
+        #eg. book1:4[1-5,9,10]+book2:8[5,9,15-20]+book3:9[*]
+        #extract vers 1 to 5 and ver 9 and ver 10 for chapter 4 in book1, 
+        #extract vers 5, 9, and vers 15 to ver 20 for chapter 8 in book2,
+        #extract all vers for chapter 9 in book3
+        if json_file==None:
+            json_file = self.bible_json
+
+        def _get_scripture_from_json(content_sig, json_obj):
+            title_info = []
+            
+            scripture_list = []
+            sections = content_sig.rstrip().rsplit('+')
+            for section in sections:
+                book, location = section.rsplit(':')
+                chapter, vers_str = location.rsplit('[')
+                ver_list_raw = vers_str[0:-1].rsplit(',')
+                if vers_str[0:-1]=='*':
+                    title_info.append(f'{book}第{chapter}章')
+                else:
+                    title_info.append(f'{book}第{chapter}章（{vers_str[0:-1]}）')
+                #vers = []
+                for each in ver_list_raw:
+                    if '-' not in each:
+                        if each!='*':
+                            scripture_list.append(each+json_obj[book][chapter][each].rstrip())
+                        else:
+                            #get full chapter scripture
+                            scripture_list = [key+value.rstrip() for key, value in json_obj[book][chapter].items()]
+                    else:
+                        lf, rt = each.rsplit('-')
+                        for i in range(int(lf),int(rt)+1):
+                            scripture_list.append(str(i)+json_obj[book][chapter][str(i)].rstrip())
+            return '；'.join(title_info), scripture_list
+
+        #setattr(self, attr_str, [])
+        self.scripture_list = []
+        yyyy, mm, dd = self.date.rsplit('-')
+        file = os.path.join(self.content_folder, f'scripture_list_{yyyy}-{mm}-{dd}.txt')
+        if not os.path.exists(file):
+            print(f'{file} is not existing!')
+            return        
+        with open(file, 'r', encoding= 'utf8') as f:
+            lines = f.readlines()
+            section_index_list = [i for i in range(len(lines)) if lines[i].startswith('#')]+[len(lines)]
+            section_index_range = [(section_index_list[i], section_index_list[i+1]) for i in range(len(section_index_list)-1)]
+            for i, ix_range in enumerate(section_index_range):
+                lf, rt = ix_range
+                self.scripture_list.append([each.rstrip() for each in lines[lf+1:rt]])
+
+        with open(json_file, 'r') as f:
+            bible = json.load(f)
+            #modify first list (xuan zao scripture)
+            sig = self.scripture_list[0][0]
+            title_info, scripture_list = _get_scripture_from_json(sig, bible)
+            self.scripture_list[0] = [title_info] + scripture_list
+            #modify third list
+            sig = self.scripture_list[2][0]
+            title_info, scripture_list = _get_scripture_from_json(sig, bible)
+            self.scripture_list[2] = [title_info] + scripture_list
 
     def add_empty_slide(self, bkg_img = None):
         self.make_one_slide(blocks = [], bkg_img= bkg_img)
