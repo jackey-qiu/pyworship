@@ -9,7 +9,7 @@ from pathlib import Path
 root = Path(__file__).parent
 
 class MakeWorkshipPpt(object):
-    max_char_per_slide = 60
+    max_char_per_slide = 50
     use_json_for_extracting_scripture = True
 
     def __init__(self, date):
@@ -292,7 +292,8 @@ class MakeWorkshipPpt(object):
         def _prepare_slides_autofit_size(items, header = '', font_italic = False):
             previous_ix = 0
             for i in range(1, len(items)):
-                if sum([len(items[j]) for j in range(previous_ix, i)])>max_chars_per_slide or i==(len(items)-1):
+                overflow = sum([len(items[j]) for j in range(previous_ix, i)])>max_chars_per_slide 
+                if overflow:
                     cont = items[previous_ix: i+int(i==(len(items)-1))]
                     if header!='':
                         cont = [header] + cont
@@ -300,6 +301,13 @@ class MakeWorkshipPpt(object):
                     slide = self.make_one_slide(blocks = [content_format], middle_vertical=False, font_italic=font_italic)
                     self.make_one_slide(slide = slide, blocks = [content_footnote_format], middle_vertical=False)
                     previous_ix = i
+            #make one more slide at the end boundary
+            cont = items[previous_ix: len(items)]
+            if header!='':
+                cont = [header] + cont
+            content_format['cont'] = cont
+            slide = self.make_one_slide(blocks = [content_format], middle_vertical=False, font_italic=font_italic)
+            self.make_one_slide(slide = slide, blocks = [content_footnote_format], middle_vertical=False)
 
         self.make_one_slide(blocks= [title_format, subtitle_format], bkg_img=os.path.join(self.src_folder, 'preach_title_bkg.jpg'), middle_vertical=False)
         #introduction_items = introduction
@@ -341,10 +349,14 @@ class MakeWorkshipPpt(object):
         else:
             max_chars_per_slide = self.max_char_per_slide
         for i in range(1, len(pray_items)):
-            if sum([len(pray_items[j]) for j in range(previous_ix, i)])>max_chars_per_slide or i==(len(pray_items)-1):
-                content_format['cont'] = pray_items[previous_ix: i+int(i==(len(pray_items)-1))]
+            if sum([len(pray_items[j]) for j in range(previous_ix, i)])>max_chars_per_slide:
+                content_format['cont'] = pray_items[previous_ix: i]
                 slide = self.make_one_slide(blocks = [content_format, footnote_format], middle_vertical=False)
                 previous_ix = i
+        #make one more slide at the end boundary
+        cont = pray_items[previous_ix: len(pray_items)]
+        content_format['cont'] = cont
+        slide = self.make_one_slide(blocks = [content_format, footnote_format], middle_vertical=False)
 
     def prepare_slides_for_one_song(self, title, scripts, lines_per_page = 5, include_title_page = True):
         
@@ -480,11 +492,16 @@ class MakeWorkshipPpt(object):
         scripture_items = scriptures
         previous_ix = 0
         for i in range(1, len(scripture_items)):
-            if sum([len(scripture_items[j]) for j in range(previous_ix, i)])>max_chars_per_slide or i==(len(scripture_items)-1):
-                scripture_format['cont'] = scripture_items[previous_ix: i+int(i==(len(scripture_items)-1))]
+            if sum([len(scripture_items[j]) for j in range(previous_ix, i)])>max_chars_per_slide:
+                scripture_format['cont'] = scripture_items[previous_ix: i]
                 slide = self.make_one_slide(blocks = [scripture_format], middle_vertical=False, superscript_first_char=True)
                 self.make_one_slide(slide = slide, blocks = [scripture_footnote_format], middle_vertical=False)
                 previous_ix = i
+        #make one more slide at the end boundary
+        cont = scripture_items[previous_ix: len(scripture_items)]
+        scripture_format['cont'] = cont
+        slide = self.make_one_slide(blocks = [scripture_format], middle_vertical=False, superscript_first_char=True)
+        self.make_one_slide(slide = slide, blocks = [scripture_footnote_format], middle_vertical=False)
 
     def make_one_slide(self, blocks, slide = None, bkg_img = None, middle_vertical = True,superscript_first_char = False, color_rgb = None, font_italic = False):
         prs = self.prs
