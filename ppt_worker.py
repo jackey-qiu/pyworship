@@ -14,6 +14,12 @@ class MakeWorkshipPpt(object):
 
     def __init__(self, date):
         self.date = date
+        if len(date.rsplit('-')[-1])==2 and date.rsplit('-')[-1].startswith('0'):
+            self.holy_dinner = int(date.rsplit('-')[-1][1:])<=7
+        elif len(date.rsplit('-')[-1])==1:
+            self.holy_dinner = int(date.rsplit('-')[-1])<=7
+        else:
+            self.holy_dinner = False
         self.src_folder = root / 'src'
         self.content_folder = root / 'content'
         self.ppt_file = root / f'{date}.pptx'
@@ -258,8 +264,12 @@ class MakeWorkshipPpt(object):
         self.make_one_slide(blocks = [], bkg_img = os.path.join(self.src_folder,'report_3.jpg'))
 
     def prepare_end_slides(self):
-        for i in range(1,8):
-            self.make_one_slide(blocks = [], bkg_img = os.path.join(self.src_folder,f'end_{i}.jpg'))
+        if self.holy_dinner:
+            for i in range(1,23):
+                self.make_one_slide(blocks = [], bkg_img = os.path.join(self.src_folder, 'holy_dinner', f'end_{i}.jpg'))
+        else:
+            for i in range(1,8):
+                self.make_one_slide(blocks = [], bkg_img = os.path.join(self.src_folder,f'end_{i}.jpg'))
 
     def pepare_preach_slides(self):
         title, preacher, subtitle = self.preach_list[0]
