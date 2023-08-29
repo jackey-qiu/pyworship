@@ -1,4 +1,4 @@
-import os, json
+import os, json, sys
 from pptx import Presentation
 from pptx import Presentation
 from pptx.util import Pt, Cm
@@ -587,8 +587,11 @@ class MakeWorkshipPpt(object):
     
 
 if __name__ == '__main__':
-    print("请输入主日崇拜日期，格式为yyyy-mm-dd，比如2023-08-16:")
-    date = input()
+    if len(sys.argv) > 1:
+        date = sys.argv[1]
+    else:
+        print("请输入主日崇拜日期，格式为yyyy-mm-dd，比如2023-08-16:")
+        date = input()
     missing_files = []
     for each in ['pray_list_', 'preach_list_', 'song_list_', 'scripture_list_','report_list_','worker_list_']:
         if not os.path.exists(root / 'content' / f'{each}{date}.txt'):
