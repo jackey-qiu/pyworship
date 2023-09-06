@@ -4,6 +4,9 @@ from pptx import Presentation
 from pptx.util import Pt, Cm
 from pptx.enum.text import PP_PARAGRAPH_ALIGNMENT, MSO_ANCHOR
 from pptx.dml.color import RGBColor
+from pptx.enum.lang import MSO_LANGUAGE_ID
+from pptx.oxml.ns import qn
+from lxml import etree
 from pathlib import Path
 
 root = Path(__file__).parent
@@ -11,8 +14,8 @@ root = Path(__file__).parent
 class MakeWorkshipPpt(object):
     max_char_per_slide = 60
     use_json_for_extracting_scripture = True
-    font_type_kaiti = '方正楷体简体'#'FZKai-Z03S'
-    font_type_zhunyuan = '方正准圆简体'#'FZZhunYuan-M02S'
+    font_type_kaiti = 'FZKai-Z03'
+    font_type_zhunyuan = 'FZZhunYuan-M02'
 
     def __init__(self, date):
         self.date = date
@@ -77,9 +80,9 @@ class MakeWorkshipPpt(object):
                 chapter, vers_str = location.rsplit('[')
                 ver_list_raw = vers_str[0:-1].rsplit(',')
                 if vers_str[0:-1]=='*':
-                    title_info.append(f'{book}第{chapter}章')
+                    title_info.append(f'{book}第 {chapter} 章')
                 else:
-                    title_info.append(f'{book}第{chapter}章（{vers_str[0:-1]}）')
+                    title_info.append(f'{book}第 {chapter} 章（{vers_str[0:-1]}）')
                 #vers = []
                 for each in ver_list_raw:
                     if '-' not in each:
@@ -203,8 +206,8 @@ class MakeWorkshipPpt(object):
         else:
             song_list = [self.song_list[-1]]
         title_format = {'cont':[each[0] for each in song_list],
-                        'font_global':'方正楷体简体+66+True',
-                        'font_run':'方正楷体简体+66+True',
+                        'font_global':'FZKai-Z03+66+True',
+                        'font_run':'FZKai-Z03+66+True',
                         'alignment':'LEFT+77+0+0+0',
                         'textbox': ['Cm(1.13)','Cm(5.1)','Cm(23.6)','Cm(13.43)']}
 
@@ -215,8 +218,8 @@ class MakeWorkshipPpt(object):
                             'textbox': ['Cm(1.14)','Cm(0.51)','Cm(18.2)','Cm(1.91)']}
 
         subtitle_format = {'cont':'',
-                            'font_global':'方正准圆简体+40+False',
-                            'font_run':'方正准圆简体+40+False',
+                            'font_global':'FZZhunYuan-M02+40+False',
+                            'font_run':'FZZhunYuan-M02+40+False',
                             'alignment':'LEFT+47+0+0+0',
                             'textbox': ['Cm(1.33)','Cm(7.93)','Cm(20.07)','Cm(1.97)']}
          
@@ -246,14 +249,14 @@ class MakeWorkshipPpt(object):
     def prepare_report_slides(self):
         self.prepare_general_report_slides()
         content_format = {'cont':'',
-                            'font_global':'方正楷体简体+44+True',
-                            'font_run':'方正楷体简体+44+True',
+                            'font_global':'FZKai-Z03+44+True',
+                            'font_run':'FZKai-Z03+44+True',
                             'alignment':'LEFT+52+12+0+0',
                             'textbox': ['Cm(1.44)','Cm(1.44)','Cm(22.91)','Cm(15.72)']}
 
         content_footnote_format = {'cont':['活动报告'],
-                            'font_global':'方正楷体简体+24+True',
-                            'font_run':'方正楷体简体+24+True',
+                            'font_global':'FZKai-Z03+24+True',
+                            'font_run':'FZKai-Z03+24+True',
                             'alignment':'RIGHT+28+0+0+0',
                             'textbox': ['Cm(1.4)','Cm(17.5)','Cm(22.91)','Cm(1.1)']} 
         for report in self.report_list:
@@ -375,14 +378,14 @@ class MakeWorkshipPpt(object):
     def prepare_slides_for_one_song(self, title, scripts, lines_per_page = 5, include_title_page = True):
         
         title_format = {'cont':'',
-                            'font_global':f'{self.font_type_zhunyuan}'+'+80+True',
-                            'font_run':f'{self.font_type_zhunyuan}'+'+80+True',
+                            'font_global':f'{self.font_type_zhunyuan}'+'+80+False',
+                            'font_run':f'{self.font_type_zhunyuan}'+'+80+False',
                             'alignment':'CENTER+94+0+0+0',
                             'textbox': ['Cm(1.75)','Cm(5.24)','Cm(21.91)','Cm(3.68)']}
 
         subtitle_format = {'cont':'',
-                            'font_global':'方正准圆简体+40+False',
-                            'font_run':'方正准圆简体+40+False',
+                            'font_global':'FZZhunYuan-M02+40+False',
+                            'font_run':'FZZhunYuan-M02+40+False',
                             'alignment':'CENTER+47+0+0+0',
                             'textbox': ['Cm(0.51)','Cm(8.93)','Cm(24.32)','Cm(1.97)']}
 
@@ -421,13 +424,13 @@ class MakeWorkshipPpt(object):
             pages = len(section_ix_pair)
             for i, pair in enumerate(section_ix_pair):
                 script_format['cont'] = script_items[pair[0]:pair[1]]
-                script_footnote_format['cont'] = [f'{tt}{i+1}/{pages}']
+                script_footnote_format['cont'] = [f'{tt} {i+1}/{pages}']
                 self.make_one_slide(blocks = [script_format, script_footnote_format])
         else:
             pages = int((len(script_items) - len(script_items)%lines_per_page)/lines_per_page) + int((len(script_items)%lines_per_page)!=0)
             for i in range(0, len(script_items), lines_per_page):
                 script_format['cont'] = script_items[i:(i+5)]
-                script_footnote_format['cont'] = [f'{tt}{int(i/5+1)}/{pages}']
+                script_footnote_format['cont'] = [f'{tt} {int(i/5+1)}/{pages}']
                 self.make_one_slide(blocks = [script_format, script_footnote_format])
 
     def prepare_slides_for_response_scripture(self):
@@ -435,20 +438,20 @@ class MakeWorkshipPpt(object):
         scriptures = '\n'.join(self.scripture_list[1][1:])
         footnote_header = '启应经文（{}）'
         title_format = {'cont':'',
-                        'font_global':'方正楷体简体+80+True',
-                        'font_run':'方正楷体简体+80+True',
+                        'font_global':'FZKai-Z03+80+True',
+                        'font_run':'FZKai-Z03+80+True',
                         'alignment':'CENTER+94+0.24+0+0',
                         'textbox': ['Cm(0)','Cm(8.46)','Cm(25.4)','Cm(5.55)']}
 
         scripture_format = {'cont':'',
-                            'font_global':'方正楷体简体+44+True',
-                            'font_run':'方正楷体简体+44+True',
+                            'font_global':'FZKai-Z03+44+True',
+                            'font_run':'FZKai-Z03+44+True',
                             'alignment':'LEFT+52+12+0+0',
                             'textbox': ['Cm(1.44)','Cm(1.44)','Cm(22.91)','Cm(15.72)']}
 
         scripture_footnote_format = {'cont':'',
-                            'font_global':'方正楷体简体+24+True',
-                            'font_run':'方正楷体简体+24+True',
+                            'font_global':'FZKai-Z03+24+True',
+                            'font_run':'FZKai-Z03+24+True',
                             'alignment':'RIGHT+28+0+0+0',
                             'textbox': ['Cm(1.4)','Cm(17.5)','Cm(22.91)','Cm(1.1)']}    
             
@@ -474,8 +477,8 @@ class MakeWorkshipPpt(object):
 
     def prepare_slides_for_scripture(self, title, scriptures, max_chars_per_slide = 60,footnote_header = '读经（{}）'):
         title_format = {'cont':'',
-                        'font_global':'方正楷体简体+72+True',
-                        'font_run':'方正楷体简体+72+True',
+                        'font_global':'FZKai-Z03+72+True',
+                        'font_run':'FZKai-Z03+72+True',
                         'alignment':'LEFT+83+0+0+0',
                         'textbox': ['Cm(1.13)','Cm(5.1)','Cm(23.6)','Cm(13.43)']}
 
@@ -486,14 +489,14 @@ class MakeWorkshipPpt(object):
                             'textbox': ['Cm(1.14)','Cm(0.51)','Cm(18.2)','Cm(1.91)']}
 
         scripture_format = {'cont':'',
-                            'font_global':'方正楷体简体+44+True',
-                            'font_run':'方正楷体简体+44+True',
+                            'font_global':'FZKai-Z03+44+True',
+                            'font_run':'FZKai-Z03+44+True',
                             'alignment':'LEFT+52+12+0+0',
                             'textbox': ['Cm(1.44)','Cm(1.44)','Cm(22.91)','Cm(15.72)']}
 
         scripture_footnote_format = {'cont':'',
-                            'font_global':'方正楷体简体+24+True',
-                            'font_run':'方正楷体简体+24+True',
+                            'font_global':'FZKai-Z03+24+True',
+                            'font_run':'FZKai-Z03+24+True',
                             'alignment':'RIGHT+28+0+0+0',
                             'textbox': ['Cm(1.4)','Cm(17.5)','Cm(22.91)','Cm(1.1)']}    
             
@@ -560,9 +563,9 @@ class MakeWorkshipPpt(object):
                         else:
                             last_num_ix = last_num_ix + 1
                     if last_num_ix == 0:
-                        txt = txt[0]+'+'+txt[1:]
+                        txt = txt[0]+' +'+txt[1:]
                     else:
-                        txt = txt[0:last_num_ix]+'+'+txt[last_num_ix:]
+                        txt = txt[0:last_num_ix]+' +'+txt[last_num_ix:]
                 txt_runs = txt.rsplit('+')
                 for j,txt_run in enumerate(txt_runs):
                     run = p.add_run()
@@ -583,6 +586,12 @@ class MakeWorkshipPpt(object):
                             run.font.color.rgb = RGBColor(*color_rgb[color_index])
                     if font_italic:
                         run.font.italic = True
+                # set language id 
+                p.font.language_id = MSO_LANGUAGE_ID.SIMPLIFIED_CHINESE
+                # set font typeface for asian characters
+                defrpr = p._element.pPr.defRPr
+                ea = etree.SubElement(defrpr, qn('a:ea'))
+                ea.set('typeface', nm)
         return slide
     
 
