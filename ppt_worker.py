@@ -576,6 +576,7 @@ class MakeWorkshipPpt(object):
                             run.font._element.set('baseline', '30000')
                     else:
                         nm, sz, bold =  block['font_run'].rsplit('+')
+                    run.font.language_id = MSO_LANGUAGE_ID.SIMPLIFIED_CHINESE
                     run.font.size = Pt(eval(sz))
                     run.font.name = nm
                     run.font.bold = eval(bold)
