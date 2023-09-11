@@ -288,7 +288,7 @@ class MakeWorkshipPpt(object):
                 for i in range(1,21):
                     self.make_one_slide(blocks = [], bkg_img = os.path.join(self.src_folder.parent, 'holy_dinner_option2', f'Slide{i}.jpg'))
         else:
-            for i in range(1,8):
+            for i in range(16,23):
                 self.make_one_slide(blocks = [], bkg_img = os.path.join(self.src_folder,f'end_{i}.jpg'))
 
     def pepare_preach_slides(self):
