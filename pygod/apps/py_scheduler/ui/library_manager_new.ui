@@ -1,0 +1,1021 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1429</width>
+    <height>918</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QHBoxLayout" name="horizontalLayout">
+    <item>
+     <widget class="QSplitter" name="splitter">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+      <widget class="QFrame" name="frame">
+       <property name="maximumSize">
+        <size>
+         <width>8000</width>
+         <height>16777215</height>
+        </size>
+       </property>
+       <property name="frameShape">
+        <enum>QFrame::StyledPanel</enum>
+       </property>
+       <property name="frameShadow">
+        <enum>QFrame::Raised</enum>
+       </property>
+       <layout class="QVBoxLayout" name="verticalLayout_7">
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_2">
+          <item>
+           <widget class="QLabel" name="label_13">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="font">
+             <font>
+              <family>KaiTi</family>
+              <pointsize>12</pointsize>
+             </font>
+            </property>
+            <property name="text">
+             <string>数据库列表</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QComboBox" name="comboBox_project_list"/>
+          </item>
+          <item>
+           <widget class="QPushButton" name="pushButton_load">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="font">
+             <font>
+              <family>KaiTi</family>
+              <pointsize>12</pointsize>
+             </font>
+            </property>
+            <property name="text">
+             <string>加载</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="pushButton_new_project">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="font">
+             <font>
+              <family>KaiTi</family>
+              <pointsize>12</pointsize>
+             </font>
+            </property>
+            <property name="text">
+             <string>新建</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_23">
+          <item>
+           <widget class="QLabel" name="label">
+            <property name="font">
+             <font>
+              <family>KaiTi</family>
+              <pointsize>12</pointsize>
+             </font>
+            </property>
+            <property name="text">
+             <string>当前数据库信息</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="horizontalSpacer_4">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item>
+           <widget class="QPushButton" name="pushButton_update_project_info">
+            <property name="font">
+             <font>
+              <family>KaiTi</family>
+              <pointsize>12</pointsize>
+             </font>
+            </property>
+            <property name="text">
+             <string>更新信息</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <widget class="QSplitter" name="splitter_3">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <widget class="QPlainTextEdit" name="plainTextEdit_project_info">
+           <property name="maximumSize">
+            <size>
+             <width>16777215</width>
+             <height>50000</height>
+            </size>
+           </property>
+           <property name="font">
+            <font>
+             <family>KaiTi</family>
+             <pointsize>13</pointsize>
+            </font>
+           </property>
+           <property name="plainText">
+            <string/>
+           </property>
+          </widget>
+         </widget>
+        </item>
+        <item>
+         <layout class="QVBoxLayout" name="verticalLayout">
+          <item>
+           <widget class="QLabel" name="label_3">
+            <property name="font">
+             <font>
+              <family>KaiTi</family>
+              <pointsize>12</pointsize>
+             </font>
+            </property>
+            <property name="text">
+             <string>终端</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="TerminalWidget" name="widget_terminal" native="true">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>300</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>16777215</width>
+              <height>300000</height>
+             </size>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QFrame" name="frame_2">
+       <property name="frameShape">
+        <enum>QFrame::StyledPanel</enum>
+       </property>
+       <property name="frameShadow">
+        <enum>QFrame::Raised</enum>
+       </property>
+       <layout class="QHBoxLayout" name="horizontalLayout_6">
+        <item>
+         <widget class="QSplitter" name="splitter_2">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <widget class="QFrame" name="frame_4">
+           <property name="frameShape">
+            <enum>QFrame::StyledPanel</enum>
+           </property>
+           <property name="frameShadow">
+            <enum>QFrame::Raised</enum>
+           </property>
+           <layout class="QHBoxLayout" name="horizontalLayout_3">
+            <item>
+             <widget class="QTabWidget" name="tabWidget">
+              <property name="font">
+               <font>
+                <family>KaiTi</family>
+                <pointsize>12</pointsize>
+               </font>
+              </property>
+              <property name="currentIndex">
+               <number>0</number>
+              </property>
+              <widget class="QWidget" name="tab">
+               <attribute name="title">
+                <string>图书基本信息</string>
+               </attribute>
+               <layout class="QHBoxLayout" name="horizontalLayout_5">
+                <item>
+                 <layout class="QGridLayout" name="gridLayout">
+                  <item row="1" column="0">
+                   <widget class="QLabel" name="label_26">
+                    <property name="font">
+                     <font>
+                      <family>KaiTi</family>
+                      <pointsize>12</pointsize>
+                     </font>
+                    </property>
+                    <property name="text">
+                     <string>作者</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="0" column="0">
+                   <widget class="QLabel" name="label_8">
+                    <property name="font">
+                     <font>
+                      <family>KaiTi</family>
+                      <pointsize>12</pointsize>
+                     </font>
+                    </property>
+                    <property name="text">
+                     <string>书名</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="2" column="1">
+                   <widget class="QLineEdit" name="lineEdit_press">
+                    <property name="text">
+                     <string/>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="4" column="1">
+                   <widget class="QLineEdit" name="lineEdit_class">
+                    <property name="text">
+                     <string/>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="0" column="1">
+                   <widget class="QLineEdit" name="lineEdit_book_name">
+                    <property name="text">
+                     <string/>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="6" column="0">
+                   <widget class="QLabel" name="label_29">
+                    <property name="font">
+                     <font>
+                      <family>KaiTi</family>
+                      <pointsize>12</pointsize>
+                     </font>
+                    </property>
+                    <property name="text">
+                     <string>图书编号</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="7" column="1">
+                   <widget class="QLineEdit" name="lineEdit_status">
+                    <property name="text">
+                     <string/>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="11" column="1">
+                   <widget class="QLineEdit" name="lineEdit_note"/>
+                  </item>
+                  <item row="11" column="0">
+                   <widget class="QLabel" name="label_19">
+                    <property name="font">
+                     <font>
+                      <family>KaiTi</family>
+                      <pointsize>12</pointsize>
+                     </font>
+                    </property>
+                    <property name="text">
+                     <string>备注</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="7" column="0">
+                   <widget class="QLabel" name="label_32">
+                    <property name="font">
+                     <font>
+                      <family>KaiTi</family>
+                      <pointsize>12</pointsize>
+                     </font>
+                    </property>
+                    <property name="text">
+                     <string>状态</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="4" column="0">
+                   <widget class="QLabel" name="label_28">
+                    <property name="font">
+                     <font>
+                      <family>KaiTi</family>
+                      <pointsize>12</pointsize>
+                     </font>
+                    </property>
+                    <property name="text">
+                     <string>类别</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="2" column="0">
+                   <widget class="QLabel" name="label_27">
+                    <property name="font">
+                     <font>
+                      <family>KaiTi</family>
+                      <pointsize>12</pointsize>
+                     </font>
+                    </property>
+                    <property name="text">
+                     <string>出版社</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="3" column="1">
+                   <widget class="QLineEdit" name="lineEdit_year">
+                    <property name="text">
+                     <string/>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="3" column="0">
+                   <widget class="QLabel" name="label_18">
+                    <property name="font">
+                     <font>
+                      <family>KaiTi</family>
+                      <pointsize>12</pointsize>
+                     </font>
+                    </property>
+                    <property name="text">
+                     <string>出版日期</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="6" column="1">
+                   <widget class="QLineEdit" name="lineEdit_id">
+                    <property name="text">
+                     <string/>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="1" column="1">
+                   <widget class="QLineEdit" name="lineEdit_author">
+                    <property name="text">
+                     <string/>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="8" column="0">
+                   <widget class="QLabel" name="label_5">
+                    <property name="sizePolicy">
+                     <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                      <horstretch>0</horstretch>
+                      <verstretch>0</verstretch>
+                     </sizepolicy>
+                    </property>
+                    <property name="font">
+                     <font>
+                      <family>KaiTi</family>
+                      <pointsize>12</pointsize>
+                     </font>
+                    </property>
+                    <property name="text">
+                     <string>借阅人</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="9" column="0">
+                   <widget class="QLabel" name="label_6">
+                    <property name="font">
+                     <font>
+                      <family>KaiTi</family>
+                      <pointsize>12</pointsize>
+                     </font>
+                    </property>
+                    <property name="text">
+                     <string>借出日期</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="8" column="1">
+                   <widget class="QLineEdit" name="lineEdit_borrower">
+                    <property name="text">
+                     <string/>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="10" column="0">
+                   <widget class="QLabel" name="label_7">
+                    <property name="font">
+                     <font>
+                      <family>KaiTi</family>
+                      <pointsize>12</pointsize>
+                     </font>
+                    </property>
+                    <property name="text">
+                     <string>归还日期</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="9" column="1">
+                   <widget class="QLineEdit" name="lineEdit_lend_date">
+                    <property name="text">
+                     <string/>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="10" column="1">
+                   <widget class="QLineEdit" name="lineEdit_return_date">
+                    <property name="text">
+                     <string/>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </item>
+               </layout>
+              </widget>
+             </widget>
+            </item>
+            <item>
+             <widget class="QTabWidget" name="tabWidget_2">
+              <property name="font">
+               <font>
+                <family>KaiTi</family>
+                <pointsize>12</pointsize>
+               </font>
+              </property>
+              <property name="currentIndex">
+               <number>0</number>
+              </property>
+              <widget class="QWidget" name="tab_3">
+               <attribute name="title">
+                <string>图书简介</string>
+               </attribute>
+               <layout class="QHBoxLayout" name="horizontalLayout_4">
+                <item>
+                 <widget class="QTextEdit" name="textEdit_abstract">
+                  <property name="font">
+                   <font>
+                    <pointsize>12</pointsize>
+                   </font>
+                  </property>
+                  <property name="frameShape">
+                   <enum>QFrame::Box</enum>
+                  </property>
+                  <property name="frameShadow">
+                   <enum>QFrame::Raised</enum>
+                  </property>
+                  <property name="html">
+                   <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'KaiTi'; font-size:12pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                  </property>
+                  <property name="acceptRichText">
+                   <bool>false</bool>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </widget>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+          <widget class="QFrame" name="frame_3">
+           <property name="font">
+            <font>
+             <family>KaiTi</family>
+             <pointsize>12</pointsize>
+            </font>
+           </property>
+           <property name="frameShape">
+            <enum>QFrame::StyledPanel</enum>
+           </property>
+           <property name="frameShadow">
+            <enum>QFrame::Raised</enum>
+           </property>
+           <layout class="QVBoxLayout" name="verticalLayout_2">
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_15">
+              <item>
+               <widget class="QLabel" name="label_31">
+                <property name="font">
+                 <font>
+                  <family>KaiTi</family>
+                  <pointsize>12</pointsize>
+                 </font>
+                </property>
+                <property name="text">
+                 <string>书目</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QComboBox" name="comboBox_books">
+                <property name="minimumSize">
+                 <size>
+                  <width>150</width>
+                  <height>0</height>
+                 </size>
+                </property>
+                <property name="font">
+                 <font>
+                  <family>KaiTi</family>
+                  <pointsize>12</pointsize>
+                 </font>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="pushButton_new">
+                <property name="font">
+                 <font>
+                  <family>KaiTi</family>
+                  <pointsize>12</pointsize>
+                 </font>
+                </property>
+                <property name="text">
+                 <string>新建</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="pushButton_update">
+                <property name="font">
+                 <font>
+                  <family>KaiTi</family>
+                  <pointsize>12</pointsize>
+                 </font>
+                </property>
+                <property name="text">
+                 <string>更新</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="pushButton_remove">
+                <property name="font">
+                 <font>
+                  <family>KaiTi</family>
+                  <pointsize>12</pointsize>
+                 </font>
+                </property>
+                <property name="text">
+                 <string>删除</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="pushButton_lend">
+                <property name="font">
+                 <font>
+                  <family>KaiTi</family>
+                  <pointsize>12</pointsize>
+                 </font>
+                </property>
+                <property name="text">
+                 <string>借阅</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="pushButton_return">
+                <property name="font">
+                 <font>
+                  <family>KaiTi</family>
+                  <pointsize>12</pointsize>
+                 </font>
+                </property>
+                <property name="text">
+                 <string>还书</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="pushButton_reserve">
+                <property name="font">
+                 <font>
+                  <family>KaiTi</family>
+                  <pointsize>12</pointsize>
+                 </font>
+                </property>
+                <property name="text">
+                 <string>预约</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="label_9">
+                <property name="font">
+                 <font>
+                  <family>KaiTi</family>
+                  <pointsize>12</pointsize>
+                 </font>
+                </property>
+                <property name="text">
+                 <string>检索</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QComboBox" name="comboBox_search_field">
+                <property name="minimumSize">
+                 <size>
+                  <width>100</width>
+                  <height>0</height>
+                 </size>
+                </property>
+                <property name="font">
+                 <font>
+                  <family>KaiTi</family>
+                  <pointsize>12</pointsize>
+                 </font>
+                </property>
+                <item>
+                 <property name="text">
+                  <string>书名</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>编号</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>作者</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>状态</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>类别</string>
+                 </property>
+                </item>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLineEdit" name="lineEdit_search_item">
+                <property name="minimumSize">
+                 <size>
+                  <width>100</width>
+                  <height>0</height>
+                 </size>
+                </property>
+                <property name="font">
+                 <font>
+                  <family>KaiTi</family>
+                  <pointsize>12</pointsize>
+                 </font>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="pushButton_search">
+                <property name="font">
+                 <font>
+                  <family>KaiTi</family>
+                  <pointsize>12</pointsize>
+                 </font>
+                </property>
+                <property name="text">
+                 <string>搜索</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <widget class="QTableView" name="tableView_book_info">
+              <property name="font">
+               <font>
+                <family>KaiTi</family>
+                <pointsize>12</pointsize>
+               </font>
+              </property>
+              <property name="sortingEnabled">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_14">
+              <item>
+               <widget class="QPushButton" name="pushButton_select_all">
+                <property name="font">
+                 <font>
+                  <family>KaiTi</family>
+                  <pointsize>12</pointsize>
+                 </font>
+                </property>
+                <property name="text">
+                 <string>查看全部</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="pushButton_2">
+                <property name="font">
+                 <font>
+                  <family>KaiTi</family>
+                  <pointsize>12</pointsize>
+                 </font>
+                </property>
+                <property name="text">
+                 <string>查看首页</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="pushButton_select_none">
+                <property name="font">
+                 <font>
+                  <family>KaiTi</family>
+                  <pointsize>12</pointsize>
+                 </font>
+                </property>
+                <property name="text">
+                 <string>往后翻页</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="pushButton_parse_row">
+                <property name="font">
+                 <font>
+                  <family>KaiTi</family>
+                  <pointsize>12</pointsize>
+                 </font>
+                </property>
+                <property name="text">
+                 <string>往前翻页</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="pushButton_3">
+                <property name="font">
+                 <font>
+                  <family>KaiTi</family>
+                  <pointsize>12</pointsize>
+                 </font>
+                </property>
+                <property name="text">
+                 <string>查看尾页</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <spacer name="horizontalSpacer_3">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+             </layout>
+            </item>
+           </layout>
+          </widget>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1429</width>
+     <height>26</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+  <widget class="QToolBar" name="toolBar">
+   <property name="windowTitle">
+    <string>toolBar</string>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="actionDatabaseCloud"/>
+   <addaction name="actionRegistration"/>
+   <addaction name="actionLogout"/>
+   <addaction name="separator"/>
+   <addaction name="actionLocalServerOn"/>
+   <addaction name="actionDatabaseInfo"/>
+   <addaction name="separator"/>
+   <addaction name="actionSearchDB"/>
+   <addaction name="actionImportBiTex"/>
+   <addaction name="actionExportBiTex"/>
+   <addaction name="separator"/>
+   <addaction name="actionFitWidth"/>
+   <addaction name="actionFitHeight"/>
+   <addaction name="actionFitBoth"/>
+   <addaction name="actionzoomin"/>
+   <addaction name="actionzoomout"/>
+   <addaction name="separator"/>
+  </widget>
+  <action name="actionFitWidth">
+   <property name="icon">
+    <iconset>
+     <normaloff>../resources/icons/fitwidth.png</normaloff>../resources/icons/fitwidth.png</iconset>
+   </property>
+   <property name="text">
+    <string>FitWidth</string>
+   </property>
+   <property name="toolTip">
+    <string>FitWidth</string>
+   </property>
+  </action>
+  <action name="actionFitHeight">
+   <property name="icon">
+    <iconset>
+     <normaloff>../resources/icons/fitheight.png</normaloff>../resources/icons/fitheight.png</iconset>
+   </property>
+   <property name="text">
+    <string>FitHeight</string>
+   </property>
+  </action>
+  <action name="actionFitBoth">
+   <property name="icon">
+    <iconset>
+     <normaloff>../resources/icons/figpage.png</normaloff>../resources/icons/figpage.png</iconset>
+   </property>
+   <property name="text">
+    <string>FitBoth</string>
+   </property>
+  </action>
+  <action name="actionzoomin">
+   <property name="icon">
+    <iconset>
+     <normaloff>../resources/icons/zoomin.png</normaloff>../resources/icons/zoomin.png</iconset>
+   </property>
+   <property name="text">
+    <string>zoomin</string>
+   </property>
+  </action>
+  <action name="actionzoomout">
+   <property name="icon">
+    <iconset>
+     <normaloff>../resources/icons/zoomout.png</normaloff>../resources/icons/zoomout.png</iconset>
+   </property>
+   <property name="text">
+    <string>zoomout</string>
+   </property>
+  </action>
+  <action name="actionExportBiTex">
+   <property name="icon">
+    <iconset>
+     <normaloff>../resources/icons/export.png</normaloff>../resources/icons/export.png</iconset>
+   </property>
+   <property name="text">
+    <string>ExportBiTex</string>
+   </property>
+   <property name="toolTip">
+    <string>export paper to BiTex file</string>
+   </property>
+  </action>
+  <action name="actionDatabaseCloud">
+   <property name="icon">
+    <iconset>
+     <normaloff>../resources/icons/cloud.png</normaloff>../resources/icons/cloud.png</iconset>
+   </property>
+   <property name="text">
+    <string>DatabaseCloud</string>
+   </property>
+   <property name="toolTip">
+    <string>登录系统</string>
+   </property>
+  </action>
+  <action name="actionImportBiTex">
+   <property name="icon">
+    <iconset>
+     <normaloff>../resources/icons/import.png</normaloff>../resources/icons/import.png</iconset>
+   </property>
+   <property name="text">
+    <string>ImportBiTex</string>
+   </property>
+   <property name="toolTip">
+    <string>Extract paper info from BiTex file</string>
+   </property>
+  </action>
+  <action name="actionLocalServerOn">
+   <property name="icon">
+    <iconset>
+     <normaloff>../resources/icons/serveron2.png</normaloff>../resources/icons/serveron2.png</iconset>
+   </property>
+   <property name="text">
+    <string>LocalServerOn</string>
+   </property>
+   <property name="toolTip">
+    <string>start local mongo server</string>
+   </property>
+  </action>
+  <action name="actionLogout">
+   <property name="icon">
+    <iconset>
+     <normaloff>../resources/icons/serveroff.png</normaloff>../resources/icons/serveroff.png</iconset>
+   </property>
+   <property name="text">
+    <string>Logout</string>
+   </property>
+   <property name="toolTip">
+    <string>注销当前用户</string>
+   </property>
+  </action>
+  <action name="actionRegistration">
+   <property name="icon">
+    <iconset>
+     <normaloff>../resources/icons/client.png</normaloff>../resources/icons/client.png</iconset>
+   </property>
+   <property name="text">
+    <string>Registration</string>
+   </property>
+   <property name="toolTip">
+    <string>注册新用户</string>
+   </property>
+  </action>
+  <action name="actionDatabaseInfo">
+   <property name="icon">
+    <iconset>
+     <normaloff>../resources/icons/info.png</normaloff>../resources/icons/info.png</iconset>
+   </property>
+   <property name="text">
+    <string>DatabaseInfo</string>
+   </property>
+   <property name="toolTip">
+    <string>get database information</string>
+   </property>
+  </action>
+  <action name="actionSearchDB">
+   <property name="icon">
+    <iconset>
+     <normaloff>../resources/icons/search.png</normaloff>../resources/icons/search.png</iconset>
+   </property>
+   <property name="text">
+    <string>SearchDB</string>
+   </property>
+  </action>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>TerminalWidget</class>
+   <extends>QWidget</extends>
+   <header>library_manager.widgets.terminal_widget.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>

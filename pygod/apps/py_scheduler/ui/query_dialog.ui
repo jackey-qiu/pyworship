@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Dialog</class>
+ <widget class="QDialog" name="Dialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>879</width>
+    <height>918</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Dialog</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <layout class="QGridLayout" name="gridLayout">
+     <item row="4" column="2">
+      <widget class="QLineEdit" name="lineEdit_journal"/>
+     </item>
+     <item row="5" column="2">
+      <widget class="QLineEdit" name="lineEdit_year"/>
+     </item>
+     <item row="5" column="0">
+      <widget class="QLabel" name="label_4">
+       <property name="text">
+        <string>Year</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="0">
+      <widget class="QLabel" name="label">
+       <property name="text">
+        <string>Title</string>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="2">
+      <widget class="QLineEdit" name="lineEdit_author"/>
+     </item>
+     <item row="1" column="2">
+      <widget class="QLineEdit" name="lineEdit_title"/>
+     </item>
+     <item row="4" column="0">
+      <widget class="QLabel" name="label_3">
+       <property name="text">
+        <string>Journal</string>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="0">
+      <widget class="QLabel" name="label_2">
+       <property name="text">
+        <string>Author</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="2">
+      <widget class="QLineEdit" name="lineEdit_abstract"/>
+     </item>
+     <item row="2" column="0">
+      <widget class="QLabel" name="label_5">
+       <property name="text">
+        <string>Abstract</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="0">
+      <widget class="QLabel" name="label_6">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="text">
+        <string>Items</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="2">
+      <widget class="QLabel" name="label_7">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="text">
+        <string>Contents to search for</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="3">
+      <widget class="QLabel" name="label_8">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="text">
+        <string>Query condition</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="3">
+      <widget class="QComboBox" name="comboBox_title">
+       <item>
+        <property name="text">
+         <string>and</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>or</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>na</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+     <item row="2" column="3">
+      <widget class="QComboBox" name="comboBox_abstract">
+       <item>
+        <property name="text">
+         <string>and</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>or</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>na</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+     <item row="3" column="3">
+      <widget class="QComboBox" name="comboBox_author">
+       <item>
+        <property name="text">
+         <string>and</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>or</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>na</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+     <item row="4" column="3">
+      <widget class="QComboBox" name="comboBox_journal">
+       <item>
+        <property name="text">
+         <string>and</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>or</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>na</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+     <item row="5" column="3">
+      <widget class="QComboBox" name="comboBox_year">
+       <item>
+        <property name="text">
+         <string>and</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>or</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>na</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <item>
+      <spacer name="horizontalSpacer">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QPushButton" name="pushButton_clear">
+       <property name="text">
+        <string>Clear</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="pushButton_search">
+       <property name="text">
+        <string>Search</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="pushButton_exit">
+       <property name="text">
+        <string>Exit</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <widget class="QLabel" name="label_9">
+     <property name="text">
+      <string>Query information</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QTextEdit" name="textEdit_query_info"/>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

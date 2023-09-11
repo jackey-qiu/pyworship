@@ -1,0 +1,229 @@
+# database configurations
+db_types:
+    share:
+        collections:
+            project_info:
+                project_info: textEdit_introduction
+                db_type: comboBox_type
+    图书:
+        collections: 
+            user_info:
+                user_name: lineEdit_login_name
+                name: lineEdit_name
+                email: lineEdit_email
+                password: lineEdit_password
+                role: None
+                internal_password: None
+            paper_info:
+                book_name: lineEdit_book_name 
+                author: lineEdit_author
+                press: lineEdit_press
+                year: lineEdit_year
+                class: lineEdit_class
+                paper_id: lineEdit_id
+                status: lineEdit_status
+                borrower: lineEdit_borrower
+                lend_date: lineEdit_lend_date
+                return_date: lineEdit_return_date
+                note: lineEdit_note
+                abstract: textEdit_abstract                 
+        table_viewer: 
+            paper_info:
+                select: 选择
+                paper_id: 编号
+                year: 年份
+                press: 出版社
+                archive_date: 入库时间
+                book_name: 书名
+                class: 类别
+                status: 状态
+                note: 备注                   
+    人事:
+        collections: 
+            personal_info:
+                name: lineEdit_name_ccg
+                gender: lineEdit_gender_ccg
+                birthday: lineEdit_birth_ccg
+                origin: lineEdit_origin_ccg
+                address: lineEdit_address_ccg
+                phone: lineEdit_phone_ccg
+                email: lineEdit_email_ccg
+                membersince: lineEdit_member_start
+                title: lineEdit_ccg_title
+                task: lineEdit_task_ccg
+                note: textEdit_note_ccg
+                img_format: lineEdit_img_format 
+                img: widget_img_view 
+        table_viewer: 
+            personal_info:
+                name: 姓名
+                gender: 性别
+                birthday: 生日
+                membersince: 入会时间
+                title: 教会职务
+                task: 教会服事          
+    服事:
+        collections: 
+            topic_info:
+                map_name: 主题
+                1st_week: lineEdit_1st_week_note
+                2nd_week: lineEdit_2nd_week_note
+                3rd_week: lineEdit_3rd_week_note
+                4th_week: lineEdit_4th_week_note
+                5th_week: lineEdit_5th_week_note
+            preacher_info:
+                map_name: 证道
+                1st_week: lineEdit_1st_week_note
+                2nd_week: lineEdit_2nd_week_note
+                3rd_week: lineEdit_3rd_week_note
+                4th_week: lineEdit_4th_week_note
+                5th_week: lineEdit_5th_week_note
+            hoster_info:
+                map_name: 司会
+                1st_week: lineEdit_1st_week_note
+                2nd_week: lineEdit_2nd_week_note
+                3rd_week: lineEdit_3rd_week_note
+                4th_week: lineEdit_4th_week_note
+                5th_week: lineEdit_5th_week_note
+            piano_info:
+                map_name: 司琴
+                1st_week: lineEdit_1st_week_note
+                2nd_week: lineEdit_2nd_week_note
+                3rd_week: lineEdit_3rd_week_note
+                4th_week: lineEdit_4th_week_note
+                5th_week: lineEdit_5th_week_note
+            song_leader_info:
+                map_name: 领唱
+                1st_week: lineEdit_1st_week_note
+                2nd_week: lineEdit_2nd_week_note
+                3rd_week: lineEdit_3rd_week_note
+                4th_week: lineEdit_4th_week_note
+                5th_week: lineEdit_5th_week_note
+            main_actioner_info:
+                map_name: 主执
+                1st_week: lineEdit_1st_week_note
+                2nd_week: lineEdit_2nd_week_note
+                3rd_week: lineEdit_3rd_week_note
+                4th_week: lineEdit_4th_week_note
+                5th_week: lineEdit_5th_week_note
+            teenage_info:
+                map_name: 少年班
+                1st_week: lineEdit_1st_week_note
+                2nd_week: lineEdit_2nd_week_note
+                3rd_week: lineEdit_3rd_week_note
+                4th_week: lineEdit_4th_week_note
+                5th_week: lineEdit_5th_week_note
+            kid_info:
+                map_name: 少儿班
+                1st_week: lineEdit_1st_week_note
+                2nd_week: lineEdit_2nd_week_note
+                3rd_week: lineEdit_3rd_week_note
+                4th_week: lineEdit_4th_week_note
+                5th_week: lineEdit_5th_week_note
+            baby_info:
+                map_name: 幼儿班
+                1st_week: lineEdit_1st_week_note
+                2nd_week: lineEdit_2nd_week_note
+                3rd_week: lineEdit_3rd_week_note
+                4th_week: lineEdit_4th_week_note
+                5th_week: lineEdit_5th_week_note
+            ppt_info:
+                map_name: PPT制作播放
+                1st_week: lineEdit_1st_week_note
+                2nd_week: lineEdit_2nd_week_note
+                3rd_week: lineEdit_3rd_week_note
+                4th_week: lineEdit_4th_week_note
+                5th_week: lineEdit_5th_week_note
+            before_lunch_info:
+                map_name: 餐前准备
+                1st_week: lineEdit_1st_week_note
+                2nd_week: lineEdit_2nd_week_note
+                3rd_week: lineEdit_3rd_week_note
+                4th_week: lineEdit_4th_week_note
+                5th_week: lineEdit_5th_week_note
+            cook_info:
+                map_name: 主厨
+                1st_week: lineEdit_1st_week_note
+                2nd_week: lineEdit_2nd_week_note
+                3rd_week: lineEdit_3rd_week_note
+                4th_week: lineEdit_4th_week_note
+                5th_week: lineEdit_5th_week_note
+            after_lunch_info:
+                map_name: 餐后洗碗
+                1st_week: lineEdit_1st_week_note
+                2nd_week: lineEdit_2nd_week_note
+                3rd_week: lineEdit_3rd_week_note
+                4th_week: lineEdit_4th_week_note
+                5th_week: lineEdit_5th_week_note
+            cleanup_info:
+                map_name: 管堂组
+                1st_week: lineEdit_1st_week_note
+                2nd_week: lineEdit_2nd_week_note
+                3rd_week: lineEdit_3rd_week_note
+                4th_week: lineEdit_4th_week_note
+                5th_week: lineEdit_5th_week_note
+        table_viewer: 
+            all_collections: 
+                1st_week: 第一周
+                2nd_week: 第二周
+                3rd_week: 第三周
+                4th_week: 第四周
+                5th_week: 第五周
+                collections: 服事岗
+    财务:
+        collections: 
+            finance_info:
+                income_offering_onside: lineEdit_income_offering_onside
+                income_offering_online: lineEdit_income_offering_online
+                income_offering_lubeck: lineEdit_income_offering_lubeck
+                income_offering_kiel: lineEdit_income_offering_kiel
+                income_offering_korea: lineEdit_income_offering_korea
+                income_offering_others: lineEdit_income_offering_others
+                total_income: lineEdit_total_income
+                total_expense: lineEdit_total_expense
+                net_income: lineEdit_net_income
+                income_offering_onside_note: lineEdit_income_offering_onside_note
+                income_offering_online_note: lineEdit_income_offering_online_note
+                income_offering_lubeck_note: lineEdit_income_offering_lubeck_note
+                income_offering_kiel_note: lineEdit_income_offering_kiel_note
+                income_offering_korea_note: lineEdit_income_offering_korea_note
+                income_offering_others_note: lineEdit_income_offering_others_note
+                expense_pastor_wu: lineEdit_expense_pastor_wu
+                expense_pastor_guan: lineEdit_expense_pastor_guan
+                expense_pastor_chuandao: lineEdit_expense_pastor_chuandao
+                expense_kiel: lineEdit_expense_kiel
+                expense_lubeck: lineEdit_expense_lubeck
+                expense_nebenkosten: lineEdit_expense_nebenkosten
+                expense_software_subscribe: lineEdit_expense_software_subscribe
+                expense_other_cost_1: lineEdit_expense_other_cost_1
+                expense_other_cost_2: lineEdit_expense_other_cost_2
+                expense_other_cost_3: lineEdit_expense_other_cost_3
+                expense_pastor_wu_note: lineEdit_expense_pastor_wu_note
+                expense_pastor_guan_note: lineEdit_expense_pastor_guan_note
+                expense_pastor_chuandao_note: lineEdit_expense_pastor_chuandao_note
+                expense_kiel_note: lineEdit_expense_kiel_note
+                expense_lubeck_note: lineEdit_expense_lubeck_note
+                expense_nebenkosten_note: lineEdit_expense_nebenkosten_note
+                expense_software_subscribe_note: lineEdit_expense_software_subscribe_note
+                expense_other_cost_1_note: lineEdit_expense_other_cost_1_note
+                expense_other_cost_2_note: lineEdit_expense_other_cost_2_note
+                expense_other_cost_3_note: lineEdit_expense_other_cost_3_note
+        table_viewer: 
+            finance_info:
+                group_id: 年月
+                income_offering_onside: 主日奉献
+                income_offering_online: 银行转账奉献
+                total_income: 当月总收入
+                total_expense: 当月总支出
+                net_income: 当月结余
+    PPT:
+        collections: 
+            ppt_info:
+                pray_items: textEdit_pray_note
+                scripture_item: textEdit_scripture_note
+                song_items: x_song_items_note
+                preach_contents: textEdit_preach_note
+                reports: textEdit_report_note
+                #workers: x_workers_note
+            song_info:
+                script: x_song_script_note
