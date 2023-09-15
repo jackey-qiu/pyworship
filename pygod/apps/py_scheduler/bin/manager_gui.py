@@ -1,4 +1,4 @@
-import sys
+import sys, json
 from PyQt5 import uic, QtCore
 from pyqtgraph.Qt import QtGui
 from pathlib import Path
@@ -25,6 +25,8 @@ class MyMainWindow(QMainWindow):
         self.ui = ui
         uic.loadUi(ui, self)
         #setup image viewer actions
+        self.comboBox_rsp_scripture.clear()
+        self.comboBox_rsp_scripture.addItems(self.get_rsp_scripture_titles())
         self.action = qpageview.viewactions.ViewActions(self)
         self.action.setView(self.widget_img_view)
         menubar = self.menuBar()
@@ -83,7 +85,37 @@ class MyMainWindow(QMainWindow):
         self.pushButton_insert_song2.clicked.connect(lambda:db.extract_one_song(self, self.comboBox_song2.currentText(),2))
         self.pushButton_insert_song3.clicked.connect(lambda:db.extract_one_song(self, self.comboBox_song3.currentText(),3))
         self.pushButton_insert_song4.clicked.connect(lambda:db.extract_one_song(self, self.comboBox_song4.currentText(),4))
+        self.comboBox_rsp_scripture.currentIndexChanged.connect(lambda: self.textEdit_rsp_scripture.setPlainText(self.get_rsp_scripture_with_title()))
+        self.pushButton_append_rsp_scripture.clicked.connect(self.update_or_append_scripture)
 
+    def get_rsp_scripture_titles(self):
+        json_file = Path(__file__).parent.parent.parent / 'ppt_worker' / 'src' / 'bible' / 'scriptures.json'
+        with open(json_file, 'r', encoding='utf-8') as f:
+            def _key(x):
+                if x.startswith('0'):
+                    return int(x[1])
+                elif x[0] in map(str, range(1,10)):
+                    return int(x[:2])
+                else:
+                    return 0
+            return sorted(list(json.load(f).keys()), key=_key)
+
+    def get_rsp_scripture_with_title(self):
+        json_file = Path(__file__).parent.parent.parent / 'ppt_worker' / 'src' / 'bible' / 'scriptures.json'
+        title = self.comboBox_rsp_scripture.currentText()
+        with open(json_file, 'r', encoding='utf-8') as f:
+            return json.load(f)[title]
+
+    def update_or_append_scripture(self):
+        json_file = Path(__file__).parent.parent.parent / 'ppt_worker' / 'src' / 'bible' / 'scriptures.json'
+        title = self.comboBox_rsp_scripture.currentText()
+        with open(json_file, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+        data[self.lineEdit_rsp_scripture.text()] = self.textEdit_rsp_scripture.toPlainText()
+        with open(json_file, 'w', encoding='utf-8') as f:
+            json.dump(data, f)
+        self.comboBox_rsp_scripture.clear()
+        self.comboBox_rsp_scripture.addItems(self.get_rsp_scripture_titles())
 
     def setget_funcs_setup(self):
         self.set_data_for_widget_img_view = partial(db.set_data_for_widget_img_view,self)

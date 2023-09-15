@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1741</width>
+    <width>1333</width>
     <height>1063</height>
    </rect>
   </property>
@@ -1328,7 +1328,7 @@ p, li { white-space: pre-wrap; }
                      <rect>
                       <x>0</x>
                       <y>0</y>
-                      <width>1194</width>
+                      <width>894</width>
                       <height>617</height>
                      </rect>
                     </property>
@@ -2049,7 +2049,7 @@ p, li { white-space: pre-wrap; }
                      <rect>
                       <x>0</x>
                       <y>0</y>
-                      <width>98</width>
+                      <width>93</width>
                       <height>53</height>
                      </rect>
                     </property>
@@ -2211,7 +2211,7 @@ p, li { white-space: pre-wrap; }
                  <item>
                   <widget class="QTabWidget" name="tabWidget_note">
                    <property name="currentIndex">
-                    <number>3</number>
+                    <number>2</number>
                    </property>
                    <widget class="QWidget" name="tab_14">
                     <attribute name="title">
@@ -2485,9 +2485,58 @@ p, li { white-space: pre-wrap; }
                     <attribute name="title">
                      <string>经文信息</string>
                     </attribute>
-                    <layout class="QVBoxLayout" name="verticalLayout_17">
+                    <layout class="QHBoxLayout" name="horizontalLayout_25">
                      <item>
-                      <widget class="QTextEdit" name="textEdit_scripture_note"/>
+                      <layout class="QVBoxLayout" name="verticalLayout_22">
+                       <item>
+                        <layout class="QHBoxLayout" name="horizontalLayout_24">
+                         <item>
+                          <widget class="QLabel" name="label_98">
+                           <property name="text">
+                            <string>启应经文</string>
+                           </property>
+                          </widget>
+                         </item>
+                         <item>
+                          <widget class="QComboBox" name="comboBox_rsp_scripture">
+                           <property name="minimumSize">
+                            <size>
+                             <width>150</width>
+                             <height>0</height>
+                            </size>
+                           </property>
+                          </widget>
+                         </item>
+                         <item>
+                          <widget class="QLineEdit" name="lineEdit_rsp_scripture"/>
+                         </item>
+                         <item>
+                          <widget class="QPushButton" name="pushButton_append_rsp_scripture">
+                           <property name="text">
+                            <string>追加或更新</string>
+                           </property>
+                          </widget>
+                         </item>
+                        </layout>
+                       </item>
+                       <item>
+                        <widget class="QTextEdit" name="textEdit_rsp_scripture"/>
+                       </item>
+                      </layout>
+                     </item>
+                     <item>
+                      <layout class="QVBoxLayout" name="verticalLayout_17">
+                       <item>
+                        <widget class="QLabel" name="label_99">
+                         <property name="text">
+                          <string>经文信息</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item>
+                        <widget class="QTextEdit" name="textEdit_scripture_note"/>
+                       </item>
+                      </layout>
                      </item>
                     </layout>
                    </widget>
@@ -2993,7 +3042,7 @@ p, li { white-space: pre-wrap; }
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1741</width>
+     <width>1333</width>
      <height>21</height>
     </rect>
    </property>
@@ -3196,5 +3245,22 @@ p, li { white-space: pre-wrap; }
   </customwidget>
  </customwidgets>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>comboBox_rsp_scripture</sender>
+   <signal>currentIndexChanged(QString)</signal>
+   <receiver>lineEdit_rsp_scripture</receiver>
+   <slot>setText(QString)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>551</x>
+     <y>218</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>716</x>
+     <y>218</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>

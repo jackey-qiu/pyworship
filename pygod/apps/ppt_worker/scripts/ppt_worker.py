@@ -87,7 +87,7 @@ class MakeWorkshipPpt(object):
             with open(json_file_scripture, 'r', encoding='utf-8') as f:
                 data = json.load(f)
                 if title in data:
-                    return [title] + data[title].replace('\u3000','').rsplit('\n')
+                    return [title] + data[title].replace('\u3000','').replace('_x000B_','').rsplit('\n')
 
         def _get_scripture_from_json(content_sig, json_obj):
             title_info = []
