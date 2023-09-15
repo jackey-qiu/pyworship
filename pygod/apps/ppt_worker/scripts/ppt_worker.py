@@ -15,6 +15,7 @@ root = Path(__file__).parent.parent
 class MakeWorkshipPpt(object):
     max_char_per_slide = 60
     use_json_for_extracting_scripture = True
+    use_json_for_extracting_response_scripture = True
     font_type_kaiti = '方正楷体简体'#'FZKai-Z03S'
     font_type_zhunyuan = '方正准圆简体'#'FZZhunYuan-M02S'
 
@@ -38,6 +39,7 @@ class MakeWorkshipPpt(object):
             Path(self.content_folder).mkdir(parents = True, exist_ok = True)
             self.ppt_file = Path(self.content_folder) / f'{date}.pptx'
         self.bible_json = root / 'src' / 'bible' / 'chinese_bible.json'
+        self.scripture_json = root / 'src' / 'bible' / 'scriptures.json'
         self.prs = Presentation()
         self.prepare_slide_contents()
 
@@ -70,7 +72,7 @@ class MakeWorkshipPpt(object):
                 lf, rt = ix_range
                 getattr(self, attr_str).append([each.rstrip() for each in lines[lf+1:rt]])
 
-    def _prepare_scripture_list_from_json(self, json_file = None):
+    def _prepare_scripture_list_from_json(self, json_file = None, json_file_rep_scripture = None):
         #here you only provide book chapter verse signiture without having to give all scripture in the txt file
         #eg. book1:4[1-5,9,10]+book2:8[5,9,15-20]+book3:9[*]
         #extract vers 1 to 5 and ver 9 and ver 10 for chapter 4 in book1, 
@@ -78,6 +80,14 @@ class MakeWorkshipPpt(object):
         #extract all vers for chapter 9 in book3
         if json_file==None:
             json_file = self.bible_json
+        if json_file_rep_scripture == None:
+            json_file_scripture = self.scripture_json
+
+        def _get_responsive_scripture_from_json(title):
+            with open(json_file_scripture, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+                if title in data:
+                    return [title] + data[title].replace('\u3000','').rsplit('\n')
 
         def _get_scripture_from_json(content_sig, json_obj):
             title_info = []
@@ -133,6 +143,10 @@ class MakeWorkshipPpt(object):
             sig = self.scripture_list[2][0]
             title_info, scripture_list = _get_scripture_from_json(sig, bible)
             self.scripture_list[2] = [title_info] + scripture_list
+            #modify second list
+            second_list = _get_responsive_scripture_from_json(self.scripture_list[1][0])
+            if second_list != None:
+                self.scripture_list[1] = second_list
 
     def add_empty_slide(self, bkg_img = None):
         self.make_one_slide(blocks = [], bkg_img= bkg_img)
