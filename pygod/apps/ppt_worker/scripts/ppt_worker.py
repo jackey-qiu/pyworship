@@ -1,4 +1,4 @@
-import os, json
+import os, json, re
 import click
 from pptx import Presentation
 from pptx import Presentation
@@ -84,10 +84,10 @@ class MakeWorkshipPpt(object):
             json_file_scripture = self.scripture_json
 
         def _get_responsive_scripture_from_json(title):
-            with open(json_file_scripture, 'r', encoding='utf-8') as f:
+            with open(json_file_scripture, 'r') as f:
                 data = json.load(f)
                 if title in data:
-                    return [title] + data[title].replace('\u3000','').replace('_x000B_','').rsplit('\n')
+                    return [re.search(r'([0-9]?[0-9]?)(.*)',title).group(2)] + data[title].replace('\u3000','').replace('♂','').rsplit('\n')
 
         def _get_scripture_from_json(content_sig, json_obj):
             title_info = []
