@@ -12,9 +12,9 @@ sys.path.append('C:\\Users\\qiucanro\\apps\\pyworkship')
 #This solution seems non-sense, since the matplotlib is not used in the app.
 #But if these lines are removed, the app GUI is not gonna pop up.
 #This situation may change in the future.
-import matplotlib.pyplot as plt
-import matplotlib
-matplotlib.use("TkAgg")
+# import matplotlib.pyplot as plt
+# import matplotlib
+# matplotlib.use("TkAgg")
 import pandas as pd
 from jieba.analyse import ChineseAnalyzer
 from whoosh.index import create_in

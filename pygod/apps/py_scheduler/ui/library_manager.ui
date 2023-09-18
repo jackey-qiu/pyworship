@@ -3222,7 +3222,7 @@ p, li { white-space: pre-wrap; }
   <customwidget>
    <class>TerminalWidget</class>
    <extends>QWidget</extends>
-   <header location="global">dafy.projects.superrod.widgets.terminal_widget.h</header>
+   <header>pygod.apps.py_scheduler.widgets.terminal_widget.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
