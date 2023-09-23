@@ -1328,8 +1328,8 @@ p, li { white-space: pre-wrap; }
                      <rect>
                       <x>0</x>
                       <y>0</y>
-                      <width>894</width>
-                      <height>617</height>
+                      <width>575</width>
+                      <height>426</height>
                      </rect>
                     </property>
                     <attribute name="label">
@@ -2049,7 +2049,7 @@ p, li { white-space: pre-wrap; }
                      <rect>
                       <x>0</x>
                       <y>0</y>
-                      <width>93</width>
+                      <width>98</width>
                       <height>53</height>
                      </rect>
                     </property>
@@ -2211,7 +2211,7 @@ p, li { white-space: pre-wrap; }
                  <item>
                   <widget class="QTabWidget" name="tabWidget_note">
                    <property name="currentIndex">
-                    <number>2</number>
+                    <number>3</number>
                    </property>
                    <widget class="QWidget" name="tab_14">
                     <attribute name="title">
@@ -2555,7 +2555,12 @@ p, li { white-space: pre-wrap; }
                         </widget>
                        </item>
                        <item>
-                        <widget class="QComboBox" name="comboBox">
+                        <widget class="QComboBox" name="comboBox_song_holy_dinner">
+                         <item>
+                          <property name="text">
+                           <string>靠近十架</string>
+                          </property>
+                         </item>
                          <item>
                           <property name="text">
                            <string>宝架清影</string>

@@ -557,7 +557,8 @@ def save_ppt_content_in_txt_format(self):
         f.write(self.textEdit_report_note.toPlainText())      
     #now create ppt file
     try:
-        ppt(f'{year}-{month}-{day}','2', content_folder)
+        v = ['2','1'][int(self.comboBox_song_holy_dinner.currentText()=='靠近十架')]
+        ppt(f'{year}-{month}-{day}',v, content_folder)
         error_pop_up(f"The ppt file is created and saved in {str(content_folder)}", 'Information')
     except Exception as e:
         error_pop_up(f'ERROR: {e}', 'Error')
