@@ -77,6 +77,11 @@
          <string>PPT</string>
         </property>
        </item>
+       <item>
+        <property name="text">
+         <string>月报</string>
+        </property>
+       </item>
       </widget>
      </item>
     </layout>

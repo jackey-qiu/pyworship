@@ -123,9 +123,11 @@ def load_img_from_base64(self, widget_view_name, base64_string, base64_string_va
 def extract_one_record(self, db_type, collection, constrain):
     doc_info = get_document_info_from_yaml(self, db_type=db_type, collection = collection)
     data_from_db = self.database[collection].find_one(constrain)
+    NO_RECORD = False
     if data_from_db==None:
-        error_pop_up('No data record can be found in the database!')
-        return False
+        NO_RECORD = True
+        #error_pop_up('No data record can be found in the database!')
+        #return False
     format_ = '{}'.format
     format_html = '<p style="color:white;margin:0px;font-size:18px">{}</p>'.format
     for doc, widget in doc_info.items():
@@ -147,8 +149,12 @@ def extract_one_record(self, db_type, collection, constrain):
                 widget_set_api = eval(f'self.set_data_for_{widget}')
                 format_text = lambda x:x
             # print(format_text(str(data_from_db[doc])))
-            widget_set_api(format_text(str(data_from_db[doc])))
-    return True
+            if NO_RECORD:
+                widget_set_api(format_text('NO RECORD!!!'))
+            else:
+                widget_set_api(format_text(str(data_from_db[doc])))
+
+    return not NO_RECORD
 
 def delete_one_record(self, db_type, constrain, cbs = []):
     reply = QMessageBox.question(self, 'Message', 'Are you sure to delete this paper?', QMessageBox.Yes | QMessageBox.No, QMessageBox.Yes)

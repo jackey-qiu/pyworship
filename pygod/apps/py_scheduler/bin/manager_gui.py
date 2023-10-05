@@ -87,6 +87,10 @@ class MyMainWindow(QMainWindow):
         self.pushButton_insert_song4.clicked.connect(lambda:db.extract_one_song(self, self.comboBox_song4.currentText(),4))
         self.comboBox_rsp_scripture.currentIndexChanged.connect(lambda: self.textEdit_rsp_scripture.setPlainText(self.get_rsp_scripture_with_title()))
         self.pushButton_append_rsp_scripture.clicked.connect(self.update_or_append_scripture)
+        #bulletin worker
+        self.pushButton_load_db_info_bulletin.clicked.connect(lambda:db.extract_bulletin_record(self))
+        self.pushButton_save_bulletin_info.clicked.connect(lambda:db.add_one_bulletin_record(self))
+        self.pushButton_delete_bulletin_record.clicked.connect(lambda:db.delete_bulletin_record(self))
 
     def get_rsp_scripture_titles(self):
         json_file = Path(__file__).parent.parent.parent / 'ppt_worker' / 'src' / 'bible' / 'scriptures.json'

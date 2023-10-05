@@ -351,10 +351,10 @@ def calculate_sum(self, total_income_widget = 'lineEdit_total_income', total_exp
 
 
 #api funcs for ppt worker
-def clear_all_text_field(self):
-    for each in self.tabWidget_note.findChildren(QLineEdit):
+def clear_all_text_field(self, tabWidget = 'tabWidget_note'):
+    for each in getattr(self, tabWidget).findChildren(QLineEdit):
         each.setText('')
-    for each in self.tabWidget_note.findChildren(QTextEdit):
+    for each in getattr(self, tabWidget).findChildren(QTextEdit):
         each.setPlainText('')
     
 def extract_ppt_record(self):
@@ -596,3 +596,36 @@ def general_query_by_field(self, field, query_string, target_field, collection_n
     # self.database.paper_info.drop_index(index_name)
     database[collection_name].drop_index(index_name)
     return return_list  
+
+#api functions for bulletin creator
+def extract_bulletin_record(self):
+    month = self.comboBox_bulletin_month.currentText()
+    year = datetime.date.today().year
+    group_id = f'{year}_{month}'
+    constrain = {'group_id':group_id}    
+    extract_one_record(self, self.database_type, 'bulletin_info', constrain)
+    extract_one_record(self, self.database_type, 'attendence_info_sunday', constrain)
+    extract_one_record(self, self.database_type, 'attendence_info_bible_study', constrain)
+    extract_one_record(self, self.database_type, 'year_scripture', {'group_id':str(year)})
+
+def delete_bulletin_record(self):
+    month = self.comboBox_bulletin_month.currentText()
+    year = datetime.date.today().year
+    group_id = f'{year}_{month}'
+    delete_one_record(self, self.database_type, {'group_id':group_id}, cbs = [partial(clear_all_text_field, tabWidget='tabWidget_bulletin')])
+
+def add_one_bulletin_record(self):
+    month = self.comboBox_bulletin_month.currentText()
+    year = datetime.date.today().year
+    group_id = f'{year}_{month}'
+    extra_info = {'group_id':group_id}
+    cbs = []
+    def _add_or_update(collection, constraint, cbs):
+        if self.database[collection].count_documents(constraint)==1:
+            update_one_record(self, self.database_type, collection, constrain=constraint, cbs=cbs)
+        elif self.database[collection].count_documents(constraint)==0:
+            add_one_record(self, self.database_type, collection, extra_info=constraint, cbs=cbs)
+    collections = ['bulletin_info','attendence_info_sunday','attendence_info_bible_study', 'year_scripture']
+    constraints = [extra_info]*3 + [{'group_id':str(year)}]
+    for collection, constraint in zip(collections, constraints):
+        _add_or_update(collection, constraint, cbs)

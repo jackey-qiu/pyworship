@@ -227,3 +227,19 @@ db_types:
                 #workers: x_workers_note
             song_info:
                 script: x_song_script_note
+    月报:
+        collections: 
+            year_scripture:
+                scripture: textEdit_year_scripture_note
+            bulletin_info:
+                month_scripture: textEdit_month_scripture_note
+                reports: textEdit_reports_note
+                pray_items: textEdit_prays_note
+            attendence_info_sunday:
+                date: lineEdit_dates_1_note
+                attendence: lineEdit_attendence_note
+                offerings: lineEdit_offerings_note
+            attendence_info_bible_study:
+                date: lineEdit_dates_2_note
+                attendence_onsite: lineEdit_attendence_onsite_note
+                attendence_online: lineEdit_attendence_online_note
