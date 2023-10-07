@@ -535,10 +535,16 @@ def save_ppt_content_in_txt_format(self):
     with open(content_folder / ('worker_list'+txt_file_name_end), 'w', encoding='utf-8') as f:
         f.write("#1\n{} 年 {:02d} 月 {:02d} 日主日服事表\n".format(year, month, day))
         for label,each in widget_names:
-            f.write(label+getattr(self, each).text()+'\n')
+            if label!='主题：':
+                f.write(label+getattr(self, each).text().replace('+','、')+'\n')
+            else:
+                f.write(label+getattr(self, each).text()+'\n')
         f.write("#2\n{} 年 {:02d} 月 {:02d} 日主日服事表\n".format(year_nw, month_nw, day_nw))
         for label,each in widget_names:
-            f.write(label+getattr(self, each+'2').text()+'\n')
+            if label!='主题：':
+                f.write(label+getattr(self, each+'2').text().replace('+','、')+'\n')
+            else:
+                f.write(label+getattr(self, each+'2').text()+'\n')            
     #save pray list
     with open(content_folder / ('pray_list'+txt_file_name_end), 'w', encoding='utf-8') as f:
         f.write(self.textEdit_pray_note.toPlainText())
