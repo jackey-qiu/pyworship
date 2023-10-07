@@ -14,6 +14,7 @@ from .common_db_opts import *
 from .graph_operations import create_piechart
 from datetime import timedelta
 from pygod.apps.ppt_worker.scripts.ppt_worker import main as ppt
+from pygod.apps.bulletin_worker.scripts.bulletin_worker import main as bulletin
 
 db_config_file = Path(__file__).parent.parent / 'config' / 'db_matching.yaml'
 db_config_info = None
@@ -720,9 +721,10 @@ def get_preach_content(self, key):
     contents_formated = [','.join(dates)]+[contents_formated[0],contents_formated[2],contents_formated[1]]
     return '\n'.join(contents_formated)
 
-def save_bulletin_content_in_txt_format(self):
+def save_bulletin_content_in_txt_format_and_make_bulletin(self):
     year, month = str(datetime.date.today().year), self.comboBox_bulletin_month.currentText()
     txt_file_name = f'bulletin_{year}-{month}.txt'
+    doc_file_name = f'bulletin_{year}-{month}.docx'
     #content_folder = Path(__file__).parent.parent.parent / 'ppt_worker' / 'src' / 'contents'
     content_folder = Path.home() / 'pygodAppData' / 'content_files'
     content_folder.mkdir(parents=True, exist_ok=True)
@@ -737,6 +739,13 @@ def save_bulletin_content_in_txt_format(self):
                   'MonthlyServiceTable':f"get_task_content(self,'{year}_{month}')",
                   'FinanceTable':f"get_finance_content(self, '{year}_{month}月')"
                   }
-    with open(str(content_folder / txt_file_name), 'w', encoding='utf8') as f:
-        for content_type in content_types:
-            f.write(f"<{content_type}>\n{eval(api_map[content_type])}\n</{content_type}>\n")
+
+    try:    
+        with open(str(content_folder / txt_file_name), 'w', encoding='utf8') as f:
+            for content_type in content_types:
+                f.write(f"<{content_type}>\n{eval(api_map[content_type])}\n</{content_type}>\n")
+        bulletin(year, month, str(content_folder / txt_file_name), str(content_folder / doc_file_name))
+        error_pop_up(f"The bulletin doc file is created and saved in {str(content_folder)}", 'Information')
+    except Exception as e:
+        error_pop_up(f'ERROR: {e}', 'Error')
+    

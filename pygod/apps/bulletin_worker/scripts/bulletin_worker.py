@@ -24,7 +24,7 @@ class makeBulletin(object):
     format_report = {
             'style':'List Number',
             'font_name':'FZShuSong-Z01S',
-            'font_size': 11,
+            'font_size': 10,
             'bold': False,
             'line_spacing': 12,
             'space_after':0,
@@ -194,7 +194,7 @@ class makeBulletin(object):
         #tb.add_row()
         #tb.rows[-1].cells[0].merge(tb.rows[-1].cells[1])
         ntb = self.add_table(font_size=10, content = [['','总进','总支','结余']]+table_data['summary'],alignments=[WD_TABLE_ALIGNMENT.LEFT,WD_TABLE_ALIGNMENT.RIGHT,WD_TABLE_ALIGNMENT.RIGHT,WD_TABLE_ALIGNMENT.RIGHT])
-        self.add_paragraphs(['* 堂址维护基金：8月提拨金为500.00欧。至8月31日止，总进为671,397.77欧，总支为-630,998.66欧，结余为40,399.11欧。\n* 神学教育基金：至8月31日止，结余为5,797.58欧。 '], format=self.format_body, font_size = 9, alignment=WD_ALIGN_PARAGRAPH.LEFT)
+        self.add_paragraphs([f'* 堂址维护基金：{self.month-2}月提拨金为???欧。至{self.month-2}月??日止，总进为????欧，总支为????欧，结余为????欧。\n* 神学教育基金：至8月31日止，结余为????欧。 '], format=self.format_body, font_size = 9, alignment=WD_ALIGN_PARAGRAPH.LEFT)
 
     def add_corresponding_table(self):
         self.add_paragraphs(['教会牧者执事联络电话'],self.format_title_big, font_size = 12)
@@ -362,6 +362,8 @@ class makeBulletin(object):
                 begin_line = -1
                 end_line = 0
             raw = [each.rstrip() for each in lines[begin_line+1:end_line]]
+            if content_type=='MonthlyServiceTable':
+                raw = [each.replace('+','\n') for each in raw]
             if content_type in ['YearScripture','MonthlyScripture','Report', 'Pray']:
                 return raw# paragraph content like ['item1','item2']
             else:#table content like [['item1','item2'],['item3','item4']]
@@ -391,7 +393,7 @@ class makeBulletin(object):
         for content_type in  ['YearScripture','MonthlyScripture','MonthlyServiceTable','Report','Pray','LastMonthRecord','FinanceTable','PreachTable']:
             self.contents[content_type] = self._extract_content_from_file(file_path, content_type)
 
-    def make_doc_in_one_go(self, content_file_path, section_spacing = 10):
+    def make_doc_in_one_go(self, content_file_path, doc_file_path = None, section_spacing = 10):
         self.prepare_contents(content_file_path)
         self.add_monthly_scripture(contents=self.contents['MonthlyScripture'])
         self.add_spacing(line_spacing=section_spacing)
@@ -419,10 +421,17 @@ class makeBulletin(object):
         self.add_spacing(line_spacing = section_spacing)
         self.add_bank_info()
         self.add_spacing(line_spacing = section_spacing)
-        self.save_doc()
+        self.save_doc(doc_file_path)
 
-    def save_doc(self):
-        self.doc.save(root / 'src' / f'bulletin-{self.year}-{self.month}.docx')
+    def save_doc(self, file_path = None):
+        if file_path==None:
+            file_path = root / 'src' / f'bulletin-{self.year}-{self.month}.docx'
+        self.doc.save(file_path)
+
+def main(year, month, content_file, doc_file=None):
+    worker = makeBulletin(year, month)
+    worker.make_doc_in_one_go(content_file, doc_file)
+
 
 emojs = ['🏠','🚉','🎁','📅''✝️','🕮','🌍','🏴󠁢󠁲󠁧󠁯󠁿','📍','👉','✬','♛','👨🏻‍🏫','✍🏽','🏛','💎','📝','📧','📙','📖','📃','✒️','🎦','🌐',\
          '➡️','💬','🤍','☞', '🏳️','⌨️','📪']

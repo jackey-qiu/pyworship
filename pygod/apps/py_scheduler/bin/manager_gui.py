@@ -94,6 +94,7 @@ class MyMainWindow(QMainWindow):
         self.pushButton_load_db_info_bulletin.clicked.connect(lambda:db.extract_bulletin_record(self))
         self.pushButton_save_bulletin_info.clicked.connect(lambda:db.add_one_bulletin_record(self))
         self.pushButton_delete_bulletin_record.clicked.connect(lambda:db.delete_bulletin_record(self))
+        self.pushButton_make_bulletin.clicked.connect(lambda:db.save_bulletin_content_in_txt_format_and_make_bulletin(self))
 
     def get_rsp_scripture_titles(self):
         json_file = Path(__file__).parent.parent.parent / 'ppt_worker' / 'src' / 'bible' / 'scriptures.json'
