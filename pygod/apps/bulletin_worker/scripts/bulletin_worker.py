@@ -29,7 +29,7 @@ class makeBulletin(object):
             'line_spacing': 12,
             'space_after':0,
             'space_before':0,
-            'alignment':WD_ALIGN_PARAGRAPH.JUSTIFY,
+            'alignment':WD_ALIGN_PARAGRAPH.LEFT,
             'font_style': 'FontReportStyle'
     }
     format_body = {
@@ -40,7 +40,7 @@ class makeBulletin(object):
             'line_spacing': 10,
             'space_after':0,
             'space_before':0,
-            'alignment':WD_ALIGN_PARAGRAPH.JUSTIFY,
+            'alignment':WD_ALIGN_PARAGRAPH.LEFT,
             'font_style': 'FontBodyStyle'
     }
     format_title_big = {
@@ -57,8 +57,10 @@ class makeBulletin(object):
     format_list = [format_title_big, format_body, format_report]
     format_style_list = ['FontTitleBigStyle','FontBodyStyle','FontReportStyle']
 
-    def __init__(self):
+    def __init__(self, year, month):
         self.doc = Document()
+        self.year = year
+        self.month = month
         self.change_orientation(self.doc)
         self.make_two_columns()
         self.set_margin()
@@ -247,6 +249,12 @@ class makeBulletin(object):
         self.add_paragraphs(contents, format = self.format_body)
 
     def add_preach_table(self, contents):
+        #append icon at the beginning place
+        if len(contents)==4:
+            contents = [['📅']+contents[0],\
+                        ['✒️']+contents[1],\
+                        ['👨🏻‍🏫']+contents[2],\
+                        ['✝️']+contents[3]]
         tb = self.add_table(font_size= 10, content = contents, alignments=WD_TABLE_ALIGNMENT.CENTER)
         self.shade_row(tb, 0, self.shade_color_code, None)
         self.shade_row(tb, 2, self.shade_color_code, None)
@@ -258,11 +266,11 @@ class makeBulletin(object):
                     ['✝️','约书亚记\n24:14-18','传道书\n12:9-14','路加福音\n9:10-17','腓立比书\n1:1-27','诗篇130, \n131']]
         self.add_preach_table(contents)
 
-    def add_header_info(self):
+    def add_header_info(self,contents = ['年度主题：复兴我灵、更新我心','我要使他们有合一的心，也要将新灵放在他们里面，又从他们肉体中除掉石心，赐给他们肉心，使他们顺从我的律例，谨守遵行我的典章。他们要作我的子民，我要作他们的　神。							以西结书11 : 19-20']):
         self.add_paragraphs( ['德国汉堡华人基督教会'], format=self.format_title_big, font_size = 24, space_before=20, space_after = 2)
-        self.add_paragraphs( ['2023年4月份月报'], format=self.format_body, font_size = 12, space_before =8, space_after =2)
-        self.add_paragraphs( ['年度主题：复兴我灵、更新我心'], format=self.format_body, font_size = 13,space_after = 2, space_before = 5)
-        self.add_paragraphs( ['我要使他们有合一的心，也要将新灵放在他们里面，又从他们肉体中除掉石心，赐给他们肉心，使他们顺从我的律例，谨守遵行我的典章。他们要作我的子民，我要作他们的　神。							以西结书11 : 19-20'], format=self.format_body, font_size = 10, line_spacing = 15)
+        self.add_paragraphs( [f'{self.year}年{self.month}月份月报'], format=self.format_body, font_size = 12, space_before =8, space_after =2)
+        self.add_paragraphs( [f'年度主题：{contents[0]}'], format=self.format_body, font_size = 13,space_after = 2, space_before = 5)
+        self.add_paragraphs( [contents[1]], format=self.format_body, font_size = 10, line_spacing = 15)
 
     def add_report(self, contents):
         self.add_paragraphs(['教会通讯'],format = self.format_body, font_size = 10, space_before = 5, space_after = 5, bold = True)
@@ -337,12 +345,91 @@ class makeBulletin(object):
         self.add_spacing(10)
         self.add_pray_list(pars)
 
+    def _extract_content_from_file(self, file_path, content_type):
+        possible_types = ['YearScripture','MonthlyScripture','MonthlyServiceTable','Report','Pray','LastMonthRecord','FinanceTable','PreachTable']
+        assert content_type in possible_types, f"Not one of the possible content type. Possible ones are:\n {possible_types}"
+        begin_line, end_line = None, None
+        begin_tag, end_tag = f'<{content_type}>', f'</{content_type}>'
+        with open(file_path, 'r') as f:
+            lines = f.readlines()
+            for i, line in enumerate(lines):
+                if line.startswith(begin_tag):
+                    begin_line = i
+                elif line.startswith(end_tag):
+                    end_line = i
+                    break
+            if begin_line==None:
+                begin_line = -1
+                end_line = 0
+            raw = [each.rstrip() for each in lines[begin_line+1:end_line]]
+            if content_type in ['YearScripture','MonthlyScripture','Report', 'Pray']:
+                return raw# paragraph content like ['item1','item2']
+            else:#table content like [['item1','item2'],['item3','item4']]
+                formated_content = []
+                for each in raw:
+                    if content_type == 'FinanceTable':
+                        formated_content.append(each.rsplit('&'))
+                    else:
+                        formated_content.append(each.rsplit(','))
+                if content_type == 'FinanceTable':
+                    #further formating is needed for finance table content
+                    formated_content_dict = {}
+                    end_income_index = 0
+                    for i in range(len(formated_content)-1):
+                        if formated_content[i][-1].startswith('+'):
+                            end_income_index = i+1
+                    formated_content_dict = {'income':formated_content[0:end_income_index],
+                                            'expanse': formated_content[end_income_index:-1],
+                                            'summary': [formated_content[-1]]}
+                    return formated_content_dict
+                else:
+                    return formated_content
+
+    def prepare_contents(self, file_path):
+        assert os.path.exists(file_path), 'The given file is not existing!'
+        self.contents = {}
+        for content_type in  ['YearScripture','MonthlyScripture','MonthlyServiceTable','Report','Pray','LastMonthRecord','FinanceTable','PreachTable']:
+            self.contents[content_type] = self._extract_content_from_file(file_path, content_type)
+
+    def make_doc_in_one_go(self, content_file_path, section_spacing = 10):
+        self.prepare_contents(content_file_path)
+        self.add_monthly_scripture(contents=self.contents['MonthlyScripture'])
+        self.add_spacing(line_spacing=section_spacing)
+        self.add_monthly_service_table(contents = self.contents['MonthlyServiceTable'])
+        self.add_spacing(line_spacing = section_spacing)
+        self.add_report(self.contents['Report'])
+        self.add_spacing(line_spacing = section_spacing)
+        self.add_report(self.contents['Pray'])
+        self.add_spacing(line_spacing = section_spacing)
+        self.add_last_month_record_table(self.contents['LastMonthRecord'][0:3],self.contents['LastMonthRecord'][3:])
+        self.add_spacing(line_spacing = section_spacing)
+        self.add_finance_table(self.contents['FinanceTable'])
+        self.add_spacing(line_spacing = section_spacing)
+        self.add_corresponding_table()
+        self.add_spacing(line_spacing = section_spacing)
+        self.add_whatsapp_info_table()
+        self.add_spacing(line_spacing = section_spacing)
+        self.add_header_info(self.contents['YearScripture'])
+        self.add_spacing(line_spacing = section_spacing)
+        self.add_preach_table(self.contents['PreachTable'])
+        self.add_spacing(line_spacing = section_spacing)
+        self.add_lesson_table()
+        self.add_spacing(line_spacing = section_spacing)
+        self.add_meetup_info()
+        self.add_spacing(line_spacing = section_spacing)
+        self.add_bank_info()
+        self.add_spacing(line_spacing = section_spacing)
+        self.save_doc()
+
     def save_doc(self):
-        self.doc.save(root / 'src' / 'test.docx')
+        self.doc.save(root / 'src' / f'bulletin-{self.year}-{self.month}.docx')
+
 emojs = ['🏠','🚉','🎁','📅''✝️','🕮','🌍','🏴󠁢󠁲󠁧󠁯󠁿','📍','👉','✬','♛','👨🏻‍🏫','✍🏽','🏛','💎','📝','📧','📙','📖','📃','✒️','🎦','🌐',\
          '➡️','💬','🤍','☞', '🏳️','⌨️','📪']
 if __name__ == '__main__':
-    worker = makeBulletin()
+    worker = makeBulletin(2023, 10)
+    worker.make_doc_in_one_go("C:\\Users\\qiucanro\\pygodAppData\\content_files\\bulletin_2023-10.txt")
+    '''
     worker.add_monthly_scripture(contents=['只要你们行事为人与基督的福音相称，叫我或来见你们，或不在你们那里，可以听见你们的景况，知道你们同有一个心志，站立得稳，为所信的福音齐心努力。 腓立比书1:27 '])
     worker.add_spacing(line_spacing = 10)
     worker.test_add_monthly_service_table()
@@ -368,3 +455,4 @@ if __name__ == '__main__':
     worker.add_bank_info()
     worker.add_spacing(line_spacing = 10)
     worker.save_doc()
+    '''

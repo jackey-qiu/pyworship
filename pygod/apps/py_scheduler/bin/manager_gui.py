@@ -1,5 +1,6 @@
 import sys, json
-from PyQt5 import uic, QtCore
+from PyQt5 import QtGui, uic, QtCore
+from PyQt5.QtWidgets import QMessageBox
 from pyqtgraph.Qt import QtGui
 from pathlib import Path
 from functools import partial
@@ -22,8 +23,10 @@ class MyMainWindow(QMainWindow):
         self.setget_funcs_setup()
 
     def init_gui(self, ui):
+        self.index_names = {}
         self.ui = ui
         uic.loadUi(ui, self)
+        self.db_opts = db
         #setup image viewer actions
         self.comboBox_rsp_scripture.clear()
         self.comboBox_rsp_scripture.addItems(self.get_rsp_scripture_titles())
@@ -128,6 +131,23 @@ class MyMainWindow(QMainWindow):
         self.get_data_for_x_song_script_note = partial(db.get_data_for_x_song_script_note, self)
         self.set_data_for_x_song_items_note = partial(db.set_data_for_x_song_items_note, self)
         self.get_data_for_x_song_items_note = partial(db.get_data_for_x_song_items_note, self)
+
+    def closeEvent(self, event) -> None:
+        quit_msg = "Are you sure you want to exit the program? If yes, all text indexes will be deleted!"
+        reply = QMessageBox.question(self, 'Message', 
+                        quit_msg, QMessageBox.Yes, QMessageBox.No)
+        if reply == QMessageBox.Yes:
+            if not hasattr(self,'mongo_client'):
+                event.accept()
+            print('remove all database index.....')
+            for each in self.index_names:
+                db_nm, coll = each
+                self.mongo_client[db_nm][coll].drop_index(self.index_names[each])
+                print(self.index_names[each], 'deleted!')
+            print('all done!')
+            event.accept()
+        else:
+            event.ignore()
 
 @click.command()
 @click.option('--ui', default='library_manager.ui',help="main gui ui file generated from Qt Desinger, possible ui files are :")

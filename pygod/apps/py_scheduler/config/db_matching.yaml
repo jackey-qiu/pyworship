@@ -134,6 +134,20 @@ db_types:
                 3rd_week: lineEdit_3rd_week_note
                 4th_week: lineEdit_4th_week_note
                 5th_week: lineEdit_5th_week_note
+            instrument_operator_info:
+                map_name: 音响
+                1st_week: lineEdit_1st_week_note
+                2nd_week: lineEdit_2nd_week_note
+                3rd_week: lineEdit_3rd_week_note
+                4th_week: lineEdit_4th_week_note
+                5th_week: lineEdit_5th_week_note
+            reception_info:
+                map_name: 接待收拾
+                1st_week: lineEdit_1st_week_note
+                2nd_week: lineEdit_2nd_week_note
+                3rd_week: lineEdit_3rd_week_note
+                4th_week: lineEdit_4th_week_note
+                5th_week: lineEdit_5th_week_note
             before_lunch_info:
                 map_name: 餐前准备
                 1st_week: lineEdit_1st_week_note
@@ -179,6 +193,7 @@ db_types:
                 income_offering_kiel: lineEdit_income_offering_kiel
                 income_offering_korea: lineEdit_income_offering_korea
                 income_offering_others: lineEdit_income_offering_others
+                income_offering_others2: lineEdit_income_offering_others2
                 total_income: lineEdit_total_income
                 total_expense: lineEdit_total_expense
                 net_income: lineEdit_net_income
@@ -188,6 +203,7 @@ db_types:
                 income_offering_kiel_note: lineEdit_income_offering_kiel_note
                 income_offering_korea_note: lineEdit_income_offering_korea_note
                 income_offering_others_note: lineEdit_income_offering_others_note
+                income_offering_others2_note: lineEdit_income_offering_others2_note
                 expense_pastor_wu: lineEdit_expense_pastor_wu
                 expense_pastor_guan: lineEdit_expense_pastor_guan
                 expense_pastor_chuandao: lineEdit_expense_pastor_chuandao
@@ -198,6 +214,8 @@ db_types:
                 expense_other_cost_1: lineEdit_expense_other_cost_1
                 expense_other_cost_2: lineEdit_expense_other_cost_2
                 expense_other_cost_3: lineEdit_expense_other_cost_3
+                expense_other_cost_4: lineEdit_expense_other_cost_4
+                expense_other_cost_5: lineEdit_expense_other_cost_5
                 expense_pastor_wu_note: lineEdit_expense_pastor_wu_note
                 expense_pastor_guan_note: lineEdit_expense_pastor_guan_note
                 expense_pastor_chuandao_note: lineEdit_expense_pastor_chuandao_note
@@ -208,6 +226,8 @@ db_types:
                 expense_other_cost_1_note: lineEdit_expense_other_cost_1_note
                 expense_other_cost_2_note: lineEdit_expense_other_cost_2_note
                 expense_other_cost_3_note: lineEdit_expense_other_cost_3_note
+                expense_other_cost_4_note: lineEdit_expense_other_cost_4_note
+                expense_other_cost_5_note: lineEdit_expense_other_cost_5_note
         table_viewer: 
             finance_info:
                 group_id: 年月

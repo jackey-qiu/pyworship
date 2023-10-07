@@ -20,6 +20,21 @@ def get_date_from_nth_week(which_week, month, decode = decode_nth_week, year = N
     else:
         return date_of_specified_sunday
 
+def get_dates_for_one_month(month, year = None):
+    dates = []
+    which_weeks = [0,1,2,3,4]
+    if year==None:
+        year = datetime.date.today().year
+    first_week_day, month_range = calendar.monthrange(year, month) 
+    date_of_first_sunday = 7-first_week_day
+    for which_week in which_weeks:
+        date_of_specified_sunday = date_of_first_sunday + 7 * which_week
+        if date_of_specified_sunday > month_range:
+            pass
+        else:
+            dates.append(f'{month}月{date_of_specified_sunday}日')
+    return dates
+
 def encrypt_password(password, encode = 'utf-8'):
     password = password.encode(encode)
     salt = bcrypt.gensalt(10)

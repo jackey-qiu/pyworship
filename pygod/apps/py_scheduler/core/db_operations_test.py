@@ -1,4 +1,4 @@
-from .util import error_pop_up, PandasModel, map_chinese_to_eng_key, get_date_from_nth_week
+from .util import error_pop_up, PandasModel, map_chinese_to_eng_key, get_date_from_nth_week, get_dates_for_one_month
 from ..widgets.dialogues import NewProject, QueryDialog, LendDialog, ReturnDialog, LoginDialog, RegistrationDialog
 from dotenv import load_dotenv
 from pathlib import Path
@@ -326,10 +326,11 @@ def calculate_sum(self, total_income_widget = 'lineEdit_total_income', total_exp
     expense = 0
     income_widgets = ['lineEdit_income_offering_onside','lineEdit_income_offering_online',
                       'lineEdit_income_offering_lubeck','lineEdit_income_offering_kiel',
-                      'lineEdit_income_offering_korea','lineEdit_income_offering_others']
+                      'lineEdit_income_offering_korea','lineEdit_income_offering_others','lineEdit_income_offering_others2']
     expense_widgets = ['lineEdit_expense_pastor_wu','lineEdit_expense_pastor_guan','lineEdit_expense_pastor_chuandao',
                        'lineEdit_expense_kiel','lineEdit_expense_lubeck','lineEdit_expense_nebenkosten','lineEdit_expense_software_subscribe',
-                       'lineEdit_expense_other_cost_1', 'lineEdit_expense_other_cost_2','lineEdit_expense_other_cost_3']
+                       'lineEdit_expense_other_cost_1', 'lineEdit_expense_other_cost_2','lineEdit_expense_other_cost_3',
+                       'lineEdit_expense_other_cost_4','lineEdit_expense_other_cost_5']
     for each in income_widgets:
         try:
             temp = float(eval(f'self.{each}.text()'))
@@ -629,3 +630,113 @@ def add_one_bulletin_record(self):
     constraints = [extra_info]*3 + [{'group_id':str(year)}]
     for collection, constraint in zip(collections, constraints):
         _add_or_update(collection, constraint, cbs)
+
+def get_task_content(self, key):
+    #last one is shared collection which is the project info
+    collections = get_collection_list_from_yaml(self, '服事')[2:-1]
+    db_temp = self.mongo_client[self.lineEdit_db_task.text()]
+    contents = []
+    for collection in collections:
+        docs = get_document_info_from_yaml(self, '服事', collection)
+        title = docs['map_name']
+        row = [[title]] + text_query_by_field(self, 'group_id', key, list(docs.keys())[1:], collection, db_temp)
+        formated_row = [l for r in row for l in r]
+        contents.append(formated_row)
+    contents_formated = []
+    for each in contents:
+        contents_formated.append(','.join(each))
+    dates = ','.join(['日期']+get_dates_for_one_month(int(key.rsplit('_')[1]), int(key.rsplit('_')[0])))
+    return '\n'.join([dates]+contents_formated)
+    # return '\n'.join(contents_formated)
+
+def get_finance_content(self, key):
+    year, month = str(datetime.date.today().year), self.comboBox_bulletin_month.currentText()
+    collection = 'finance_info'
+    docs =  list(get_document_info_from_yaml(self, '财务', collection).keys())
+    db_temp = self.mongo_client[self.lineEdit_db_finance.text()]
+    income = []
+    expense = []
+    summary = [f'{year}年{month}月份']
+    for doc in ['total_income','total_expense','net_income']:
+        summary.append(text_query_by_field(self, 'group_id', key, doc, collection, db_temp)[0])
+    for doc in docs:
+        if not doc.endswith('note'):
+            if doc not in ['total_income','total_expense','net_income']:
+                value = text_query_by_field(self, 'group_id', key, doc, collection, db_temp)
+                note = text_query_by_field(self, 'group_id', key, doc+'_note', collection, db_temp)
+                if note == ['']:
+                    note = [doc]
+                if doc.startswith('income'):
+                    if value!=['0.0']:
+                        income.append([note[0], '+'+str(value[0])])
+                else:
+                    if value!=['0.0']:
+                        expense.append([note[0], '-'+str(value[0])])
+    income = '\n'.join(['&'.join(each) for each in income])
+    expense = '\n'.join(['&'.join(each) for each in expense])
+    summary = '&'.join(list(map(str,summary)))
+    return income+'\n'+expense+'\n'+summary
+
+def get_last_month_record(self):
+    widgets = ['lineEdit_dates_1_note','lineEdit_attendence_note','lineEdit_offerings_note',\
+               'lineEdit_dates_2_note','lineEdit_attendence_onsite_note','lineEdit_attendence_online_note']
+    contents = []
+    for each in widgets:
+        contents.append(getattr(self, each).text())
+    return '\n'.join(contents)
+
+def get_preach_content(self, key):
+    collections = get_collection_list_from_yaml(self, '服事')[0:2]
+    db_temp = self.mongo_client[self.lineEdit_db_task.text()]
+    contents = []
+    for collection in collections:
+        docs = get_document_info_from_yaml(self, '服事', collection)
+        title = docs['map_name']
+        row = text_query_by_field(self, 'group_id', key, list(docs.keys())[1:], collection, db_temp)
+        formated_row = [l for r in row for l in r]#each item is like topic+chapter
+        if title=='主题':
+            topic = []
+            chapter = []
+            for each in formated_row:
+                if each=='':
+                    topic.append('')
+                    chapter.append('')
+                else:
+                    items = each.rsplit('+')
+                    if len(items)>=2:
+                        topic.append(items[0])
+                        chapter.append(items[1])
+                    elif len(items)==1:
+                        topic.append(items[0])
+                        chapter.append('')
+            contents.append(topic)
+            contents.append(chapter)
+        else:
+            contents.append(formated_row)
+    contents_formated = []
+    for each in contents:
+        contents_formated.append(','.join(each))
+    dates = get_dates_for_one_month(int(key.rsplit('_')[-1]), int(key.rsplit('_')[0]))
+    contents_formated = [','.join(dates)]+[contents_formated[0],contents_formated[2],contents_formated[1]]
+    return '\n'.join(contents_formated)
+
+def save_bulletin_content_in_txt_format(self):
+    year, month = str(datetime.date.today().year), self.comboBox_bulletin_month.currentText()
+    txt_file_name = f'bulletin_{year}-{month}.txt'
+    #content_folder = Path(__file__).parent.parent.parent / 'ppt_worker' / 'src' / 'contents'
+    content_folder = Path.home() / 'pygodAppData' / 'content_files'
+    content_folder.mkdir(parents=True, exist_ok=True)
+    year, month= int(year), int(month)
+    content_types = ['YearScripture','MonthlyScripture','MonthlyServiceTable','Report','Pray','LastMonthRecord','FinanceTable','PreachTable']
+    api_map = {'YearScripture':'self.textEdit_year_scripture_note.toPlainText()',
+                  'MonthlyScripture':'self.textEdit_month_scripture_note.toPlainText()',
+                  'Report':'self.textEdit_reports_note.toPlainText()',
+                  'Pray': 'self.textEdit_prays_note.toPlainText()',
+                  'LastMonthRecord':'get_last_month_record(self)',
+                  'PreachTable':f"get_preach_content(self,'{year}_{month}')",
+                  'MonthlyServiceTable':f"get_task_content(self,'{year}_{month}')",
+                  'FinanceTable':f"get_finance_content(self, '{year}_{month}月')"
+                  }
+    with open(str(content_folder / txt_file_name), 'w', encoding='utf8') as f:
+        for content_type in content_types:
+            f.write(f"<{content_type}>\n{eval(api_map[content_type])}\n</{content_type}>\n")

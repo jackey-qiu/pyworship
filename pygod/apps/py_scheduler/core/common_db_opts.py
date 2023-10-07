@@ -152,7 +152,10 @@ def extract_one_record(self, db_type, collection, constrain):
             if NO_RECORD:
                 widget_set_api(format_text('NO RECORD!!!'))
             else:
-                widget_set_api(format_text(str(data_from_db[doc])))
+                if doc not in data_from_db:
+                    widget_set_api(format_text('0'))
+                else:
+                    widget_set_api(format_text(str(data_from_db[doc])))
 
     return not NO_RECORD
 
@@ -260,7 +263,7 @@ def text_query_by_field(self, field, query_string, target_field, collection_name
     Args:
         field ([string]): in ['author','book_name','book_id','status','class']
         query_string ([string]): [the query string you want to perform, e.g. 1999 for field = 'year']
-        target_filed([string]): the targeted filed you would like to extract
+        target_filed([string]): the targeted filed you would like to extract, single string or a list of strings
         collection_name([string]): the collection name you would like to target
 
     Returns:
@@ -269,15 +272,25 @@ def text_query_by_field(self, field, query_string, target_field, collection_name
     general_query_by_field(self, field='name', query_string='jackey', target_field='email', collection_name='user_info')
     means I would like to get a list of email for jackey in user_info collection in the current database
     """
-
     if database == None:
         database = self.database
-    index_name = database[collection_name].create_index([(field,'text')])
+    index_key = (database.name, collection_name)
+    if index_key not in self.index_names:
+        index_name = database[collection_name].create_index([(field,'text')])
+        self.index_names[index_key] = index_name
     targets = database[collection_name].find({"$text": {"$search": "\"{}\"".format(query_string)}})
+    # print([each for each in targets])
     #drop the index afterwards
-    return_list = [each[target_field] for each in targets]
+    if type(target_field)==list:
+        return_list = []
+        for field in target_field:
+            targets = database[collection_name].find({"$text": {"$search": "\"{}\"".format(query_string)}})
+            #print(field)
+            return_list.append([each[field] for each in targets])
+    else:
+        return_list = [each[target_field] for each in targets]
     # self.database.paper_info.drop_index(index_name)
-    database[collection_name].drop_index(index_name)
+    #database[collection_name].drop_index(index_name)
     return return_list  
 
 #eg name == 'jackey' and birth_year== '1983'
