@@ -350,7 +350,7 @@ class makeBulletin(object):
         assert content_type in possible_types, f"Not one of the possible content type. Possible ones are:\n {possible_types}"
         begin_line, end_line = None, None
         begin_tag, end_tag = f'<{content_type}>', f'</{content_type}>'
-        with open(file_path, 'r') as f:
+        with open(file_path, 'r', encoding='utf-8') as f:
             lines = f.readlines()
             for i, line in enumerate(lines):
                 if line.startswith(begin_tag):
