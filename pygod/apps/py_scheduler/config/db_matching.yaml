@@ -247,6 +247,9 @@ db_types:
                 #workers: x_workers_note
             song_info:
                 script: x_song_script_note
+        table_viewer: 
+            ppt_info:
+                group_id: 年月周
     月报:
         collections: 
             year_scripture:
@@ -263,3 +266,6 @@ db_types:
                 date: lineEdit_dates_2_note
                 attendence_onsite: lineEdit_attendence_onsite_note
                 attendence_online: lineEdit_attendence_online_note
+        table_viewer: 
+            bulletin_info:
+                group_id: 年月

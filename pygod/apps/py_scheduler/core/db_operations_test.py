@@ -80,18 +80,35 @@ def load_project(self):
     elif self.database_type == 'PPT':
         extract_all_song_titles(self)
 
+def disable_all_tabs_but_one(self, tab_name = 'tabWidget_2', enabled_tab_ix = 0):
+    for i in range(len(getattr(self, tab_name))):
+        getattr(self, tab_name).setTabEnabled(i, False)
+    getattr(self, tab_name).setTabEnabled(enabled_tab_ix, True)
+
 def init_pandas_model_from_db(self):
     if self.database_type == '图书':
+        disable_all_tabs_but_one(self, 'tabWidget_2', 0)
         self.tabWidget_2.setCurrentIndex(0) 
         data = create_pandas_data_from_db(self, db_type = self.database_type, single_collection= True)
     elif self.database_type == '服事':
+        disable_all_tabs_but_one(self, 'tabWidget_2', 2)
         self.tabWidget_2.setCurrentIndex(2) 
         data = create_pandas_data_from_db(self, db_type = self.database_type, single_collection= False, constrains = get_current_task_constrain(self))
     elif self.database_type == '人事':
+        disable_all_tabs_but_one(self, 'tabWidget_2', 1)
         self.tabWidget_2.setCurrentIndex(1) 
         data = create_pandas_data_from_db(self, db_type = self.database_type, single_collection= True)
     elif self.database_type == '财务':
+        disable_all_tabs_but_one(self, 'tabWidget_2', 3)
         self.tabWidget_2.setCurrentIndex(3) 
+        data = create_pandas_data_from_db(self, db_type = self.database_type, single_collection= True)
+    elif self.database_type == 'PPT':
+        disable_all_tabs_but_one(self, 'tabWidget_2', 4)
+        self.tabWidget_2.setCurrentIndex(4) 
+        data = create_pandas_data_from_db(self, db_type = self.database_type, single_collection= True)
+    elif self.database_type == '月报':
+        disable_all_tabs_but_one(self, 'tabWidget_2', 5)
+        self.tabWidget_2.setCurrentIndex(5) 
         data = create_pandas_data_from_db(self, db_type = self.database_type, single_collection= True)
     else:
         data = pd.DataFrame({})
@@ -129,6 +146,18 @@ def init_pandas_model_from_db(self):
         except:
             pass
         self.tableView_book_info.clicked.connect(partial(update_selected_finance_info,self))
+    elif self.database_type == 'PPT':
+        try:
+            self.tableView_book_info.clicked.disconnect()
+        except:
+            pass
+        self.tableView_book_info.clicked.connect(partial(update_selected_PPT_info,self))
+    elif self.database_type == '月报':
+        try:
+            self.tableView_book_info.clicked.disconnect()
+        except:
+            pass
+        self.tableView_book_info.clicked.connect(partial(update_selected_bulletin_info,self))
 
 def update_project_info(self):
     try:
@@ -371,12 +400,13 @@ def extract_ppt_record(self):
         clear_all_text_field(self)
 
 def delete_ppt_record(self):
+    cbs = [init_pandas_model_from_db,clear_all_text_field]
     month = self.comboBox_ppt_month.currentText()
     year = datetime.date.today().year
     week_map = dict([('第一周','1st_week'),('第二周','2nd_week'),('第三周','3rd_week'),('第四周','4th_week'),('第五周','5th_week')])
     week = week_map[self.comboBox_ppt_week.currentText()]
     group_id = f'{year}_{month}+{week}'
-    delete_one_record(self, self.database_type, {'group_id':group_id}, cbs = [clear_all_text_field])
+    delete_one_record(self, self.database_type, {'group_id':group_id}, cbs = cbs)
 
 def add_one_ppt_record(self):
     month = self.comboBox_ppt_month.currentText()
@@ -385,7 +415,7 @@ def add_one_ppt_record(self):
     week = week_map[self.comboBox_ppt_week.currentText()]
     group_id = f'{year}_{month}+{week}'
     extra_info = {'group_id':group_id}
-    cbs = []
+    cbs = [init_pandas_model_from_db]
     if self.database['ppt_info'].count_documents({'group_id': group_id})==1:
         update_one_record(self, 'PPT', 'ppt_info', constrain= {'group_id': group_id}, cbs=cbs)
     elif self.database['ppt_info'].count_documents({'group_id': group_id})==0:    
@@ -511,6 +541,17 @@ def get_data_for_x_workers_note(self):
     #do nothing
     pass
 
+def update_selected_PPT_info(self, index = None):
+    group_id = self.pandas_model_paper_info._data['group_id'].tolist()[index.row()]
+    y_m, week = group_id.rsplit('+')
+    y, m = y_m.rsplit('_')
+    week_map = dict([('1st_week','第一周'),('2nd_week','第二周'),('3rd_week','第三周'),('4th_week','第四周'),('5th_week','第五周')])
+    self.comboBox_ppt_month.setCurrentText(m)
+    self.comboBox_ppt_week.setCurrentText(week_map[week])
+    collection =  'ppt_info'
+    constrain = {'group_id': group_id}
+    extract_one_record(self, self.database_type, collection, constrain)
+
 def save_ppt_content_in_txt_format(self):
     year, month = str(datetime.date.today().year), self.comboBox_ppt_month.currentText()
     day = get_date_from_nth_week(self.comboBox_ppt_week.currentText(),int(month))
@@ -620,14 +661,14 @@ def delete_bulletin_record(self):
     month = self.comboBox_bulletin_month.currentText()
     year = datetime.date.today().year
     group_id = f'{year}_{month}'
-    delete_one_record(self, self.database_type, {'group_id':group_id}, cbs = [partial(clear_all_text_field, tabWidget='tabWidget_bulletin')])
+    delete_one_record(self, self.database_type, {'group_id':group_id}, cbs = [partial(clear_all_text_field, tabWidget='tabWidget_bulletin'), init_pandas_model_from_db])
 
 def add_one_bulletin_record(self):
     month = self.comboBox_bulletin_month.currentText()
     year = datetime.date.today().year
     group_id = f'{year}_{month}'
     extra_info = {'group_id':group_id}
-    cbs = []
+    cbs = [init_pandas_model_from_db]
     def _add_or_update(collection, constraint, cbs):
         if self.database[collection].count_documents(constraint)==1:
             update_one_record(self, self.database_type, collection, constrain=constraint, cbs=cbs)
@@ -691,6 +732,14 @@ def get_last_month_record(self):
     for each in widgets:
         contents.append(getattr(self, each).text())
     return '\n'.join(contents)
+
+def update_selected_bulletin_info(self, index = None):
+    group_id = self.pandas_model_paper_info._data['group_id'].tolist()[index.row()]
+    _, m = group_id.rsplit('_')
+    self.comboBox_bulletin_month.setCurrentText(m)
+    collection =  'bulletin_info'
+    constrain = {'group_id': group_id}
+    extract_one_record(self, self.database_type, collection, constrain)
 
 def get_preach_content(self, key):
     collections = get_collection_list_from_yaml(self, '服事')[0:2]
