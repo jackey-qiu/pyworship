@@ -80,9 +80,12 @@ class MakeWorkshipPpt(object):
                 chapter, vers_str = location.rsplit('[')
                 ver_list_raw = vers_str[0:-1].rsplit(',')
                 if vers_str[0:-1]=='*':
-                    title_info.append(f'{book}第 {chapter} 章')
+                    if book == '诗篇':
+                        title_info.append(f'{book}第 {chapter} 篇')
+                    else:
+                        title_info.append(f'{book}第 {chapter} 章')
                 else:
-                    title_info.append(f'{book}第 {chapter} 章（{vers_str[0:-1]}）')
+                    title_info.append(f'{book} {chapter}:{vers_str[0:-1]}')
                 #vers = []
                 for each in ver_list_raw:
                     if '-' not in each:
@@ -188,7 +191,10 @@ class MakeWorkshipPpt(object):
                           'font_run':f'{self.font_type_kaiti}'+'+33+True',
                           'alignment':'LEFT+39+0.24+0+0',
                           'textbox': ['Cm(1.23)','Cm(5.6)','Cm(14.35)','Cm(1.8)']}
-        title = '{} 年 {} 月 {} 日'.format(*self.date.rsplit('-'))
+        yyyy, mm, dd = self.date.rsplit('-')
+        mm = mm.lstrip('0')
+        dd = dd.lstrip('0')
+        title = '{} 年 {} 月 {} 日'.format(*[yyyy, mm, dd])
         title_format['cont'] = [title]        
         self.make_one_slide(blocks = [],bkg_img=os.path.join(self.src_folder, 'begin_slide_1.jpg'))
         self.make_one_slide(blocks = [title_format],bkg_img=os.path.join(self.src_folder, 'begin_slide_2.jpg'), middle_vertical=False)
@@ -206,8 +212,8 @@ class MakeWorkshipPpt(object):
         else:
             song_list = [self.song_list[-1]]
         title_format = {'cont':[each[0] for each in song_list],
-                        'font_global':'FZKai-Z03+66+True',
-                        'font_run':'FZKai-Z03+66+True',
+                        'font_global':f'{self.font_type_kaiti}'+'+66+True',
+                        'font_run':f'{self.font_type_kaiti}'+'+66+True',
                         'alignment':'LEFT+77+0+0+0',
                         'textbox': ['Cm(1.13)','Cm(5.1)','Cm(23.6)','Cm(13.43)']}
 
@@ -218,8 +224,8 @@ class MakeWorkshipPpt(object):
                             'textbox': ['Cm(1.14)','Cm(0.51)','Cm(18.2)','Cm(1.91)']}
 
         subtitle_format = {'cont':'',
-                            'font_global':'FZZhunYuan-M02+40+False',
-                            'font_run':'FZZhunYuan-M02+40+False',
+                            'font_global':f'{self.font_type_kaiti}'+'+40+True',
+                            'font_run':f'{self.font_type_kaiti}'+'+40+True',
                             'alignment':'LEFT+47+0+0+0',
                             'textbox': ['Cm(1.33)','Cm(7.93)','Cm(20.07)','Cm(1.97)']}
          
@@ -249,14 +255,14 @@ class MakeWorkshipPpt(object):
     def prepare_report_slides(self):
         self.prepare_general_report_slides()
         content_format = {'cont':'',
-                            'font_global':'FZKai-Z03+44+True',
-                            'font_run':'FZKai-Z03+44+True',
+                            'font_global':f'{self.font_type_kaiti}'+'+44+True',
+                            'font_run':f'{self.font_type_kaiti}'+'+44+True',
                             'alignment':'LEFT+52+12+0+0',
                             'textbox': ['Cm(1.44)','Cm(1.44)','Cm(22.91)','Cm(15.72)']}
 
         content_footnote_format = {'cont':['活动报告'],
-                            'font_global':'FZKai-Z03+24+True',
-                            'font_run':'FZKai-Z03+24+True',
+                            'font_global':f'{self.font_type_kaiti}'+'+24+True',
+                            'font_run':f'{self.font_type_kaiti}'+'+24+True',
                             'alignment':'RIGHT+28+0+0+0',
                             'textbox': ['Cm(1.4)','Cm(17.5)','Cm(22.91)','Cm(1.1)']} 
         for report in self.report_list:
@@ -286,8 +292,8 @@ class MakeWorkshipPpt(object):
                             'textbox': ['Cm(1.14)','Cm(5.11)','Cm(22.55)','Cm(12.76)']}
 
         subtitle_format = {'cont':[preacher, subtitle],
-                            'font_global':f'{self.font_type_kaiti}'+'+40+False',
-                            'font_run':f'{self.font_type_kaiti}'+'+40+False',
+                            'font_global':f'{self.font_type_kaiti}'+'+40+True',
+                            'font_run':f'{self.font_type_kaiti}'+'+40+True',
                             'alignment':'LEFT+47+0+0+0',
                             'textbox':['Cm(1.14)','Cm(8.23)','Cm(22.55)','Cm(9.64)']}   
 
@@ -354,7 +360,10 @@ class MakeWorkshipPpt(object):
                            'textbox': ['Cm(1.4)','Cm(17.5)','Cm(22.91)','Cm(1.1)']}
         
         if first_section:
-            title = '{} 年 {} 月 {} 日'.format(*self.date.rsplit('-'))
+            yyyy, mm, dd = self.date.rsplit('-')
+            mm = mm.lstrip('0')
+            dd = dd.lstrip('0')
+            title = '{} 年 {} 月 {} 日'.format(*[yyyy, mm, dd])
             title_format['cont'] = [title]
             self.make_one_slide(blocks = [], bkg_img= os.path.join(self.src_folder, 'bkg_pray_begin_slide.jpg'))
             self.make_one_slide(blocks = [title_format],bkg_img=os.path.join(self.src_folder, 'bkg_pray_title.jpg'), middle_vertical=False)
@@ -384,8 +393,8 @@ class MakeWorkshipPpt(object):
                             'textbox': ['Cm(1.75)','Cm(5.24)','Cm(21.91)','Cm(3.68)']}
 
         subtitle_format = {'cont':'',
-                            'font_global':'FZZhunYuan-M02+40+False',
-                            'font_run':'FZZhunYuan-M02+40+False',
+                            'font_global':f'{self.font_type_zhunyuan}'+'+40+False',
+                            'font_run':f'{self.font_type_zhunyuan}'+'+40+False',
                             'alignment':'CENTER+47+0+0+0',
                             'textbox': ['Cm(0.51)','Cm(8.93)','Cm(24.32)','Cm(1.97)']}
 
@@ -438,20 +447,20 @@ class MakeWorkshipPpt(object):
         scriptures = '\n'.join(self.scripture_list[1][1:])
         footnote_header = '启应经文（{}）'
         title_format = {'cont':'',
-                        'font_global':'FZKai-Z03+80+True',
-                        'font_run':'FZKai-Z03+80+True',
+                        'font_global':f'{self.font_type_kaiti}'+'+80+True',
+                        'font_run':f'{self.font_type_kaiti}'+'+80+True',
                         'alignment':'CENTER+94+0.24+0+0',
                         'textbox': ['Cm(0)','Cm(8.46)','Cm(25.4)','Cm(5.55)']}
 
         scripture_format = {'cont':'',
-                            'font_global':'FZKai-Z03+44+True',
-                            'font_run':'FZKai-Z03+44+True',
+                            'font_global':f'{self.font_type_kaiti}'+'+44+True',
+                            'font_run':f'{self.font_type_kaiti}'+'+44+True',
                             'alignment':'LEFT+52+12+0+0',
                             'textbox': ['Cm(1.44)','Cm(1.44)','Cm(22.91)','Cm(15.72)']}
 
         scripture_footnote_format = {'cont':'',
-                            'font_global':'FZKai-Z03+24+True',
-                            'font_run':'FZKai-Z03+24+True',
+                            'font_global':f'{self.font_type_kaiti}'+'+24+True',
+                            'font_run':f'{self.font_type_kaiti}'+'+24+True',
                             'alignment':'RIGHT+28+0+0+0',
                             'textbox': ['Cm(1.4)','Cm(17.5)','Cm(22.91)','Cm(1.1)']}    
             
@@ -459,7 +468,8 @@ class MakeWorkshipPpt(object):
         tt_footnote = title
         self.make_one_slide(blocks = [title_format],bkg_img=os.path.join(self.src_folder,'bkg_response_title.jpg'), middle_vertical=False, color_rgb=[255,255,0])
         scripture_footnote_format['cont'] = [footnote_header.format(tt_footnote)]
-        scripture_items = scriptures.replace("神","　神").rsplit('\n')
+        #scripture_items = scriptures.replace("神","　神").rsplit('\n')
+        scripture_items = scriptures.rsplit('\n')
         for i in range(0, int(len(scripture_items)/2) + int((len(scripture_items)%2)!=0)):
             scripture_on_slide = scripture_items[i*2:i*2+2]
             scripture_format['cont'] = scripture_on_slide
@@ -477,8 +487,8 @@ class MakeWorkshipPpt(object):
 
     def prepare_slides_for_scripture(self, title, scriptures, max_chars_per_slide = 60,footnote_header = '读经（{}）'):
         title_format = {'cont':'',
-                        'font_global':'FZKai-Z03+72+True',
-                        'font_run':'FZKai-Z03+72+True',
+                        'font_global':f'{self.font_type_kaiti}'+'+72+True',
+                        'font_run':f'{self.font_type_kaiti}'+'+72+True',
                         'alignment':'LEFT+83+0+0+0',
                         'textbox': ['Cm(1.13)','Cm(5.1)','Cm(23.6)','Cm(13.43)']}
 
@@ -489,14 +499,14 @@ class MakeWorkshipPpt(object):
                             'textbox': ['Cm(1.14)','Cm(0.51)','Cm(18.2)','Cm(1.91)']}
 
         scripture_format = {'cont':'',
-                            'font_global':'FZKai-Z03+44+True',
-                            'font_run':'FZKai-Z03+44+True',
+                            'font_global':f'{self.font_type_kaiti}'+'+44+True',
+                            'font_run':f'{self.font_type_kaiti}'+'+44+True',
                             'alignment':'LEFT+52+12+0+0',
                             'textbox': ['Cm(1.44)','Cm(1.44)','Cm(22.91)','Cm(15.72)']}
 
         scripture_footnote_format = {'cont':'',
-                            'font_global':'FZKai-Z03+24+True',
-                            'font_run':'FZKai-Z03+24+True',
+                            'font_global':f'{self.font_type_kaiti}'+'+24+True',
+                            'font_run':f'{self.font_type_kaiti}'+'+24+True',
                             'alignment':'RIGHT+28+0+0+0',
                             'textbox': ['Cm(1.4)','Cm(17.5)','Cm(22.91)','Cm(1.1)']}    
             
