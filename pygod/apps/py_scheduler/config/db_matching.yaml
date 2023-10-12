@@ -176,6 +176,9 @@ db_types:
                 3rd_week: lineEdit_3rd_week_note
                 4th_week: lineEdit_4th_week_note
                 5th_week: lineEdit_5th_week_note
+            name_info:
+                role: x_role_note
+                name: x_worker_name_note
         table_viewer: 
             all_collections: 
                 1st_week: 第一周
@@ -184,6 +187,8 @@ db_types:
                 4th_week: 第四周
                 5th_week: 第五周
                 collections: 服事岗
+            excluded_collections: #all collections but excluded following ones
+            - name_info
     财务:
         collections: 
             finance_info:

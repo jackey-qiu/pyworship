@@ -52,11 +52,15 @@ def create_pandas_data_from_db(self, db_type = 'book', single_collection = True,
             data[key] = []
         if 'all_collections' in collections:
             collections = list(self.db_config_info['db_types'][db_type]['collections'].keys())
+            excluded_collections = self.db_config_info['db_types'][db_type]['table_viewer']['excluded_collections']
+            collections = [each for each in collections if each not in excluded_collections]
         else:
             pass
         for collection in collections:
             for each in self.database[collection].find():
-                assert constrains[0] in each, f"The constrain key {constrains[0]} is not found in the database"
+                #if constrains[0] not in each:
+                #    break
+                assert constrains[0] in each, 'The constrain key' + {constrains[0]} + 'is not found in the database'
                 if each[constrains[0]] == constrains[1]:
                     for each_key in data:
                         if each_key!='collections':

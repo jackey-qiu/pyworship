@@ -1255,41 +1255,11 @@ p, li { white-space: pre-wrap; }
                   </widget>
                  </item>
                  <item>
-                  <layout class="QFormLayout" name="formLayout_2">
-                   <item row="0" column="0">
-                    <widget class="QLabel" name="label_33">
-                     <property name="text">
-                      <string>第一周</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="0" column="1">
-                    <widget class="QLineEdit" name="lineEdit_1st_week_note"/>
-                   </item>
+                  <layout class="QGridLayout" name="gridLayout_9">
                    <item row="1" column="0">
                     <widget class="QLabel" name="label_34">
                      <property name="text">
                       <string>第二周</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="1" column="1">
-                    <widget class="QLineEdit" name="lineEdit_2nd_week_note"/>
-                   </item>
-                   <item row="2" column="0">
-                    <widget class="QLabel" name="label_35">
-                     <property name="text">
-                      <string>第三周</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="2" column="1">
-                    <widget class="QLineEdit" name="lineEdit_3rd_week_note"/>
-                   </item>
-                   <item row="3" column="0">
-                    <widget class="QLabel" name="label_36">
-                     <property name="text">
-                      <string>第四周</string>
                      </property>
                     </widget>
                    </item>
@@ -1306,7 +1276,40 @@ p, li { white-space: pre-wrap; }
                    <item row="4" column="1">
                     <widget class="QLineEdit" name="lineEdit_5th_week_note"/>
                    </item>
+                   <item row="0" column="1">
+                    <widget class="QLineEdit" name="lineEdit_1st_week_note"/>
+                   </item>
+                   <item row="3" column="0">
+                    <widget class="QLabel" name="label_36">
+                     <property name="text">
+                      <string>第四周</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="1" column="1">
+                    <widget class="QLineEdit" name="lineEdit_2nd_week_note"/>
+                   </item>
+                   <item row="2" column="0">
+                    <widget class="QLabel" name="label_35">
+                     <property name="text">
+                      <string>第三周</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="2" column="1">
+                    <widget class="QLineEdit" name="lineEdit_3rd_week_note"/>
+                   </item>
+                   <item row="0" column="0">
+                    <widget class="QLabel" name="label_33">
+                     <property name="text">
+                      <string>第一周</string>
+                     </property>
+                    </widget>
+                   </item>
                   </layout>
+                 </item>
+                 <item>
+                  <layout class="QGridLayout" name="gridLayout_names"/>
                  </item>
                  <item>
                   <spacer name="verticalSpacer_16">
@@ -1338,7 +1341,7 @@ p, li { white-space: pre-wrap; }
                      <rect>
                       <x>0</x>
                       <y>0</y>
-                      <width>870</width>
+                      <width>903</width>
                       <height>617</height>
                      </rect>
                     </property>
@@ -2426,7 +2429,7 @@ p, li { white-space: pre-wrap; }
                  <item>
                   <widget class="QTabWidget" name="tabWidget_note">
                    <property name="currentIndex">
-                    <number>5</number>
+                    <number>3</number>
                    </property>
                    <widget class="QWidget" name="tab_14">
                     <attribute name="title">

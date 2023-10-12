@@ -26,6 +26,7 @@ class MyMainWindow(QMainWindow):
         self.index_names = {}
         self.ui = ui
         uic.loadUi(ui, self)
+        self.activated_task_input_widget = self.lineEdit_1st_week_note
         self.db_opts = db
         #setup image viewer actions
         self.comboBox_rsp_scripture.clear()
@@ -61,7 +62,15 @@ class MyMainWindow(QMainWindow):
         self.pushButton_search.clicked.connect(lambda:db.query_paper_info_for_paper_id(self,self.comboBox_search_field.currentText(),self.lineEdit_search_item.text()))
         self.comboBox_books.activated.connect(lambda:db.extract_paper_info(self))
         self.comboBox_month.activated.connect(lambda:db.init_pandas_model_from_db(self))
+        # task
+        self.comboBox_group.activated.connect(lambda:db.update_worker_names_info(self))
         self.pushButton_add_task_record.clicked.connect(lambda:db.add_task_info(self))
+        self.lineEdit_1st_week_note.mousePressEvent = lambda x:self.set_activated_input_widget(self.lineEdit_1st_week_note)
+        self.lineEdit_2nd_week_note.mousePressEvent = lambda x:self.set_activated_input_widget(self.lineEdit_2nd_week_note)
+        self.lineEdit_3rd_week_note.mousePressEvent = lambda x:self.set_activated_input_widget(self.lineEdit_3rd_week_note)
+        self.lineEdit_4th_week_note.mousePressEvent = lambda x:self.set_activated_input_widget(self.lineEdit_4th_week_note)
+        self.lineEdit_5th_week_note.mousePressEvent = lambda x:self.set_activated_input_widget(self.lineEdit_5th_week_note)
+
         #image
         self.pushButton_load_img.clicked.connect(lambda:db.load_img_from_file(self))
         self.pushButton_push_db_personal.clicked.connect(lambda: db.add_personal_info(self))
@@ -95,6 +104,9 @@ class MyMainWindow(QMainWindow):
         self.pushButton_save_bulletin_info.clicked.connect(lambda:db.add_one_bulletin_record(self))
         self.pushButton_delete_bulletin_record.clicked.connect(lambda:db.delete_bulletin_record(self))
         self.pushButton_make_bulletin.clicked.connect(lambda:db.save_bulletin_content_in_txt_format_and_make_bulletin(self))
+
+    def set_activated_input_widget(self, widget):
+        self.activated_task_input_widget = widget
 
     def get_rsp_scripture_titles(self):
         json_file = Path(__file__).parent.parent.parent / 'ppt_worker' / 'src' / 'bible' / 'scriptures.json'
@@ -132,6 +144,10 @@ class MyMainWindow(QMainWindow):
         self.get_data_for_x_song_script_note = partial(db.get_data_for_x_song_script_note, self)
         self.set_data_for_x_song_items_note = partial(db.set_data_for_x_song_items_note, self)
         self.get_data_for_x_song_items_note = partial(db.get_data_for_x_song_items_note, self)
+        self.set_data_for_x_role_note = partial(db.set_data_for_x_role_note, self)
+        self.get_data_for_x_role_note = partial(db.get_data_for_x_role_note, self)
+        self.set_data_for_x_worker_name_note = partial(db.set_data_for_x_worker_name_note, self)
+        self.get_data_for_x_worker_name_note = partial(db.get_data_for_x_worker_name_note, self)
 
     def closeEvent(self, event) -> None:
         quit_msg = "Are you sure you want to exit the program? If yes, all text indexes will be deleted!"

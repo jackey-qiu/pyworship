@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 from pathlib import Path
 import os, certifi, datetime, time
 from pymongo import MongoClient
-from PyQt5.QtWidgets import QMessageBox, QInputDialog, QTextEdit, QLineEdit
+from PyQt5.QtWidgets import QMessageBox, QInputDialog, QTextEdit, QLineEdit, QPushButton
 from pathlib import Path
 import PyQt5
 import pandas as pd
@@ -278,6 +278,9 @@ def add_task_info(self):
         update_one_record(self, '服事', collection, constrain= {'group_id': group_id}, cbs=cbs)
     elif self.database[collection].count_documents({'group_id': group_id})==0:
         add_one_record(self, '服事', collection, extra_info= {'group_id': group_id}, cbs=cbs)
+    if get_data_for_x_role_note(self)!='主题':
+        add_worker_names_info(self)
+        update_worker_names_info(self)
 
 def update_selected_task_info(self, index = None):
     self.comboBox_group.setCurrentText(self.pandas_model_paper_info._data['collections'].tolist()[index.row()])
@@ -286,6 +289,54 @@ def update_selected_task_info(self, index = None):
     group_id = f'{year}_{self.comboBox_month.currentText()}'
     constrain = {'group_id': group_id}
     extract_one_record(self, self.database_type, collection, constrain)
+    if get_data_for_x_role_note(self)!='主题':
+        update_worker_names_info(self)
+
+def add_worker_names_info(self):
+    role = get_data_for_x_role_note(self)
+    if role=='主题':
+        return
+    collection = 'name_info'
+    cbs = []
+    if self.database[collection].count_documents({'role': role})==1:
+        update_one_record(self, '服事', collection, constrain= {'role': role}, cbs=cbs)
+    elif self.database[collection].count_documents({'role': role})==0:
+        add_one_record(self, '服事', collection, cbs=cbs)
+
+def update_worker_names_info(self):
+    constrain = {'role': get_data_for_x_role_note(self)}
+    extract_one_record(self, self.database_type, 'name_info', constrain)
+
+def set_data_for_x_role_note(self, content):
+    pass
+
+def get_data_for_x_role_note(self):
+    return self.comboBox_group.currentText()
+
+def set_data_for_x_worker_name_note(self, content):
+    #remove all widgets first
+    for i in reversed(range(self.gridLayout_names.count())): 
+        self.gridLayout_names.itemAt(i).widget().setParent(None)
+    names = content.rsplit('+')
+    for i, name in enumerate(names):
+        button = QPushButton(name)
+        button.setStyleSheet("font-size: 14px;")
+        self.gridLayout_names.addWidget(button, int(i/8), i%8)
+        button.clicked.connect(lambda state, name=name:self.activated_task_input_widget.setText(f'{self.activated_task_input_widget.text()}+{name}'))
+
+def get_data_for_x_worker_name_note(self):
+    names_db = text_query_by_field(self, field = 'role', query_string = get_data_for_x_role_note(self), target_field='name', collection_name = 'name_info')
+    if len(names_db)!=0:
+        names_db = names_db[0].rsplit('+')
+    else:
+        names_db = []
+    names = self.lineEdit_1st_week_note.text().rsplit('+') + \
+            self.lineEdit_2nd_week_note.text().rsplit('+') + \
+            self.lineEdit_3rd_week_note.text().rsplit('+') + \
+            self.lineEdit_4th_week_note.text().rsplit('+') + \
+            self.lineEdit_5th_week_note.text().rsplit('+')
+    names = [each for each in names if each!='' and each not in names_db]
+    return '+'.join(sorted(names+names_db))
 
 #apis for personal database
 def load_img_from_file(self):
