@@ -335,7 +335,7 @@ def get_data_for_x_worker_name_note(self):
             self.lineEdit_3rd_week_note.text().rsplit('+') + \
             self.lineEdit_4th_week_note.text().rsplit('+') + \
             self.lineEdit_5th_week_note.text().rsplit('+')
-    names = [each for each in names if each!='' and each not in names_db]
+    names = list(set([each for each in names if each!='' and each not in names_db]))
     return '+'.join(sorted(names+names_db))
 
 #apis for personal database
@@ -733,6 +733,11 @@ def add_one_bulletin_record(self):
 def get_task_content(self, key):
     #last one is shared collection which is the project info
     collections = get_collection_list_from_yaml(self, '服事')[2:-1]
+    #also exclude name_info content
+    excluded_collections = []
+    if 'excluded_collections' in self.db_config_info['db_types']['服事']['table_viewer']:
+        excluded_collections = self.db_config_info['db_types']['服事']['table_viewer']['excluded_collections']
+    collections = [each for each in collections if each not in excluded_collections]
     db_temp = self.mongo_client[self.lineEdit_db_task.text()]
     contents = []
     for collection in collections:
@@ -746,7 +751,6 @@ def get_task_content(self, key):
         contents_formated.append(','.join(each))
     dates = ','.join(['日期']+get_dates_for_one_month(int(key.rsplit('_')[1]), int(key.rsplit('_')[0])))
     return '\n'.join([dates]+contents_formated)
-    # return '\n'.join(contents_formated)
 
 def get_finance_content(self, key):
     year, month = str(datetime.date.today().year), self.comboBox_bulletin_month.currentText()
@@ -845,7 +849,6 @@ def save_bulletin_content_in_txt_format_and_make_bulletin(self):
                   'MonthlyServiceTable':f"get_task_content(self,'{year}_{month}')",
                   'FinanceTable':f"get_finance_content(self, '{year}_{month}月')"
                   }
-
     try:    
         with open(str(content_folder / txt_file_name), 'w', encoding='utf8') as f:
             for content_type in content_types:

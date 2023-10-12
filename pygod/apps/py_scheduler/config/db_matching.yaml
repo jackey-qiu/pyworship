@@ -177,6 +177,7 @@ db_types:
                 4th_week: lineEdit_4th_week_note
                 5th_week: lineEdit_5th_week_note
             name_info:
+                map_name: none
                 role: x_role_note
                 name: x_worker_name_note
         table_viewer: 
