@@ -14,7 +14,7 @@ eg. ccg reader, ccg scheduler. You will need users login credential to login ccg
 7. People receiving this zip file, just unzip the file and run the ccg.exe file in the ccg folder.
 
 # executable file (only works on Windows pc)
-1. download from https://1drv.ms/u/s!AijhQio6-ElysFbDa0aDG7eUliWd?e=rJXED9
+1. download from https://1drv.ms/u/s!AijhQio6-ElysFeW_bJiOf3fKles?e=SF3mXl
 2. cd to the root folder after decompressing the file
 3. double click ccg.exe
 4. You should be able to see the client interface of MongoDB Atlas database
