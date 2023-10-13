@@ -1,8 +1,8 @@
 import datetime
 from ...widgets.dialogues import ReturnDialog
 from ..util import error_pop_up, map_chinese_to_eng_key
-from .common_db_opts import init_pandas_model_from_db_base, extract_one_record, delete_one_record, update_one_record, add_one_record, text_query_by_field
-# from .db_opts_entry import init_pandas_model_from_db
+from .common_db_opts import *
+
 def init_pandas_model_from_db(self):
     args = {'self': self, 
             'tab_indx': 0, 
@@ -42,14 +42,6 @@ def get_papers_in_a_list(self):
 def update_selected_book_info(self, index = None):
     self.comboBox_books.setCurrentText(self.pandas_model._data['paper_id'].tolist()[index.row()])
     extract_paper_info(self)
-
-def update_project_info(self):
-    try:
-        self.database.project_info.drop()
-        self.database.project_info.insert_many([{'project_info':self.plainTextEdit_project_info.toPlainText()}])
-        error_pop_up('Project information has been updated successfully!','Information')
-    except Exception as e:
-        error_pop_up('Failure to update Project information!','Error')
 
 def extract_paper_info(self):
     paper_id = self.comboBox_books.currentText()

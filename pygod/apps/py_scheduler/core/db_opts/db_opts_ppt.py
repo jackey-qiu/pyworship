@@ -6,7 +6,6 @@ from pathlib import Path
 from ..db_opts.common_db_opts import *
 from datetime import timedelta
 from pygod.apps.ppt_worker.scripts.ppt_worker import main as ppt
-# from .db_opts_entry import init_pandas_model_from_db
 
 def init_pandas_model_from_db(self):
     args = {'self': self, 

@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1333</width>
+    <width>1448</width>
     <height>1063</height>
    </rect>
   </property>
@@ -1256,6 +1256,13 @@ p, li { white-space: pre-wrap; }
                  </item>
                  <item>
                   <layout class="QGridLayout" name="gridLayout_9">
+                   <item row="3" column="2">
+                    <widget class="QPushButton" name="pushButton_rm_4th_week">
+                     <property name="text">
+                      <string>清除所有</string>
+                     </property>
+                    </widget>
+                   </item>
                    <item row="1" column="0">
                     <widget class="QLabel" name="label_34">
                      <property name="text">
@@ -1306,6 +1313,69 @@ p, li { white-space: pre-wrap; }
                      </property>
                     </widget>
                    </item>
+                   <item row="2" column="2">
+                    <widget class="QPushButton" name="pushButton_rm_3rd_week">
+                     <property name="text">
+                      <string>清除所有</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="1" column="2">
+                    <widget class="QPushButton" name="pushButton_rm_2nd_week">
+                     <property name="text">
+                      <string>清除所有</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="4" column="2">
+                    <widget class="QPushButton" name="pushButton_rm_5th_week">
+                     <property name="text">
+                      <string>清除所有</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="0" column="2">
+                    <widget class="QPushButton" name="pushButton_rm_1st_week">
+                     <property name="text">
+                      <string>清除所有</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="0" column="3">
+                    <widget class="QPushButton" name="pushButton_format_1st_week">
+                     <property name="text">
+                      <string>文本格式化</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="1" column="3">
+                    <widget class="QPushButton" name="pushButton_format_2nd_week">
+                     <property name="text">
+                      <string>文本格式化</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="2" column="3">
+                    <widget class="QPushButton" name="pushButton_format_3rd_week">
+                     <property name="text">
+                      <string>文本格式化</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="3" column="3">
+                    <widget class="QPushButton" name="pushButton_format_4th_week">
+                     <property name="text">
+                      <string>文本格式化</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="4" column="3">
+                    <widget class="QPushButton" name="pushButton_format_5th_week">
+                     <property name="text">
+                      <string>文本格式化</string>
+                     </property>
+                    </widget>
+                   </item>
                   </layout>
                  </item>
                  <item>
@@ -1341,8 +1411,8 @@ p, li { white-space: pre-wrap; }
                      <rect>
                       <x>0</x>
                       <y>0</y>
-                      <width>903</width>
-                      <height>617</height>
+                      <width>998</width>
+                      <height>594</height>
                      </rect>
                     </property>
                     <attribute name="label">
@@ -3623,8 +3693,8 @@ p, li { white-space: pre-wrap; }
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1333</width>
-     <height>21</height>
+     <width>1448</width>
+     <height>26</height>
     </rect>
    </property>
   </widget>

@@ -3,9 +3,7 @@ import datetime
 from pathlib import Path
 from functools import partial
 from .common_db_opts import * 
-from datetime import timedelta
 from pygod.apps.bulletin_worker.scripts.bulletin_worker import main as bulletin
-# from .db_opts_entry import init_pandas_model_from_db
 
 def init_pandas_model_from_db(self):
     args = {'self': self, 

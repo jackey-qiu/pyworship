@@ -1,9 +1,5 @@
-import PyQt5
-import pandas as pd
-from functools import partial
-from .common_db_opts import *
-from ..util import error_pop_up, PandasModel, disable_all_tabs_but_one
-from ...widgets.dialogues import *
+from ..util import error_pop_up
+from ...widgets.dialogues import NewProject
 from .db_opts_book import load_db_book
 from .db_opts_task import load_db_task
 from .db_opts_finance import load_db_fin

@@ -6,7 +6,7 @@ from pymongo import MongoClient
 import certifi, urllib
 from ..core.util import error_pop_up, confirm_password, encrypt_password
 from ..config.config import hidden_pushButtons_normal_user
-from ..core.db_opts import db_opts_entry as db
+from ..core.db_opts import common_db_opts as db
 
 ui_path = str(Path(__file__).parent.parent/ "ui")
 

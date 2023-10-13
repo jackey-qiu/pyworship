@@ -80,7 +80,9 @@ class MyMainWindow(QMainWindow):
         self.lineEdit_3rd_week_note.mousePressEvent = lambda x:self.set_activated_input_widget(self.lineEdit_3rd_week_note)
         self.lineEdit_4th_week_note.mousePressEvent = lambda x:self.set_activated_input_widget(self.lineEdit_4th_week_note)
         self.lineEdit_5th_week_note.mousePressEvent = lambda x:self.set_activated_input_widget(self.lineEdit_5th_week_note)
-
+        for which in ['1st', '2nd', '3rd', '4th', '5th']:
+            getattr(self, f'pushButton_rm_{which}_week').clicked.connect(lambda state, which=which: getattr(self, f'lineEdit_{which}_week_note').setText(''))
+            getattr(self, f'pushButton_format_{which}_week').clicked.connect(lambda state, which=which:self.format_input_text(f'lineEdit_{which}_week_note'))
         #image
         self.pushButton_load_img.clicked.connect(lambda:db_pe.load_img_from_file(self))
         self.pushButton_push_db_personal.clicked.connect(lambda: db_pe.add_personal_info(self))
@@ -114,6 +116,11 @@ class MyMainWindow(QMainWindow):
         self.pushButton_save_bulletin_info.clicked.connect(lambda:db_bulletin.add_one_bulletin_record(self))
         self.pushButton_delete_bulletin_record.clicked.connect(lambda:db_bulletin.delete_bulletin_record(self))
         self.pushButton_make_bulletin.clicked.connect(lambda:db_bulletin.save_bulletin_content_in_txt_format_and_make_bulletin(self))
+
+    def format_input_text(self, lineEditWidget_name):
+        lineEditWidget = getattr(self, lineEditWidget_name)
+        if lineEditWidget.text().startswith('+'):
+            lineEditWidget.setText(lineEditWidget.text()[1:])
 
     def set_activated_input_widget(self, widget):
         self.activated_task_input_widget = widget

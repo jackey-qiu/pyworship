@@ -2,7 +2,7 @@ import datetime
 from PyQt5.QtWidgets import QPushButton
 import pandas as pd
 from ..db_opts.common_db_opts import *
-# from .db_opts_entry import init_pandas_model_from_db
+
 #apis for task database
 def init_pandas_model_from_db(self):
     args = {'self': self, 
@@ -84,7 +84,7 @@ def set_data_for_x_worker_name_note(self, content):
     for i, name in enumerate(names):
         button = QPushButton(name)
         button.setStyleSheet("font-size: 14px;")
-        self.gridLayout_names.addWidget(button, int(i/8), i%8)
+        self.gridLayout_names.addWidget(button, int(i/6), i%6)
         button.clicked.connect(lambda state, name=name:self.activated_task_input_widget.setText(f'{self.activated_task_input_widget.text()}+{name}'))
 
 def get_data_for_x_worker_name_note(self):
