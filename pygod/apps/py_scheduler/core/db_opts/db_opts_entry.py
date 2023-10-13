@@ -32,7 +32,7 @@ def load_project(self):
 def update_project_info(self):
     try:
         self.database.project_info.drop()
-        self.database.project_info.insert_many([{'project_info':self.plainTextEdit_project_info.toPlainText()}])
+        self.database.project_info.insert_many([{'project_info':self.plainTextEdit_project_info.toPlainText(),'db_type': self.database_type}])
         error_pop_up('Project information has been updated successfully!','Information')
     except Exception as e:
         error_pop_up('Failure to update Project information!','Error')
