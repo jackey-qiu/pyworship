@@ -1,8 +1,19 @@
 from PyQt5 import QtCore, QtGui
-from PyQt5.QtWidgets import QMessageBox, QMenu
+from PyQt5.QtWidgets import QMessageBox, QMenu, QLineEdit, QTextEdit
 import base64
 import bcrypt
 import calendar, datetime
+
+def clear_all_text_field(self, tabWidget = 'tabWidget_note'):
+    for each in getattr(self, tabWidget).findChildren(QLineEdit):
+        each.setText('')
+    for each in getattr(self, tabWidget).findChildren(QTextEdit):
+        each.setPlainText('')
+
+def disable_all_tabs_but_one(self, tab_name = 'tabWidget_2', enabled_tab_ix = 0):
+    for i in range(len(getattr(self, tab_name))):
+        getattr(self, tab_name).setTabEnabled(i, False)
+    getattr(self, tab_name).setTabEnabled(enabled_tab_ix, True)
 
 def decode_nth_week(input):
     nb = input[1]

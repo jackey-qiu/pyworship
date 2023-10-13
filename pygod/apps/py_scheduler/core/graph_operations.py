@@ -10,7 +10,7 @@ def create_piechart(self, accordingto = 'income'):
     year = datetime.date.today().year
     group_id = f'{year}_{self.comboBox_finance_month.currentText()}'
     series = QPieSeries()
-    data = self.pandas_model_paper_info._data[self.pandas_model_paper_info._data['group_id']==group_id]
+    data = self.pandas_model._data[self.pandas_model._data['group_id']==group_id]
     income_offering_onside = list(data['income_offering_onside'].astype(np.float))[0]
     income_offering_online = list(data['income_offering_online'].astype(np.float))[0]
     total_income = list(data['total_income'].astype(np.float))[0]
@@ -45,7 +45,7 @@ def create_piechart(self, accordingto = 'income'):
     self.widget_chart.setRenderHint(QPainter.Antialiasing)
 
 def plot_finance_details(self):
-    pd_df = self.pandas_model_paper_info._data
+    pd_df = self.pandas_model._data
     data = {'x': list(zip(range(len(pd_df)), pd_df['group_id'])),
             'y1': list(pd_df['total_income']),
             'y2': list(pd_df['total_expense'])
@@ -121,7 +121,7 @@ def _add_one_y_axis(original_ax, y_label, number_curves, names = [], axis_color 
 
 def mouseMoved_slot(self,evt):
     pos = evt[0]  ## using signal proxy turns original arguments into a tuple
-    pd_df = self.pandas_model_paper_info._data
+    pd_df = self.pandas_model._data
     data = {'x': list(range(len(pd_df))),
             'y1': list(pd_df['total_income']),
             'y2': list(pd_df['total_expense'])

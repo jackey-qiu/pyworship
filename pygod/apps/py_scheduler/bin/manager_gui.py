@@ -8,7 +8,14 @@ import click
 import qpageview.viewactions
 from PyQt5.QtWidgets import QMainWindow,QApplication, QLabel
 sys.path.append(str(Path(__file__).parent.parent.parent))
-from ..core import db_operations_test as db
+from ..core.db_opts import db_opts_entry as db_prj
+from ..core.db_opts import db_opts_bulletin as db_bulletin
+from ..core.db_opts import db_opts_book as db_book
+from ..core.db_opts import db_opts_finance as db_fin
+from ..core.db_opts import db_opts_personal as db_pe
+from ..core.db_opts import db_opts_ppt as db_ppt
+from ..core.db_opts import db_opts_task as db_task
+from ..core.db_opts import init_db_opts as db_reg
 from ..core import graph_operations as graph
 
 class MyMainWindow(QMainWindow):
@@ -27,7 +34,7 @@ class MyMainWindow(QMainWindow):
         self.ui = ui
         uic.loadUi(ui, self)
         self.activated_task_input_widget = self.lineEdit_1st_week_note
-        self.db_opts = db
+        self.db_opts = db_prj
         #setup image viewer actions
         self.comboBox_rsp_scripture.clear()
         self.comboBox_rsp_scripture.addItems(self.get_rsp_scripture_titles())
@@ -42,29 +49,32 @@ class MyMainWindow(QMainWindow):
         fileMenu.addAction(self.action.zoom_out)
         fileMenu.addAction(self.action.next_page)
         fileMenu.addAction(self.action.previous_page)
-        db.set_db_config(self)
         self.statusbar = self.statusBar()
         self.statusLabel = QLabel(f"Welcome to ccg lib management system!")
         self.statusbar.addPermanentWidget(self.statusLabel)
         self.widget_terminal.update_name_space('main_gui',self)
-        self.actionDatabaseCloud.triggered.connect(lambda:db.start_mongo_client_cloud(self))
-        self.actionLogout.triggered.connect(lambda:db.logout(self))
-        self.actionRegistration.triggered.connect(lambda:db.register_new_user(self))
-        self.pushButton_load.clicked.connect(lambda:db.load_project(self))
-        self.pushButton_new_project.clicked.connect(lambda:db.new_project_dialog(self))
-        self.pushButton_update_project_info.clicked.connect(lambda:db.update_project_info(self))
-        self.pushButton_lend.clicked.connect(lambda:db.lend_dialog(self))
-        self.pushButton_return.clicked.connect(lambda:db.return_dialog(self))
-        self.pushButton_new.clicked.connect(lambda:db.add_paper_info(self))
-        self.pushButton_update.clicked.connect(lambda:db.update_paper_info(self))
-        self.pushButton_reserve.clicked.connect(lambda:db.reserve(self))
-        self.pushButton_remove.clicked.connect(lambda:db.delete_one_paper(self))
-        self.pushButton_search.clicked.connect(lambda:db.query_paper_info_for_paper_id(self,self.comboBox_search_field.currentText(),self.lineEdit_search_item.text()))
-        self.comboBox_books.activated.connect(lambda:db.extract_paper_info(self))
-        self.comboBox_month.activated.connect(lambda:db.init_pandas_model_from_db(self))
+        #reg
+        db_reg.set_db_config(self)
+        self.actionDatabaseCloud.triggered.connect(lambda:db_reg.start_mongo_client_cloud(self))
+        self.actionLogout.triggered.connect(lambda:db_reg.logout(self))
+        self.actionRegistration.triggered.connect(lambda:db_reg.register_new_user(self))
+        #project
+        self.pushButton_load.clicked.connect(lambda:db_prj.load_project(self))
+        self.pushButton_new_project.clicked.connect(lambda:db_prj.new_project_dialog(self))
+        self.pushButton_update_project_info.clicked.connect(lambda:db_prj.update_project_info(self))
+        #book
+        self.pushButton_lend.clicked.connect(lambda:db_book.lend_dialog(self))
+        self.pushButton_return.clicked.connect(lambda:db_book.return_dialog(self))
+        self.pushButton_new.clicked.connect(lambda:db_book.add_paper_info(self))
+        self.pushButton_update.clicked.connect(lambda:db_book.update_paper_info(self))
+        self.pushButton_reserve.clicked.connect(lambda:db_book.reserve(self))
+        self.pushButton_remove.clicked.connect(lambda:db_book.delete_one_paper(self))
+        self.pushButton_search.clicked.connect(lambda:db_book.query_paper_info_for_paper_id(self,self.comboBox_search_field.currentText(),self.lineEdit_search_item.text()))
+        self.comboBox_books.activated.connect(lambda:db_book.extract_paper_info(self))
         # task
-        self.comboBox_group.activated.connect(lambda:db.update_worker_names_info(self))
-        self.pushButton_add_task_record.clicked.connect(lambda:db.add_task_info(self))
+        self.comboBox_month.activated.connect(lambda:db_task.init_pandas_model_from_db(self))
+        self.comboBox_group.activated.connect(lambda:db_task.update_worker_names_info(self))
+        self.pushButton_add_task_record.clicked.connect(lambda:db_task.add_task_info(self))
         self.lineEdit_1st_week_note.mousePressEvent = lambda x:self.set_activated_input_widget(self.lineEdit_1st_week_note)
         self.lineEdit_2nd_week_note.mousePressEvent = lambda x:self.set_activated_input_widget(self.lineEdit_2nd_week_note)
         self.lineEdit_3rd_week_note.mousePressEvent = lambda x:self.set_activated_input_widget(self.lineEdit_3rd_week_note)
@@ -72,38 +82,38 @@ class MyMainWindow(QMainWindow):
         self.lineEdit_5th_week_note.mousePressEvent = lambda x:self.set_activated_input_widget(self.lineEdit_5th_week_note)
 
         #image
-        self.pushButton_load_img.clicked.connect(lambda:db.load_img_from_file(self))
-        self.pushButton_push_db_personal.clicked.connect(lambda: db.add_personal_info(self))
-        self.pushButton_delete_one_record_personal.clicked.connect(lambda: db.delete_one_person(self))
-        self.pushButton_clear.clicked.connect(lambda:db.clear_all_input(self, 'formLayout'))
+        self.pushButton_load_img.clicked.connect(lambda:db_pe.load_img_from_file(self))
+        self.pushButton_push_db_personal.clicked.connect(lambda: db_pe.add_personal_info(self))
+        self.pushButton_delete_one_record_personal.clicked.connect(lambda: db_pe.delete_one_person(self))
+        self.pushButton_clear.clicked.connect(lambda:db_pe.clear_all_input(self, 'formLayout'))
         #finance
-        self.pushButton_add_finance_info.clicked.connect(lambda:db.add_finance_info(self))
-        self.pushButton_cal_sum.clicked.connect(lambda:db.calculate_sum(self))
-        self.pushButton_finance_info.clicked.connect(lambda:db.delete_finance_info(self))
+        self.pushButton_add_finance_info.clicked.connect(lambda:db_fin.add_finance_info(self))
+        self.pushButton_cal_sum.clicked.connect(lambda:db_fin.calculate_sum(self))
+        self.pushButton_finance_info.clicked.connect(lambda:db_fin.delete_finance_info(self))
         #plot
         self.pushButton_plot.clicked.connect(lambda:graph.create_piechart(self))
         self.pushButton_plot.clicked.connect(lambda:graph.plot_finance_details(self))
         #ppt worker
-        self.pushButton_make_ppt.clicked.connect(lambda:db.save_ppt_content_in_txt_format(self))
-        self.pushButton_delete_ppt_record.clicked.connect(lambda:db.delete_ppt_record(self))
-        self.pushButton_load_db_info.clicked.connect(lambda:db.extract_ppt_record(self))
-        self.pushButton_save_ppt_info_to_db.clicked.connect(lambda:db.add_one_ppt_record(self))
-        self.pushButton_update_song1.clicked.connect(lambda:db.add_one_song(self, which = '1'))
-        self.pushButton_update_song2.clicked.connect(lambda:db.add_one_song(self, which = '2'))
-        self.pushButton_update_song3.clicked.connect(lambda:db.add_one_song(self, which = '3'))
-        self.pushButton_update_song4.clicked.connect(lambda:db.add_one_song(self, which = '4'))
-        self.pushButton_extract_worker_info.clicked.connect(lambda:db.extract_workers(self))
-        self.pushButton_insert_song1.clicked.connect(lambda:db.extract_one_song(self, self.comboBox_song1.currentText(),1))
-        self.pushButton_insert_song2.clicked.connect(lambda:db.extract_one_song(self, self.comboBox_song2.currentText(),2))
-        self.pushButton_insert_song3.clicked.connect(lambda:db.extract_one_song(self, self.comboBox_song3.currentText(),3))
-        self.pushButton_insert_song4.clicked.connect(lambda:db.extract_one_song(self, self.comboBox_song4.currentText(),4))
+        self.pushButton_make_ppt.clicked.connect(lambda:db_ppt.save_ppt_content_in_txt_format(self))
+        self.pushButton_delete_ppt_record.clicked.connect(lambda:db_ppt.delete_ppt_record(self))
+        self.pushButton_load_db_info.clicked.connect(lambda:db_ppt.extract_ppt_record(self))
+        self.pushButton_save_ppt_info_to_db.clicked.connect(lambda:db_ppt.add_one_ppt_record(self))
+        self.pushButton_update_song1.clicked.connect(lambda:db_ppt.add_one_song(self, which = '1'))
+        self.pushButton_update_song2.clicked.connect(lambda:db_ppt.add_one_song(self, which = '2'))
+        self.pushButton_update_song3.clicked.connect(lambda:db_ppt.add_one_song(self, which = '3'))
+        self.pushButton_update_song4.clicked.connect(lambda:db_ppt.add_one_song(self, which = '4'))
+        self.pushButton_extract_worker_info.clicked.connect(lambda:db_ppt.extract_workers(self))
+        self.pushButton_insert_song1.clicked.connect(lambda:db_ppt.extract_one_song(self, self.comboBox_song1.currentText(),1))
+        self.pushButton_insert_song2.clicked.connect(lambda:db_ppt.extract_one_song(self, self.comboBox_song2.currentText(),2))
+        self.pushButton_insert_song3.clicked.connect(lambda:db_ppt.extract_one_song(self, self.comboBox_song3.currentText(),3))
+        self.pushButton_insert_song4.clicked.connect(lambda:db_ppt.extract_one_song(self, self.comboBox_song4.currentText(),4))
         self.comboBox_rsp_scripture.currentIndexChanged.connect(lambda: self.textEdit_rsp_scripture.setPlainText(self.get_rsp_scripture_with_title()))
         self.pushButton_append_rsp_scripture.clicked.connect(self.update_or_append_scripture)
         #bulletin worker
-        self.pushButton_load_db_info_bulletin.clicked.connect(lambda:db.extract_bulletin_record(self))
-        self.pushButton_save_bulletin_info.clicked.connect(lambda:db.add_one_bulletin_record(self))
-        self.pushButton_delete_bulletin_record.clicked.connect(lambda:db.delete_bulletin_record(self))
-        self.pushButton_make_bulletin.clicked.connect(lambda:db.save_bulletin_content_in_txt_format_and_make_bulletin(self))
+        self.pushButton_load_db_info_bulletin.clicked.connect(lambda:db_bulletin.extract_bulletin_record(self))
+        self.pushButton_save_bulletin_info.clicked.connect(lambda:db_bulletin.add_one_bulletin_record(self))
+        self.pushButton_delete_bulletin_record.clicked.connect(lambda:db_bulletin.delete_bulletin_record(self))
+        self.pushButton_make_bulletin.clicked.connect(lambda:db_bulletin.save_bulletin_content_in_txt_format_and_make_bulletin(self))
 
     def set_activated_input_widget(self, widget):
         self.activated_task_input_widget = widget
@@ -138,16 +148,16 @@ class MyMainWindow(QMainWindow):
         self.comboBox_rsp_scripture.addItems(self.get_rsp_scripture_titles())
 
     def setget_funcs_setup(self):
-        self.set_data_for_widget_img_view = partial(db.set_data_for_widget_img_view,self)
-        self.get_data_for_widget_img_view = partial(db.get_data_for_widget_img_view,self)
-        self.set_data_for_x_song_script_note = partial(db.set_data_for_x_song_script_note, self)
-        self.get_data_for_x_song_script_note = partial(db.get_data_for_x_song_script_note, self)
-        self.set_data_for_x_song_items_note = partial(db.set_data_for_x_song_items_note, self)
-        self.get_data_for_x_song_items_note = partial(db.get_data_for_x_song_items_note, self)
-        self.set_data_for_x_role_note = partial(db.set_data_for_x_role_note, self)
-        self.get_data_for_x_role_note = partial(db.get_data_for_x_role_note, self)
-        self.set_data_for_x_worker_name_note = partial(db.set_data_for_x_worker_name_note, self)
-        self.get_data_for_x_worker_name_note = partial(db.get_data_for_x_worker_name_note, self)
+        self.set_data_for_widget_img_view = partial(db_pe.set_data_for_widget_img_view,self)
+        self.get_data_for_widget_img_view = partial(db_pe.get_data_for_widget_img_view,self)
+        self.set_data_for_x_song_script_note = partial(db_ppt.set_data_for_x_song_script_note, self)
+        self.get_data_for_x_song_script_note = partial(db_ppt.get_data_for_x_song_script_note, self)
+        self.set_data_for_x_song_items_note = partial(db_ppt.set_data_for_x_song_items_note, self)
+        self.get_data_for_x_song_items_note = partial(db_ppt.get_data_for_x_song_items_note, self)
+        self.set_data_for_x_role_note = partial(db_task.set_data_for_x_role_note, self)
+        self.get_data_for_x_role_note = partial(db_task.get_data_for_x_role_note, self)
+        self.set_data_for_x_worker_name_note = partial(db_task.set_data_for_x_worker_name_note, self)
+        self.get_data_for_x_worker_name_note = partial(db_task.get_data_for_x_worker_name_note, self)
 
     def closeEvent(self, event) -> None:
         quit_msg = "Are you sure you want to exit the program? If yes, all text indexes will be deleted!"

@@ -1,13 +1,30 @@
+from functools import partial
 import pandas as pd
 import io
-import PyQt5
-from PyQt5.QtWidgets import QMessageBox
+from PyQt5.QtWidgets import QMessageBox,QAbstractItemView
 from PyQt5.QtWidgets import QFileDialog
-import base64
 import codecs
 from PIL import ImageGrab
-from .util import error_pop_up, image_string_to_qimage, image_to_64base_string
+from ..util import error_pop_up, image_string_to_qimage, image_to_64base_string, disable_all_tabs_but_one, PandasModel
 
+def init_pandas_model_from_db_base(self, tab_indx, single_collection, contrains, onclicked_func, tab_widget_name = 'tabWidget_2', table_view_widget_name='tableView_book_info'):
+    disable_all_tabs_but_one(self, tab_widget_name, tab_indx)
+    getattr(self, tab_widget_name).setCurrentIndex(tab_indx)
+    data = create_pandas_data_from_db(self, db_type=self.database_type, single_collection= single_collection, constrains=contrains)
+    header_name_map = {}
+    if len(data)!=0:
+        header_name_map = list(self.db_config_info['db_types'][self.database_type]['table_viewer'].values())[0]
+    self.pandas_model = PandasModel(data = data, tableviewer = getattr(self, table_view_widget_name), main_gui = self, column_names=header_name_map)
+    getattr(self, table_view_widget_name).setModel(self.pandas_model)
+    getattr(self, table_view_widget_name).resizeColumnsToContents()
+    getattr(self, table_view_widget_name).setSelectionBehavior(QAbstractItemView.SelectRows)
+    getattr(self, table_view_widget_name).horizontalHeader().setStretchLastSection(True)
+    try:
+        getattr(self, table_view_widget_name).clicked.disconnect()
+    except:
+        pass
+    getattr(self, table_view_widget_name).clicked.connect(partial(onclicked_func,self))
+    
 def get_collection_list_from_yaml(self, db_type):
     return list(self.db_config_info['db_types'][db_type]['collections'].keys()) + \
            list(self.db_config_info['db_types']['share']['collections'].keys())

@@ -6,7 +6,7 @@ from pymongo import MongoClient
 import certifi, urllib
 from ..core.util import error_pop_up, confirm_password, encrypt_password
 from ..config.config import hidden_pushButtons_normal_user
-from ..core import db_operations_test as db
+from ..core.db_opts import db_opts_entry as db
 
 ui_path = str(Path(__file__).parent.parent/ "ui")
 
@@ -71,8 +71,8 @@ class LoginDialog(QDialog):
                     relevant_database_names.append(each)
             parent.comboBox_project_list.addItems(relevant_database_names)
             # client['ccg-book'].user_info[]
-            names = db.general_query_by_field(self=parent, field='user_name', query_string=self.lineEdit_login_name.text(),target_field='name',collection_name='user_info', database=client['ccg-book'])
-            roles = db.general_query_by_field(self=parent, field='user_name', query_string=self.lineEdit_login_name.text(),target_field='role',collection_name='user_info', database=client['ccg-book'])
+            names = db.text_query_by_field(self=parent, field='user_name', query_string=self.lineEdit_login_name.text(),target_field='name',collection_name='user_info', database=client['ccg-book'])
+            roles = db.text_query_by_field(self=parent, field='user_name', query_string=self.lineEdit_login_name.text(),target_field='role',collection_name='user_info', database=client['ccg-book'])
             #salts = db.general_query_by_field(self=parent, field='user_name', query_string=self.lineEdit_login_name.text(),target_field='salt',collection_name='user_info', database=client['ccg-book'])
             if len(names)==0:
                 name = self.lineEdit_login_name.text()
