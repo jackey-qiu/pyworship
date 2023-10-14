@@ -231,7 +231,7 @@
                 </font>
                </property>
                <property name="currentIndex">
-                <number>2</number>
+                <number>4</number>
                </property>
                <widget class="QWidget" name="tab_5">
                 <attribute name="title">
@@ -2937,13 +2937,6 @@ p, li { white-space: pre-wrap; }
                           </widget>
                          </item>
                          <item>
-                          <widget class="QPushButton" name="pushButton_insert_song1">
-                           <property name="text">
-                            <string>插入歌曲</string>
-                           </property>
-                          </widget>
-                         </item>
-                         <item>
                           <widget class="QPushButton" name="pushButton_update_song1">
                            <property name="text">
                             <string>歌曲入库更新</string>
@@ -2985,13 +2978,6 @@ p, li { white-space: pre-wrap; }
                           </widget>
                          </item>
                          <item>
-                          <widget class="QPushButton" name="pushButton_insert_song2">
-                           <property name="text">
-                            <string>插入歌曲</string>
-                           </property>
-                          </widget>
-                         </item>
-                         <item>
                           <widget class="QPushButton" name="pushButton_update_song2">
                            <property name="text">
                             <string>歌曲入库更新</string>
@@ -3027,13 +3013,6 @@ p, li { white-space: pre-wrap; }
                           </widget>
                          </item>
                          <item>
-                          <widget class="QPushButton" name="pushButton_insert_song3">
-                           <property name="text">
-                            <string>插入歌曲</string>
-                           </property>
-                          </widget>
-                         </item>
-                         <item>
                           <widget class="QPushButton" name="pushButton_update_song3">
                            <property name="text">
                             <string>歌曲入库更新</string>
@@ -3065,13 +3044,6 @@ p, li { white-space: pre-wrap; }
                              <horstretch>0</horstretch>
                              <verstretch>0</verstretch>
                             </sizepolicy>
-                           </property>
-                          </widget>
-                         </item>
-                         <item>
-                          <widget class="QPushButton" name="pushButton_insert_song4">
-                           <property name="text">
-                            <string>插入歌曲</string>
                            </property>
                           </widget>
                          </item>

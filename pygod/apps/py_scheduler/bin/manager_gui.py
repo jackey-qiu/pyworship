@@ -105,10 +105,10 @@ class MyMainWindow(QMainWindow):
         self.pushButton_update_song3.clicked.connect(lambda:db_ppt.add_one_song(self, which = '3'))
         self.pushButton_update_song4.clicked.connect(lambda:db_ppt.add_one_song(self, which = '4'))
         self.pushButton_extract_worker_info.clicked.connect(lambda:db_ppt.extract_workers(self))
-        self.pushButton_insert_song1.clicked.connect(lambda:db_ppt.extract_one_song(self, self.comboBox_song1.currentText(),1))
-        self.pushButton_insert_song2.clicked.connect(lambda:db_ppt.extract_one_song(self, self.comboBox_song2.currentText(),2))
-        self.pushButton_insert_song3.clicked.connect(lambda:db_ppt.extract_one_song(self, self.comboBox_song3.currentText(),3))
-        self.pushButton_insert_song4.clicked.connect(lambda:db_ppt.extract_one_song(self, self.comboBox_song4.currentText(),4))
+        self.comboBox_song1.currentIndexChanged.connect(lambda:db_ppt.extract_one_song(self, self.comboBox_song1.currentText(),1))
+        self.comboBox_song2.currentIndexChanged.connect(lambda:db_ppt.extract_one_song(self, self.comboBox_song2.currentText(),2))
+        self.comboBox_song3.currentIndexChanged.connect(lambda:db_ppt.extract_one_song(self, self.comboBox_song3.currentText(),3))
+        self.comboBox_song4.currentIndexChanged.connect(lambda:db_ppt.extract_one_song(self, self.comboBox_song4.currentText(),4))
         self.comboBox_rsp_scripture.currentIndexChanged.connect(lambda: self.textEdit_rsp_scripture.setPlainText(self.get_rsp_scripture_with_title()))
         self.pushButton_append_rsp_scripture.clicked.connect(self.update_or_append_scripture)
         #bulletin worker
@@ -186,7 +186,7 @@ class MyMainWindow(QMainWindow):
 @click.command()
 @click.option('--ui', default='library_manager.ui',help="main gui ui file generated from Qt Desinger, possible ui files are :")
 @click.option('--ss', default ='Takezo.qss', help='style sheet file *.qss, possible qss files include: ')
-@click.option('--tm', default = 'True', help='show terminal widget (--tm True) or not (--tm False)')
+@click.option('--tm', default = 'False', help='show terminal widget (--tm True) or not (--tm False)')
 def scheduler(ui, ss, tm):
     ui_file = str(Path(__file__).parent.parent/ "ui" / ui)
     QApplication.setStyle("fusion")
