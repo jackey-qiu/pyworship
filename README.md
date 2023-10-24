@@ -13,10 +13,10 @@ eg. ccg reader, ccg scheduler. You will need users login credential to login ccg
 6. Then you can archive this whole folder down to ccg.zip and send it around to other users.
 7. People receiving this zip file, just unzip the file and run the ccg.exe file in the ccg folder.
 
-# executable file (only works on Windows pc)
-1. download from https://1drv.ms/u/s!AijhQio6-ElysFkVWHMNRFUaj66J?e=K19jlg
+# executable file
+1. download from https://1drv.ms/u/s!AijhQio6-ElysFkVWHMNRFUaj66J?e=kgEeVy (for windowOS) or from https://1drv.ms/u/s!AijhQio6-ElysFvL1QEJQhdQfwa4?e=hplIBH (for MacOS)
 2. cd to the root folder after decompressing the file
-3. double click ccg.exe
+3. double click ccg.exe (windowOS) or ccg (MacOS)
 4. You should be able to see the client interface of MongoDB Atlas database
 5. To use it, login first to connect to Atlas cloud. Just clik the first icon (cloud-like) from the toolbar.
 6. Provide you login name and password. If you don't have it, you can register by clicking the second icon. Input the info and submit it. The admin will grant you to the Atlas database access with proper rights. You need to wait for a few days depending on how fast the admin can proccess your case.
