@@ -20,7 +20,7 @@ class makeBulletin(object):
     bottom_margin = Mm(5)
     left_margin = Mm(5)
     right_margin = Mm(5)
-    shade_color_code = '6495ED'
+    shade_color_code = '9CC2E5'#'6495ED'
     format_report = {
             'style':'List Number',
             'font_name':'FZShuSong-Z01S',
@@ -115,7 +115,10 @@ class makeBulletin(object):
             _each = each.rsplit('+')
             for each_item in _each:
                 run = pg.add_run(each_item, style = format['font_style'])
+                run.font.name = 'Times New Roman'
+                #run.font.language_id = MSO_LANGUAGE_ID.SIMPLIFIED_CHINESE
                 #run.font.name = format['font_name']
+                run._element.rPr.rFonts.set(qn('w:eastAsia'), format['font_name'])
                 run.font.size = Pt(format['font_size'])
                 run.font.bold = format['bold']
                 if each_item==_each[-1] and len(_each)>1:
@@ -160,7 +163,9 @@ class makeBulletin(object):
                     pg.paragraph_format.line_spacing = Pt(font_size*1.2)
                     pg.alignment = alignments[j]
                     for run in pg.runs:
-                        run.font.name = "FZShuSong-Z01S"
+                        run.font.name = 'Times New Roman'
+                        run._element.rPr.rFonts.set(qn('w:eastAsia'), "FZShuSong-Z01S")
+                        #run.font.name = "FZShuSong-Z01S"
                         run.font.size = Pt(font_size)
         return tb
 
@@ -253,7 +258,7 @@ class makeBulletin(object):
         if len(contents)==4:
             contents = [['📅']+contents[0],\
                         ['✒️']+contents[1],\
-                        ['👨🏻‍🏫']+contents[2],\
+                        ["🤵"]+contents[2],\
                         ['✝️']+contents[3]]
         tb = self.add_table(font_size= 10, content = contents, alignments=WD_TABLE_ALIGNMENT.CENTER)
         self.shade_row(tb, 0, self.shade_color_code, None)
@@ -262,7 +267,7 @@ class makeBulletin(object):
     def test_add_preach_table(self):
         contents = [['📅','10月1日','10月8日','10月15日','10月22日','10月29日'],
                     ['✒️','事奉 • 我 •我的家','敬畏神','耶稣接待我们','让基督在我\n身上照常显大','从深处发出\n的祷告'],
-                    ['👨🏻‍🏫','管惠萍牧师','吴振忠牧师','吴雨洁传道','吴振忠牧师','吴温淑芳师母'],
+                    ["🤵",'管惠萍牧师','吴振忠牧师','吴雨洁传道','吴振忠牧师','吴温淑芳师母'],
                     ['✝️','约书亚记\n24:14-18','传道书\n12:9-14','路加福音\n9:10-17','腓立比书\n1:1-27','诗篇130, \n131']]
         self.add_preach_table(contents)
 
@@ -401,7 +406,7 @@ class makeBulletin(object):
         self.add_spacing(line_spacing = section_spacing)
         self.add_report(self.contents['Report'])
         self.add_spacing(line_spacing = section_spacing)
-        self.add_report(self.contents['Pray'])
+        self.add_pray_list(self.contents['Pray'])
         self.add_spacing(line_spacing = section_spacing)
         self.add_last_month_record_table(self.contents['LastMonthRecord'][0:3],self.contents['LastMonthRecord'][3:])
         self.add_spacing(line_spacing = section_spacing)
