@@ -64,9 +64,17 @@ def extract_workers(self):
 
 def extract_all_song_titles(self):
     songs = [each['song_id'] for each in self.database.song_info.find()]
+    self.songs = songs
     for i in range(1, 5):
         getattr(self,f'comboBox_song{i}').clear()
         getattr(self,f'comboBox_song{i}').addItems(songs)
+
+def extract_targeted_songs_from_cache(self, signature, comboBox_widget):
+    if not hasattr(self, 'songs'):
+        return
+    targeted_songs = [each for each in self.songs if each.startswith(signature)]
+    comboBox_widget.clear()
+    comboBox_widget.addItems(targeted_songs)
 
 def extract_one_song(self, song_title, which):
     self.which_song_widget = which

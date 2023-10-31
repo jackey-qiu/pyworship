@@ -109,6 +109,10 @@ class MyMainWindow(QMainWindow):
         self.comboBox_song2.currentIndexChanged.connect(lambda:db_ppt.extract_one_song(self, self.comboBox_song2.currentText(),2))
         self.comboBox_song3.currentIndexChanged.connect(lambda:db_ppt.extract_one_song(self, self.comboBox_song3.currentText(),3))
         self.comboBox_song4.currentIndexChanged.connect(lambda:db_ppt.extract_one_song(self, self.comboBox_song4.currentText(),4))
+        self.lineEdit_song1.returnPressed.connect(lambda:db_ppt.extract_targeted_songs_from_cache(self, self.lineEdit_song1.text(), self.comboBox_song1))
+        self.lineEdit_song2.returnPressed.connect(lambda:db_ppt.extract_targeted_songs_from_cache(self, self.lineEdit_song2.text(), self.comboBox_song2))
+        self.lineEdit_song3.returnPressed.connect(lambda:db_ppt.extract_targeted_songs_from_cache(self, self.lineEdit_song3.text(), self.comboBox_song3))
+        self.lineEdit_song4.returnPressed.connect(lambda:db_ppt.extract_targeted_songs_from_cache(self, self.lineEdit_song4.text(), self.comboBox_song4))
         self.comboBox_rsp_scripture.currentIndexChanged.connect(lambda: self.textEdit_rsp_scripture.setPlainText(self.get_rsp_scripture_with_title()))
         self.pushButton_append_rsp_scripture.clicked.connect(self.update_or_append_scripture)
         #bulletin worker

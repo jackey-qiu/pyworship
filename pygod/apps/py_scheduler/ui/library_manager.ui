@@ -1411,8 +1411,8 @@ p, li { white-space: pre-wrap; }
                      <rect>
                       <x>0</x>
                       <y>0</y>
-                      <width>998</width>
-                      <height>594</height>
+                      <width>1018</width>
+                      <height>617</height>
                      </rect>
                     </property>
                     <attribute name="label">
@@ -2299,7 +2299,7 @@ p, li { white-space: pre-wrap; }
                      <rect>
                       <x>0</x>
                       <y>0</y>
-                      <width>93</width>
+                      <width>98</width>
                       <height>53</height>
                      </rect>
                     </property>
@@ -2950,6 +2950,9 @@ p, li { white-space: pre-wrap; }
                            </property>
                           </widget>
                          </item>
+                         <item>
+                          <widget class="QLineEdit" name="lineEdit_song1"/>
+                         </item>
                         </layout>
                        </item>
                        <item row="0" column="1">
@@ -2991,6 +2994,9 @@ p, li { white-space: pre-wrap; }
                            </property>
                           </widget>
                          </item>
+                         <item>
+                          <widget class="QLineEdit" name="lineEdit_song2"/>
+                         </item>
                         </layout>
                        </item>
                        <item row="2" column="0">
@@ -3026,6 +3032,9 @@ p, li { white-space: pre-wrap; }
                            </property>
                           </widget>
                          </item>
+                         <item>
+                          <widget class="QLineEdit" name="lineEdit_song3"/>
+                         </item>
                         </layout>
                        </item>
                        <item row="2" column="1">
@@ -3060,6 +3069,9 @@ p, li { white-space: pre-wrap; }
                             <string>删除歌曲</string>
                            </property>
                           </widget>
+                         </item>
+                         <item>
+                          <widget class="QLineEdit" name="lineEdit_song4"/>
                          </item>
                         </layout>
                        </item>
@@ -3666,7 +3678,7 @@ p, li { white-space: pre-wrap; }
      <x>0</x>
      <y>0</y>
      <width>1448</width>
-     <height>26</height>
+     <height>21</height>
     </rect>
    </property>
   </widget>
