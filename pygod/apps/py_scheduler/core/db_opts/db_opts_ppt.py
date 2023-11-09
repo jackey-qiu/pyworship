@@ -69,6 +69,11 @@ def extract_all_song_titles(self):
         getattr(self,f'comboBox_song{i}').clear()
         getattr(self,f'comboBox_song{i}').addItems(songs)
 
+def add_one_song_title_to_cache(self, song_title):
+    self.songs.append(song_title)
+    for i in range(1, 5):
+        getattr(self,f'comboBox_song{i}').addItem(song_title)
+
 def extract_targeted_songs_from_cache(self, signature, comboBox_widget):
     if not hasattr(self, 'songs'):
         return
@@ -89,11 +94,13 @@ def add_one_song(self, which):
     else:
         return
     set_song_title = lambda self:getattr(self,f'comboBox_song{self.which_song_widget}').setCurrentText(text)
-    cbs = [extract_all_song_titles, set_song_title]
+    append_song_title = lambda self:add_one_song_title_to_cache(self, text)
+    # cbs = [extract_all_song_titles, set_song_title]
+    cbs = [append_song_title, set_song_title]
     collection = 'song_info'
     constrain = {'song_id': song_title}
     if self.database[collection].count_documents(constrain)==1:
-        update_one_record(self, 'PPT', collection, constrain= constrain, cbs=cbs)
+        update_one_record(self, 'PPT', collection, constrain= constrain, cbs=[])
     elif self.database[collection].count_documents(constrain)==0:
         add_one_record(self, 'PPT', collection, extra_info= constrain, cbs=cbs)
 

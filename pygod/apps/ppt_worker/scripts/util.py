@@ -86,12 +86,13 @@ def get_song_list(slides, unique_keys=[]):
     songs = [song for song in songs if song not in unique_keys]
     return songs, title_pos
 
-def extract_songs_from_folder(folder = "C:\\Users\\qiucanro\\Downloads\\test"):
+def extract_songs_from_folder(folder = "C:\\Users\\qiucanro\\Downloads\\test", unique_keys = None):
     assert os.path.exists(folder), "The specified ppt file folder is not existing!"
-    unique_keys = []
+    if unique_keys==None:
+        unique_keys = []
     song_list = []
     # for each in glob.glob(os.path.join(folder, '*.pptx')):
-    for each in glob.glob(os.path.join(folder, '**', '*.pptx'), recursive=True):
+    for each in glob.glob(os.path.join(folder, '**', '*.ppt'), recursive=True):
         try:
             songs, unique_keys = extract_song_from_ppt_file(each, unique_keys)
             song_list=song_list + songs
