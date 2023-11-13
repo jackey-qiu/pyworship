@@ -82,6 +82,11 @@
          <string>月报</string>
         </property>
        </item>
+       <item>
+        <property name="text">
+         <string>诗歌</string>
+        </property>
+       </item>
       </widget>
      </item>
     </layout>

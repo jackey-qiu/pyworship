@@ -16,6 +16,7 @@ from ..core.db_opts import db_opts_personal as db_pe
 from ..core.db_opts import db_opts_ppt as db_ppt
 from ..core.db_opts import db_opts_task as db_task
 from ..core.db_opts import init_db_opts as db_reg
+from ..core.db_opts import db_opts_hymn as db_hymn
 from ..core import graph_operations as graph
 
 class MyMainWindow(QMainWindow):
@@ -120,6 +121,10 @@ class MyMainWindow(QMainWindow):
         self.pushButton_save_bulletin_info.clicked.connect(lambda:db_bulletin.add_one_bulletin_record(self))
         self.pushButton_delete_bulletin_record.clicked.connect(lambda:db_bulletin.delete_bulletin_record(self))
         self.pushButton_make_bulletin.clicked.connect(lambda:db_bulletin.save_bulletin_content_in_txt_format_and_make_bulletin(self))
+        #song manager
+        self.pushButton_clear_field.clicked.connect(lambda:db_hymn.clear_all_text_field(self))
+        self.pushButton_update_hymn.clicked.connect(lambda:db_hymn.add_one_hymn_record(self))
+        self.pushButton_delete_hymn.clicked.connect(lambda:db_hymn.delete_hymn_record(self))
 
     def format_input_text(self, lineEditWidget_name):
         lineEditWidget = getattr(self, lineEditWidget_name)

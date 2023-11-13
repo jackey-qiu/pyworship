@@ -7,6 +7,7 @@ from .db_opts_ppt import load_db_ppt
 from .db_opts_personal import load_db_pe
 from .db_opts_ppt import load_db_ppt
 from .db_opts_bulletin import load_db_bulletin
+from .db_opts_hymn import load_db_hymn
 
 def extract_project_info(self):
     all = self.database.project_info.find()
@@ -25,6 +26,7 @@ def load_project(self):
                     '财务': load_db_fin,
                     'PPT': load_db_ppt,
                     '月报': load_db_bulletin,
+                    '诗歌': load_db_hymn,
                     }
     assert self.database_type in maps_load_db, self.database_type+' is not in the maps!'
     maps_load_db[self.database_type](self)

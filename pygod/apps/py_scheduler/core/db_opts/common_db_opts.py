@@ -8,7 +8,7 @@ from PIL import ImageGrab
 from ..util import error_pop_up, image_string_to_qimage, image_to_64base_string, disable_all_tabs_but_one, PandasModel
 
 def init_pandas_model_from_db_base(self, tab_indx, single_collection, contrains, onclicked_func, tab_widget_name = 'tabWidget_2', table_view_widget_name='tableView_book_info'):
-    disable_all_tabs_but_one(self, tab_widget_name, tab_indx)
+    #disable_all_tabs_but_one(self, tab_widget_name, tab_indx)
     getattr(self, tab_widget_name).setCurrentIndex(tab_indx)
     data = create_pandas_data_from_db(self, db_type=self.database_type, single_collection= single_collection, constrains=contrains)
     header_name_map = {}

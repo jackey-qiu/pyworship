@@ -275,3 +275,23 @@ db_types:
         table_viewer: 
             bulletin_info:
                 group_id: 年月
+    诗歌:
+        collections: 
+            hymn_info:
+                name: lineEdit_hymn_name_note
+                album: lineEdit_album_note
+                band: lineEdit_band_note
+                script_text_for_ppt_worker: textEdit_script_ppt_note
+                script_text_link: lineEdit_script_text_note
+                script_piano_link: lineEdit_script_piano_note
+                mp3_link_dropbox: lineEdit_mp3_dropbox_note
+                vedio_link_youtube: lineEdit_youtube_note
+                archive_date: lineEdit_archived_date_note
+                archive_worker: lineEdit_worker_note
+                notes: textEdit_note_hymn_note
+        table_viewer: 
+            hymn_info:
+                name: 诗歌歌名
+                album: 诗歌专辑
+                band: 演唱乐队
+                archive_worker: 入库同工
