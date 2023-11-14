@@ -7,7 +7,7 @@ import codecs
 from PIL import ImageGrab
 from ..util import error_pop_up, image_string_to_qimage, image_to_64base_string, disable_all_tabs_but_one, PandasModel
 
-def init_pandas_model_from_db_base(self, tab_indx, single_collection, contrains, onclicked_func, tab_widget_name = 'tabWidget_2', table_view_widget_name='tableView_book_info'):
+def init_pandas_model_from_db_base(self, tab_indx, single_collection, contrains, onclicked_func, update_func = None, tab_widget_name = 'tabWidget_2', table_view_widget_name='tableView_book_info'):
     #disable_all_tabs_but_one(self, tab_widget_name, tab_indx)
     getattr(self, tab_widget_name).setCurrentIndex(tab_indx)
     data = create_pandas_data_from_db(self, db_type=self.database_type, single_collection= single_collection, constrains=contrains)
@@ -15,6 +15,8 @@ def init_pandas_model_from_db_base(self, tab_indx, single_collection, contrains,
     if len(data)!=0:
         header_name_map = list(self.db_config_info['db_types'][self.database_type]['table_viewer'].values())[0]
     self.pandas_model = PandasModel(data = data, tableviewer = getattr(self, table_view_widget_name), main_gui = self, column_names=header_name_map)
+    if update_func!=None:
+        self.pandas_model.dataChanged.connect(partial(update_func,self))
     getattr(self, table_view_widget_name).setModel(self.pandas_model)
     getattr(self, table_view_widget_name).resizeColumnsToContents()
     getattr(self, table_view_widget_name).setSelectionBehavior(QAbstractItemView.SelectRows)
@@ -193,7 +195,7 @@ def delete_one_record(self, db_type, constrain, cbs = []):
         except Exception as e:
             error_pop_up('Failure to append paper info!\n{}'.format(str(e)),'Error') 
 
-def update_one_record(self, db_type, collection, constrain, extra_info = {}, cbs = []):
+def update_one_record(self, db_type, collection, constrain, extra_info = {}, cbs = [], silent = False):
     doc_info = get_document_info_from_yaml(self, db_type=db_type, collection = collection)
     data_from_client = {}
     data_from_db = self.database[collection].find_one(constrain)
@@ -218,12 +220,29 @@ def update_one_record(self, db_type, collection, constrain, extra_info = {}, cbs
             else:
                 get_api_str = f'self.get_data_for_{widget}'
             widget_get_api = eval(get_api_str)
-            data_from_client[doc] = content_type(widget_get_api())
+            result = widget_get_api()
+            if type(result)==bool:
+                content_type = bool                
+            data_from_client[doc] = content_type(result)
     data_from_client.update(extra_info)
+
     try:        
-        message = 'Would you like to update your database with new input?'
-        reply = QMessageBox.question(self, 'Message', message, QMessageBox.Yes | QMessageBox.No, QMessageBox.Yes)
-        if reply == QMessageBox.Yes:
+        if not silent:
+            message = 'Would you like to update your database with new input?'
+            reply = QMessageBox.question(self, 'Message', message, QMessageBox.Yes | QMessageBox.No, QMessageBox.Yes)
+            if reply == QMessageBox.Yes:
+                for key in data_from_db:
+                    if key not in data_from_client and key!='_id':
+                        data_from_client[key] = data_from_db[key]
+                self.database[collection].replace_one(data_from_db, data_from_client)
+                for cb in cbs:
+                    cb(self)
+                self.statusbar.clearMessage()
+                self.statusbar.showMessage("'Update the record info successfully")
+                return True
+            else:
+                return False
+        else:
             for key in data_from_db:
                 if key not in data_from_client and key!='_id':
                     data_from_client[key] = data_from_db[key]
@@ -232,9 +251,6 @@ def update_one_record(self, db_type, collection, constrain, extra_info = {}, cbs
                 cb(self)
             self.statusbar.clearMessage()
             self.statusbar.showMessage("'Update the record info successfully")
-            return True
-        else:
-            return False
     except Exception as e:
         self.statusbar.clearMessage()
         self.statusbar.showMessage("'Fail to update the record info!")
@@ -266,7 +282,10 @@ def add_one_record(self, db_type, collection, extra_info = {}, cbs = []):
             else:
                 get_api_str = f'self.get_data_for_{widget}'
             widget_get_api = eval(get_api_str)
-            data_from_client[doc] = content_type(widget_get_api())            
+            result = widget_get_api()
+            if type(result)==bool:
+                content_type = bool
+            data_from_client[doc] = content_type(result)            
     try:
         data_from_client.update(extra_info)
         self.database[collection].insert_one(data_from_client)

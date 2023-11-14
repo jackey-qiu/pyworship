@@ -3,6 +3,7 @@ from PyQt5.QtWidgets import QMessageBox, QMenu, QLineEdit, QTextEdit
 import base64
 import bcrypt
 import calendar, datetime
+import numpy as np
 
 def clear_all_text_field(self, tabWidget = 'tabWidget_note'):
     for each in getattr(self, tabWidget).findChildren(QLineEdit):
@@ -110,6 +111,8 @@ class PandasModel(QtCore.QAbstractTableModel):
         return self._data.shape[1]
 
     def data(self, index, role):
+        cols = self._data.shape[1]
+        checked_columns = [i for i in range(cols) if type(self._data.iloc[0, i])==np.bool_]
         if index.isValid():
             if role in [QtCore.Qt.DisplayRole, QtCore.Qt.EditRole]:
                 return str(self._data.iloc[index.row(), index.column()])
@@ -119,24 +122,35 @@ class PandasModel(QtCore.QAbstractTableModel):
                 #return QtGui.QColor('Blue')
             # if role == QtCore.Qt.BackgroundRole and index.row()%2 == 1:
             if role == QtCore.Qt.BackgroundRole:
-                return QtGui.QColor('white')
+                if index.column() in checked_columns:
+                    return QtGui.QColor('yellow')
+                else:
+                    return QtGui.QColor('white')
                 # return QtGui.QColor('aqua')
                 # return QtGui.QColor('lightGreen')
             # if role == QtCore.Qt.ForegroundRole and index.row()%2 == 1:
             if role == QtCore.Qt.ForegroundRole:
-                return QtGui.QColor('black')
+                if index.column() in checked_columns:
+                    if self._data.iloc[index.row(), index.column()]:
+                        return QtGui.QColor('green')
+                    else:
+                        return QtGui.QColor('red')
+                else:
+                    return QtGui.QColor('black')
             
-            #if role == QtCore.Qt.CheckStateRole and index.column()==0:
-            #    if self._data.iloc[index.row(),index.column()]:
-            #        return QtCore.Qt.Checked
-            #    else:
-            #        return QtCore.Qt.Unchecked
+            if role == QtCore.Qt.CheckStateRole and index.column() in checked_columns:
+                if self._data.iloc[index.row(),index.column()]:
+                    return QtCore.Qt.Checked
+                else:
+                    return QtCore.Qt.Unchecked
         return None
 
     def setData(self, index, value, role):
+        cols = self._data.shape[1]
+        checked_columns = [i for i in range(cols) if type(self._data.iloc[0, i])==np.bool_]        
         if not index.isValid():
             return False
-        if role == QtCore.Qt.CheckStateRole and index.column() == 0:
+        if role == QtCore.Qt.CheckStateRole and index.column() in checked_columns:
             if value == QtCore.Qt.Checked:
                 self._data.iloc[index.row(),index.column()] = True
             else:
@@ -155,6 +169,7 @@ class PandasModel(QtCore.QAbstractTableModel):
         return True
     
     def update_view(self):
+        self.tableviewer.resizeColumnsToContents() 
         self.layoutAboutToBeChanged.emit()
         self.dataChanged.emit(self.createIndex(0, 0), self.createIndex(self.rowCount(0), self.columnCount(0)))
         self.layoutChanged.emit()
@@ -172,14 +187,21 @@ class PandasModel(QtCore.QAbstractTableModel):
         return None
 
     def flags(self, index):
+        cols = self._data.shape[1]
+        checked_columns = [i for i in range(cols) if type(self._data.iloc[0, i])==np.bool_]        
         if not index.isValid():
            return QtCore.Qt.NoItemFlags
         else:
+            if index.column() in checked_columns:
+                return (QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEditable | QtCore.Qt.ItemIsUserCheckable)
+            else:
+                return (QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable)
+            """
             if index.column()==0:
                 return (QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEditable | QtCore.Qt.ItemIsUserCheckable)
             else:
                 return (QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable)
-
+            """
     def sort(self, Ncol, order):
         """Sort table by given column number."""
         self.layoutAboutToBeChanged.emit()

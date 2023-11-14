@@ -123,8 +123,8 @@ class MyMainWindow(QMainWindow):
         self.pushButton_make_bulletin.clicked.connect(lambda:db_bulletin.save_bulletin_content_in_txt_format_and_make_bulletin(self))
         #song manager
         self.pushButton_clear_field.clicked.connect(lambda:db_hymn.clear_all_text_field(self))
-        self.pushButton_update_hymn.clicked.connect(lambda:db_hymn.add_one_hymn_record(self))
-        self.pushButton_delete_hymn.clicked.connect(lambda:db_hymn.delete_hymn_record(self))
+        self.pushButton_update_hymn.clicked.connect(lambda:db_hymn.add_one_record_in_db(self))
+        self.pushButton_delete_hymn.clicked.connect(lambda:db_hymn.delete_one_record_in_db(self))
 
     def format_input_text(self, lineEditWidget_name):
         lineEditWidget = getattr(self, lineEditWidget_name)
@@ -174,6 +174,10 @@ class MyMainWindow(QMainWindow):
         self.get_data_for_x_role_note = partial(db_task.get_data_for_x_role_note, self)
         self.set_data_for_x_worker_name_note = partial(db_task.set_data_for_x_worker_name_note, self)
         self.get_data_for_x_worker_name_note = partial(db_task.get_data_for_x_worker_name_note, self)
+        self.get_data_for_x_check_status = partial(db_hymn.get_data_for_x_check_status, self)
+        self.set_data_for_x_check_status = partial(db_hymn.set_data_for_x_check_status, self)
+        self.get_data_for_x_correct_status = partial(db_hymn.get_data_for_x_correct_status, self)
+        self.set_data_for_x_correct_status = partial(db_hymn.set_data_for_x_correct_status, self)
 
     def closeEvent(self, event) -> None:
         quit_msg = "Are you sure you want to exit the program? If yes, all text indexes will be deleted!"
