@@ -43,7 +43,7 @@ def get_tableviewer_info_from_yaml(self, db_type, collection):
     else:
         return self.db_config_info['db_types'][db_type]['table_viewer'][collection]
 
-def create_pandas_data_from_db(self, db_type = 'book', single_collection = True, constrains = []):
+def create_pandas_data_from_db(self, db_type = 'book', single_collection = True, constrains = [], limit = 50):
     """extact data from database and create a pandas dataframe to be used as table model input for table 
        viewer widget
 
@@ -60,6 +60,7 @@ def create_pandas_data_from_db(self, db_type = 'book', single_collection = True,
     for key, value in var_column_names.items():
         data[key] = []
     if single_collection:
+        # for each in self.database[collections[0]].find().limit(limit):
         for each in self.database[collections[0]].find():
             for each_key in data:
                 data[each_key].append(each.get(each_key, 'NA'))
@@ -77,6 +78,7 @@ def create_pandas_data_from_db(self, db_type = 'book', single_collection = True,
             pass
         for collection in collections:
             for each in self.database[collection].find():
+            # for each in self.database[collection].find().limit(limit):
                 #if constrains[0] not in each:
                 #    break
                 assert constrains[0] in each, 'The constrain key' + {constrains[0]} + 'is not found in the database'
@@ -143,9 +145,12 @@ def load_img_from_base64(self, widget_view_name, base64_string, base64_string_va
     view.loadImages([qimage])
     view.show()
 
-def extract_one_record(self, db_type, collection, constrain):
+def extract_one_record(self, db_type, collection, constrain, cache = None):
     doc_info = get_document_info_from_yaml(self, db_type=db_type, collection = collection)
-    data_from_db = self.database[collection].find_one(constrain)
+    if cache==None:
+        data_from_db = self.database[collection].find_one(constrain)
+    else:
+        data_from_db = cache
     NO_RECORD = False
     if data_from_db==None:
         NO_RECORD = True

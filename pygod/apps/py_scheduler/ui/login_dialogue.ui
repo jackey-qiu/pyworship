@@ -38,7 +38,7 @@
         </font>
        </property>
        <property name="text">
-        <string>public_user</string>
+        <string>jackey</string>
        </property>
       </widget>
      </item>
@@ -58,7 +58,7 @@
      <item row="1" column="1">
       <widget class="QLineEdit" name="lineEdit_password">
        <property name="text">
-        <string>9jkFSJrSoq6QFISv</string>
+        <string>Qiu11243912</string>
        </property>
        <property name="echoMode">
         <enum>QLineEdit::Password</enum>

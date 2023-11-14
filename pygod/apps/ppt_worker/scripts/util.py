@@ -4,6 +4,70 @@ import json
 from pptx import Presentation
 import win32com.client
 
+def get_album_tmp(script):
+    try:
+        album = script.rsplit('\n')[1]
+        if len(album)>15:
+            return 'NA'
+        else:
+            return album
+    except:
+        return 'NA'
+
+def get_group_id(script, song_id):
+    try:
+        album = script.rsplit('\n')[1]
+        if len(album)>15:
+            album = 'NA' 
+    except:
+        album = 'NA'
+    return f'{song_id}_{album}_NA'
+
+
+#key: collection to be transferred to, value: collection being transferred from
+mapping_rule_temp = {'name':'song_id',
+                'script_text_for_ppt_worker':'script',
+                'album':"get_album_tmp+script",
+                'band':'NA',
+                'script_text_link':'nan',
+                'script_piano_link':'nan',
+                'mp3_link_dropbox':"nan",
+                'vedio_link_youtube':"nan",
+                'archive_date':"2023-11-14",
+                'archive_worker':"灿荣",
+                'notes':"nan",
+                'checked':False,
+                'corrected':False,
+                'group_id':'get_group_id+script+song_id'
+                }
+def transfer_collection_docs_to_db(mongo_client, db_name_from='ccg-PPT', collection_name_from='song_info', db_name_to='ccg-hymn', collection_name_to='hymn_info', mapping_rule=mapping_rule_temp, limits = None):
+    collection_data_from = list(mongo_client[db_name_from][collection_name_from].find({}))
+    if limits!=None:
+        assert type(limits)==int, "limits has to be of type int"
+        collection_data_from = collection_data_from[0:limits]
+    collection_data_to = []
+    for each in collection_data_from:
+        doc = {}
+        for value, key in mapping_rule.items():
+            if key in each:
+                doc[value] = each[key]
+            elif key=='nan':
+                doc[value] = 'na'
+            elif type(key)==str and key.startswith('get_'):
+                func, *args = key.rsplit('+')
+                args_decoded = []
+                for arg in args:
+                    if arg in each:
+                        args_decoded.append(each[arg])
+                    else:
+                        args_decoded.append(arg)
+                doc[value] = eval(func)(*args_decoded)
+            else:
+                doc[value] = key
+        collection_data_to.append(doc)
+    mongo_client[db_name_to][collection_name_to].insert_many(collection_data_to)
+    return collection_data_to
+
 def extract_text_from_ppt_file(ppt_file_path):
     assert os.path.exists(ppt_file_path), "The specified ppt file path is not existing!"
     _, name = os.path.split(ppt_file_path)

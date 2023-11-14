@@ -194,6 +194,12 @@
               <height>300000</height>
              </size>
             </property>
+            <property name="font">
+             <font>
+              <family>Javanese Text</family>
+              <pointsize>12</pointsize>
+             </font>
+            </property>
            </widget>
           </item>
          </layout>

@@ -4,6 +4,7 @@ import base64
 import bcrypt
 import calendar, datetime
 import numpy as np
+from pypinyin import pinyin, Style
 
 def clear_all_text_field(self, tabWidget = 'tabWidget_note'):
     for each in getattr(self, tabWidget).findChildren(QLineEdit):
@@ -204,8 +205,14 @@ class PandasModel(QtCore.QAbstractTableModel):
             """
     def sort(self, Ncol, order):
         """Sort table by given column number."""
+        def _to_pinyin(s):
+            return ''.join([each[:-1] for each_list in pinyin(s, style = Style.TONE3) for each in each_list])
+        self._data['sort_me'] = self._data[self._data.columns.tolist()[Ncol]].apply(_to_pinyin)
         self.layoutAboutToBeChanged.emit()
-        self._data = self._data.sort_values(self._data.columns.tolist()[Ncol],
+        self._data = self._data.sort_values('sort_me',
                                         ascending=order == QtCore.Qt.AscendingOrder, ignore_index = True)
+        # self._data = self._data.sort_values(self._data.columns.tolist()[Ncol],
+                                        # ascending=order == QtCore.Qt.AscendingOrder, ignore_index = True, key=_to_pinyin)
         self.dataChanged.emit(self.createIndex(0, 0), self.createIndex(self.rowCount(0), self.columnCount(0)))
         self.layoutChanged.emit()
+        self._data.drop(columns='sort_me', inplace=True)

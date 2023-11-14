@@ -17,10 +17,15 @@ def init_pandas_model_from_db(self):
     init_pandas_model_from_db_base(**args)
 
 def load_db_hymn(self):
+    update_cache(self)
     init_pandas_model_from_db(self)
     update_selected_record(self)
     self.tableView_book_info.resizeColumnsToContents()
     #extract_all_song_titles(self)
+
+def update_cache(self):
+    # self.cache = list(self.database.hymn_info.find({}).limit(50))
+    self.cache = list(self.database.hymn_info.find({}))
 
 def clear_all_text_field(self, widgets = ['frame_song_info','tabWidget_song']):
     for widget in widgets:
@@ -38,15 +43,15 @@ def extract_one_record_in_db(self):
         pass
 
 def delete_one_record_in_db(self):
-    cbs = [init_pandas_model_from_db]
+    cbs = [init_pandas_model_from_db, update_cache]
     extra_info = {'group_id':f'{self.lineEdit_hymn_name_note.text()}_{self.lineEdit_album_note.text()}_{self.lineEdit_band_note.text()}'} 
     delete_one_record(self, self.database_type, extra_info, cbs = cbs)
 
 def add_one_record_in_db(self):
-    if (self.lineEdit_hymn_name_note.text()=='') or (self.lineEdit_album_note.text()=='') or (self.lineEdit_band_note.text()==''):
-        error_pop_up('歌名，专辑以及演唱乐队不能为空，至少有一个是空，请填充', 'Error')
+    if (self.lineEdit_hymn_name_note.text()==''):
+        error_pop_up('歌名不能为空，请填充', 'Error')
     extra_info = {'group_id':f'{self.lineEdit_hymn_name_note.text()}_{self.lineEdit_album_note.text()}_{self.lineEdit_band_note.text()}'} 
-    cbs = [init_pandas_model_from_db]
+    cbs = [init_pandas_model_from_db, update_cache]
     if self.database['hymn_info'].count_documents(extra_info)==1:
         update_one_record(self, '诗歌', 'hymn_info', constrain= extra_info, cbs=cbs)
     elif self.database['hymn_info'].count_documents(extra_info)==0:    
@@ -64,7 +69,7 @@ def update_selected_record(self, index = None):
         band = self.pandas_model._data['band'].tolist()[index.row()]
         collection =  'hymn_info'
         extra_info = {'group_id':f'{name}_{album}_{band}'} 
-        extract_one_record(self, self.database_type, collection, extra_info)
+        extract_one_record(self, self.database_type, collection, extra_info, cache=self.cache[index.row()])
     else:
         if len(self.pandas_model._data)!=0:
             name = self.pandas_model._data['name'].tolist()[0]
@@ -72,7 +77,7 @@ def update_selected_record(self, index = None):
             band = self.pandas_model._data['band'].tolist()[0]
             collection =  'hymn_info'
             extra_info = {'group_id':f'{name}_{album}_{band}'} 
-            extract_one_record(self, self.database_type, collection, extra_info)  
+            extract_one_record(self, self.database_type, collection, extra_info, cache=self.cache[0]) 
     self.tableView_book_info.resizeColumnsToContents()           
 
 #get data for this attr to be saved in db
