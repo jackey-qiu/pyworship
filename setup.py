@@ -8,7 +8,7 @@ setup(
     url = 'https://github.com/jackey-qiu/pyworkship',
     classifiers = ['Topic::pyqt5 application', 'Programming Language::Python'],
     license = 'MIT',
-    install_requires = ['PyQt5', 'pyqtgraph', 'qpageview', 'pyqtchart', 'qdarkstyle', 'numpy', 'pymongo', 'bcrypt','python-dotenv', 'pandas', 'dnspython', 'click', 'python-pptx', 'jieba', 'whoosh','yt-dlp','pyyaml'],
+    install_requires = ['PyQt5', 'pyqtgraph', 'qpageview', 'pyqtchart', 'qdarkstyle', 'numpy', 'pymongo', 'bcrypt','python-dotenv', 'pandas', 'dnspython', 'click', 'python-pptx', 'jieba', 'whoosh','yt-dlp','pyyaml', 'pypinyin'],
     packages = find_packages(),
     package_data = {'pygod.apps.bible_reader.src': ['bible_interpret/*/*', 'bibles_json/*', 'icons/*', 'notes/*', 'ui/*'], 
                     'pygod.apps.ppt_worker': ['src/bible/*'], 

@@ -237,7 +237,7 @@
                 </font>
                </property>
                <property name="currentIndex">
-                <number>5</number>
+                <number>6</number>
                </property>
                <widget class="QWidget" name="tab_5">
                 <attribute name="title">
@@ -3785,7 +3785,7 @@ p, li { white-space: pre-wrap; }
                      </property>
                      <property name="icon">
                       <iconset>
-                       <normaloff>../../bible_reader/src/icons/control-skip-180.png</normaloff>../../bible_reader/src/icons/control-skip-180.png</iconset>
+                       <normaloff>../resources/icons/control-skip-180.png</normaloff>../resources/icons/control-skip-180.png</iconset>
                      </property>
                     </widget>
                    </item>
@@ -3802,7 +3802,7 @@ p, li { white-space: pre-wrap; }
                      </property>
                      <property name="icon">
                       <iconset>
-                       <normaloff>../../bible_reader/src/icons/control.png</normaloff>../../bible_reader/src/icons/control.png</iconset>
+                       <normaloff>../resources/icons/control.png</normaloff>../resources/icons/control.png</iconset>
                      </property>
                     </widget>
                    </item>
@@ -3819,7 +3819,7 @@ p, li { white-space: pre-wrap; }
                      </property>
                      <property name="icon">
                       <iconset>
-                       <normaloff>../../bible_reader/src/icons/control-pause.png</normaloff>../../bible_reader/src/icons/control-pause.png</iconset>
+                       <normaloff>../resources/icons/control-pause.png</normaloff>../resources/icons/control-pause.png</iconset>
                      </property>
                     </widget>
                    </item>
@@ -3836,7 +3836,7 @@ p, li { white-space: pre-wrap; }
                      </property>
                      <property name="icon">
                       <iconset>
-                       <normaloff>../../bible_reader/src/icons/control-stop-square.png</normaloff>../../bible_reader/src/icons/control-stop-square.png</iconset>
+                       <normaloff>../resources/icons/control-stop-square.png</normaloff>../resources/icons/control-stop-square.png</iconset>
                      </property>
                     </widget>
                    </item>
@@ -3853,7 +3853,7 @@ p, li { white-space: pre-wrap; }
                      </property>
                      <property name="icon">
                       <iconset>
-                       <normaloff>../../bible_reader/src/icons/control-skip.png</normaloff>../../bible_reader/src/icons/control-skip.png</iconset>
+                       <normaloff>../resources/icons/control-skip.png</normaloff>../resources/icons/control-skip.png</iconset>
                      </property>
                     </widget>
                    </item>
