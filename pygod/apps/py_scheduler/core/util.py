@@ -165,7 +165,7 @@ class PandasModel(QtCore.QAbstractTableModel):
         self.layoutAboutToBeChanged.emit()
         self.dataChanged.emit(self.createIndex(0, 0), self.createIndex(self.rowCount(0), self.columnCount(0)))
         self.layoutChanged.emit()
-        self.tableviewer.resizeColumnsToContents() 
+        # self.tableviewer.resizeColumnsToContents() 
         # self.tableviewer.horizontalHeader().setStretchLastSection(True)
         return True
     

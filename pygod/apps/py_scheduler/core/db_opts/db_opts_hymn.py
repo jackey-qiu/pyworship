@@ -17,7 +17,7 @@ def init_pandas_model_from_db(self):
     init_pandas_model_from_db_base(**args)
 
 def load_db_hymn(self):
-    update_cache(self)
+    # update_cache(self)
     init_pandas_model_from_db(self)
     update_selected_record(self)
     self.tableView_book_info.resizeColumnsToContents()
@@ -43,7 +43,7 @@ def extract_one_record_in_db(self):
         pass
 
 def delete_one_record_in_db(self):
-    cbs = [init_pandas_model_from_db, update_cache]
+    cbs = [init_pandas_model_from_db]
     extra_info = {'group_id':f'{self.lineEdit_hymn_name_note.text()}_{self.lineEdit_album_note.text()}_{self.lineEdit_band_note.text()}'} 
     delete_one_record(self, self.database_type, extra_info, cbs = cbs)
 
@@ -51,7 +51,7 @@ def add_one_record_in_db(self):
     if (self.lineEdit_hymn_name_note.text()==''):
         error_pop_up('歌名不能为空，请填充', 'Error')
     extra_info = {'group_id':f'{self.lineEdit_hymn_name_note.text()}_{self.lineEdit_album_note.text()}_{self.lineEdit_band_note.text()}'} 
-    cbs = [init_pandas_model_from_db, update_cache]
+    cbs = [init_pandas_model_from_db]
     if self.database['hymn_info'].count_documents(extra_info)==1:
         update_one_record(self, '诗歌', 'hymn_info', constrain= extra_info, cbs=cbs)
     elif self.database['hymn_info'].count_documents(extra_info)==0:    
@@ -60,7 +60,7 @@ def add_one_record_in_db(self):
 def update_recored_upon_change_in_pd_model(self):
     extra_info = {'group_id':f'{self.lineEdit_hymn_name_note.text()}_{self.lineEdit_album_note.text()}_{self.lineEdit_band_note.text()}'} 
     update_one_record(self, '诗歌', 'hymn_info', constrain= extra_info, cbs=[], silent=True)
-    self.tableView_book_info.resizeColumnsToContents() 
+    # self.tableView_book_info.resizeColumnsToContents() 
 
 def update_selected_record(self, index = None):
     if index!=None:
@@ -69,7 +69,8 @@ def update_selected_record(self, index = None):
         band = self.pandas_model._data['band'].tolist()[index.row()]
         collection =  'hymn_info'
         extra_info = {'group_id':f'{name}_{album}_{band}'} 
-        extract_one_record(self, self.database_type, collection, extra_info, cache=self.cache[index.row()])
+        # extract_one_record(self, self.database_type, collection, extra_info, cache=self.cache[index.row()])
+        extract_one_record(self, self.database_type, collection, extra_info)
     else:
         if len(self.pandas_model._data)!=0:
             name = self.pandas_model._data['name'].tolist()[0]
@@ -77,15 +78,15 @@ def update_selected_record(self, index = None):
             band = self.pandas_model._data['band'].tolist()[0]
             collection =  'hymn_info'
             extra_info = {'group_id':f'{name}_{album}_{band}'} 
-            extract_one_record(self, self.database_type, collection, extra_info, cache=self.cache[0]) 
-    self.tableView_book_info.resizeColumnsToContents()           
+            # extract_one_record(self, self.database_type, collection, extra_info, cache=self.cache[0]) 
+            extract_one_record(self, self.database_type, collection, extra_info) 
 
 #get data for this attr to be saved in db
 def get_data_for_x_check_status(self):
     try:
         data_ = self.pandas_model._data
         contraint = (data_['name']==self.lineEdit_hymn_name_note.text()) & (data_['album']==self.lineEdit_album_note.text()) & (data_['band']==self.lineEdit_band_note.text())
-        return bool(data_['checked'][contraint][0])
+        return bool(list(data_[contraint]['checked'])[0])
     except:
         return False
 
@@ -97,8 +98,8 @@ def set_data_for_x_check_status(self, content):
 def get_data_for_x_correct_status(self):
     try:
         data_ = self.pandas_model._data
-        contraint = (data_['name']==self.lineEdit_hymn_name_note.text()) & (data_['album']==self.lineEdit_hymn_album_note.text()) & (data_['band']==self.lineEdit_hymn_band_note.text())
-        return bool(data_['corrected'][contraint][0])
+        contraint = (data_['name']==self.lineEdit_hymn_name_note.text()) & (data_['album']==self.lineEdit_album_note.text()) & (data_['band']==self.lineEdit_band_note.text())
+        return bool(list(data_[contraint]['corrected'])[0])
     except:
         return False
 

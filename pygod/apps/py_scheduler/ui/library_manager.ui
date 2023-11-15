@@ -237,7 +237,7 @@
                 </font>
                </property>
                <property name="currentIndex">
-                <number>6</number>
+                <number>5</number>
                </property>
                <widget class="QWidget" name="tab_5">
                 <attribute name="title">
@@ -3589,18 +3589,11 @@ p, li { white-space: pre-wrap; }
                     <layout class="QVBoxLayout" name="verticalLayout_28">
                      <item>
                       <layout class="QGridLayout" name="gridLayout_10">
-                       <item row="0" column="0">
-                        <widget class="QLabel" name="label_113">
-                         <property name="text">
-                          <string>歌曲名称</string>
-                         </property>
-                        </widget>
+                       <item row="2" column="1">
+                        <widget class="QLineEdit" name="lineEdit_band_note"/>
                        </item>
                        <item row="0" column="1">
                         <widget class="QLineEdit" name="lineEdit_hymn_name_note"/>
-                       </item>
-                       <item row="2" column="1">
-                        <widget class="QLineEdit" name="lineEdit_band_note"/>
                        </item>
                        <item row="3" column="1">
                         <widget class="QLineEdit" name="lineEdit_script_text_note"/>
@@ -3615,13 +3608,6 @@ p, li { white-space: pre-wrap; }
                          </property>
                         </widget>
                        </item>
-                       <item row="4" column="0">
-                        <widget class="QLabel" name="label_123">
-                         <property name="text">
-                          <string>钢琴曲谱</string>
-                         </property>
-                        </widget>
-                       </item>
                        <item row="1" column="0">
                         <widget class="QLabel" name="label_120">
                          <property name="text">
@@ -3629,15 +3615,12 @@ p, li { white-space: pre-wrap; }
                          </property>
                         </widget>
                        </item>
-                       <item row="2" column="0">
-                        <widget class="QLabel" name="label_121">
+                       <item row="4" column="0">
+                        <widget class="QLabel" name="label_123">
                          <property name="text">
-                          <string>演唱乐队</string>
+                          <string>钢琴曲谱</string>
                          </property>
                         </widget>
-                       </item>
-                       <item row="4" column="1">
-                        <widget class="QLineEdit" name="lineEdit_script_piano_note"/>
                        </item>
                        <item row="5" column="0">
                         <widget class="QLabel" name="label_124">
@@ -3646,16 +3629,26 @@ p, li { white-space: pre-wrap; }
                          </property>
                         </widget>
                        </item>
+                       <item row="4" column="1">
+                        <widget class="QLineEdit" name="lineEdit_script_piano_note"/>
+                       </item>
+                       <item row="2" column="0">
+                        <widget class="QLabel" name="label_121">
+                         <property name="text">
+                          <string>演唱乐队</string>
+                         </property>
+                        </widget>
+                       </item>
                        <item row="1" column="1">
                         <widget class="QLineEdit" name="lineEdit_album_note"/>
                        </item>
                        <item row="9" column="1">
-                        <widget class="QTextEdit" name="textEdit_note_hymn_note"/>
-                       </item>
-                       <item row="9" column="0">
-                        <widget class="QLabel" name="label_125">
-                         <property name="text">
-                          <string>备注</string>
+                        <widget class="QTextEdit" name="textEdit_note_hymn_note">
+                         <property name="maximumSize">
+                          <size>
+                           <width>16777215</width>
+                           <height>60</height>
+                          </size>
                          </property>
                         </widget>
                        </item>
@@ -3666,18 +3659,22 @@ p, li { white-space: pre-wrap; }
                          </property>
                         </widget>
                        </item>
-                       <item row="7" column="1">
-                        <widget class="QLineEdit" name="lineEdit_archived_date_note"/>
-                       </item>
-                       <item row="6" column="1">
-                        <widget class="QLineEdit" name="lineEdit_youtube_note"/>
-                       </item>
-                       <item row="6" column="0">
-                        <widget class="QLabel" name="label_127">
+                       <item row="9" column="0">
+                        <widget class="QLabel" name="label_125">
                          <property name="text">
-                          <string>YouTube</string>
+                          <string>备注</string>
                          </property>
                         </widget>
+                       </item>
+                       <item row="0" column="0">
+                        <widget class="QLabel" name="label_113">
+                         <property name="text">
+                          <string>歌曲名称</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="7" column="1">
+                        <widget class="QLineEdit" name="lineEdit_archived_date_note"/>
                        </item>
                        <item row="8" column="0">
                         <widget class="QLabel" name="label_128">
@@ -3688,6 +3685,29 @@ p, li { white-space: pre-wrap; }
                        </item>
                        <item row="8" column="1">
                         <widget class="QLineEdit" name="lineEdit_worker_note"/>
+                       </item>
+                       <item row="6" column="0">
+                        <widget class="QLabel" name="label_127">
+                         <property name="text">
+                          <string>YouTube</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="6" column="1">
+                        <widget class="QLineEdit" name="lineEdit_youtube_note"/>
+                       </item>
+                       <item row="10" column="0">
+                        <spacer name="verticalSpacer_14">
+                         <property name="orientation">
+                          <enum>Qt::Vertical</enum>
+                         </property>
+                         <property name="sizeHint" stdset="0">
+                          <size>
+                           <width>20</width>
+                           <height>40</height>
+                          </size>
+                         </property>
+                        </spacer>
                        </item>
                       </layout>
                      </item>
@@ -3723,7 +3743,14 @@ p, li { white-space: pre-wrap; }
                      </attribute>
                      <layout class="QHBoxLayout" name="horizontalLayout_31">
                       <item>
-                       <widget class="QWidget" name="widget_script_piano" native="true"/>
+                       <widget class="QWidget" name="widget_script_piano" native="true">
+                        <property name="sizePolicy">
+                         <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                          <horstretch>0</horstretch>
+                          <verstretch>0</verstretch>
+                         </sizepolicy>
+                        </property>
+                       </widget>
                       </item>
                      </layout>
                     </widget>
