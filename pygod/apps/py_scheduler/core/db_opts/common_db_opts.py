@@ -15,6 +15,8 @@ def init_pandas_model_from_db_base(self, tab_indx, single_collection, contrains,
     if len(data)!=0:
         header_name_map = list(self.db_config_info['db_types'][self.database_type]['table_viewer'].values())[0]
     self.pandas_model = PandasModel(data = data, tableviewer = getattr(self, table_view_widget_name), main_gui = self, column_names=header_name_map)
+    #sort the table according to the first column
+    self.pandas_model.sort(0, False)
     if update_func!=None:
         self.pandas_model.dataChanged.connect(partial(update_func,self))
     getattr(self, table_view_widget_name).setModel(self.pandas_model)
