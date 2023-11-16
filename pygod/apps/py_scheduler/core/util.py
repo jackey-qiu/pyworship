@@ -1,10 +1,16 @@
+import os
 from PyQt5 import QtCore, QtGui
-from PyQt5.QtWidgets import QMessageBox, QMenu, QLineEdit, QTextEdit
+from PyQt5.QtWidgets import QMessageBox, QMenu, QLineEdit, QTextEdit, QFileDialog
+from PyQt5.QtCore import Qt, QAbstractListModel
+from PyQt5.QtMultimedia import QMediaContent, QMediaPlayer
+from PyQt5.QtCore import Qt, QAbstractListModel,QUrl
 import base64
 import bcrypt
 import calendar, datetime
 import numpy as np
 from pypinyin import pinyin, Style
+import yt_dlp as youtube_dl
+from pathlib import Path
 
 def clear_all_text_field(self, tabWidget = 'tabWidget_note'):
     for each in getattr(self, tabWidget).findChildren(QLineEdit):
@@ -216,3 +222,169 @@ class PandasModel(QtCore.QAbstractTableModel):
         self.dataChanged.emit(self.createIndex(0, 0), self.createIndex(self.rowCount(0), self.columnCount(0)))
         self.layoutChanged.emit()
         self._data.drop(columns='sort_me', inplace=True)
+
+class MyLogger(object):
+    def __init__(self, statusbar):
+        self.statusbar = statusbar
+
+    def debug(self, msg):
+        print(msg)
+        if msg.startswith('[download]'):
+            self.statusbar.showMessage(msg)
+
+    def warning(self, msg):
+        print(msg)
+        if msg.startswith('[download]'):
+            self.statusbar.showMessage(msg)
+
+    def error(self, msg):
+        print(msg)
+        if msg.startswith('[download]'):
+            self.statusbar.showMessage(msg)
+
+class DownloadYoutube(QtCore.QObject):
+    def __init__(self, statusbar, parent):
+        super(DownloadYoutube, self).__init__()
+        self.url = ''
+        self.path = ''
+        self.download_mp4 = False
+        self.statusbar = statusbar
+        self._parent = parent
+
+    def my_hook(self, d):
+        if d['status'] == 'finished':
+            #file_tuple = os.path.split(os.path.abspath(d['filename']))
+            self.statusbar.showMessage("Done downloading {}".format(os.path.abspath(d['filename'].replace('.webm','.mp3'))))
+        if d['status'] == 'downloading':
+            self.statusbar.showMessage(d['filename']+d['_percent_str']+d['_eta_str'])
+
+    def prepare_download(self, url, file_name, download_mp4 = False):
+        content_folder = Path.home() / 'pygodAppData' / 'songs'
+        content_folder.mkdir(parents=True, exist_ok=True)
+        self.url = url
+        self.path = content_folder
+        self.file_name = file_name
+        self.download_mp4 = download_mp4
+
+    def download(self):
+        ydl_opts_mp3 = {
+            'format': 'bestaudio/best',
+            'postprocessors': [{
+                'key': 'FFmpegExtractAudio',
+                'preferredcodec': 'mp3',
+                'preferredquality': '192'
+            }],
+            'postprocessor_args': [
+                '-ar', '16000'
+            ],
+            'prefer_ffmpeg': True,
+            'keepvideo': False,
+            'outtmpl':str(self.path / f'{self.file_name}.%(ext)s'),
+            'logger': MyLogger(self.statusbar),
+            'progress_hooks':[self.my_hook]
+            }
+
+        ydl_opts_video = {'outtmpl':os.path.join(self.path, '/%(title)s.%(ext)s'),'format':'best'}
+
+        if self.download_mp4:
+            ydl_opts = ydl_opts_video
+        else:
+            ydl_opts = ydl_opts_mp3
+        with youtube_dl.YoutubeDL(ydl_opts) as ydl:
+                ydl.download([self.url])
+
+class PlaylistModel(QAbstractListModel):
+    def __init__(self, playlist, *args, **kwargs):
+        super(PlaylistModel, self).__init__(*args, **kwargs)
+        self.playlist = playlist
+
+    def data(self, index, role):
+        if role == Qt.DisplayRole:
+            media = self.playlist.media(index.row())
+            return media.canonicalUrl().fileName()
+
+    def rowCount(self, index):
+        return self.playlist.mediaCount()
+    
+def hhmmss(ms):
+    # s = 1000
+    # m = 60000
+    # h = 360000
+    h, r = divmod(ms, 3600000)
+    m, r = divmod(r, 60000)
+    s, _ = divmod(r, 1000)
+    return ("%d:%02d:%02d" % (h,m,s)) if h else ("%d:%02d" % (m,s))
+
+class player_api:
+
+    @staticmethod
+    def dragEnterEvent(self, e):
+        if e.mimeData().hasUrls():
+            e.acceptProposedAction()
+
+    @staticmethod
+    def dropEvent(self, e):
+        for url in e.mimeData().urls():
+            self.playlist.addMedia(
+                QMediaContent(url)
+            )
+
+        self.model.layoutChanged.emit()
+
+        # If not playing, seeking to first of newly added + play.
+        if self.player.state() != QMediaPlayer.PlayingState:
+            i = self.playlist.mediaCount() - len(e.mimeData().urls())
+            self.playlist.setCurrentIndex(i)
+            self.player.play()
+
+    @staticmethod
+    def open_file(self):
+        path, _ = QFileDialog.getOpenFileName(self, "Open file", str(Path.home() / 'pygodAppData' / 'songs'), "mp3 Audio (*.mp3);;mp4 Video (*.mp4);;Movie files (*.mov)")
+        if path:
+            self.playlist.addMedia(
+                QMediaContent(
+                    QUrl.fromLocalFile(path)
+                )
+            )
+
+        self.model.layoutChanged.emit()
+
+    @staticmethod
+    def empty_files(self):
+        self.playlist.clear()
+
+    @staticmethod
+    def update_duration(self, duration):
+        # print("!", duration)
+        # print("?", self.player.duration())
+        
+        self.timeSlider.setMaximum(duration)
+
+        if duration >= 0:
+            self.totalTimeLabel.setText(hhmmss(duration))
+
+    @staticmethod
+    def update_position(self, position):
+        if position >= 0:
+            self.currentTimeLabel.setText(hhmmss(position))
+
+        # Disable the events to prevent updating triggering a setPosition event (can cause stuttering).
+        self.timeSlider.blockSignals(True)
+        self.timeSlider.setValue(position)
+        self.timeSlider.blockSignals(False)
+
+    @staticmethod
+    def playlist_selection_changed(self, ix):
+        # We receive a QItemSelection from selectionChanged.
+        i = ix.indexes()[0].row()
+        self.playlist.setCurrentIndex(i)
+
+    @staticmethod
+    def playlist_position_changed(self, i):
+        if i > -1:
+            ix = self.model.index(i)
+            self.playlistView.setCurrentIndex(ix)
+
+    @staticmethod
+    def erroralert(self, *args):
+        print(args)

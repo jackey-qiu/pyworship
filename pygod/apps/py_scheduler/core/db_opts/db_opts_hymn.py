@@ -118,3 +118,13 @@ def get_data_for_x_correct_status(self):
 #extract from db, and set content to the widget
 def set_data_for_x_correct_status(self, content):
     pass
+
+def download_file(self):
+    url = self.lineEdit_youtube_note.text()
+    file_name = self.lineEdit_hymn_name_note.text()
+    self.download.prepare_download(url, file_name)
+    try:
+        self.thread_download.terminate()
+    except:
+        pass
+    self.thread_download.start()

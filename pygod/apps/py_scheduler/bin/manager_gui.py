@@ -7,6 +7,7 @@ from functools import partial
 import click
 import qpageview.viewactions
 from PyQt5.QtWidgets import QMainWindow,QApplication, QLabel
+from PyQt5.QtMultimedia import QMediaPlayer, QMediaPlaylist
 sys.path.append(str(Path(__file__).parent.parent.parent))
 from ..core.db_opts import db_opts_entry as db_prj
 from ..core.db_opts import db_opts_bulletin as db_bulletin
@@ -18,6 +19,7 @@ from ..core.db_opts import db_opts_task as db_task
 from ..core.db_opts import init_db_opts as db_reg
 from ..core.db_opts import db_opts_hymn as db_hymn
 from ..core import graph_operations as graph
+from ...py_scheduler.core.util import DownloadYoutube, PlaylistModel, player_api
 
 class MyMainWindow(QMainWindow):
     def __init__(self, parent = None):
@@ -125,6 +127,42 @@ class MyMainWindow(QMainWindow):
         self.pushButton_clear_field.clicked.connect(lambda:db_hymn.clear_all_text_field(self))
         self.pushButton_update_hymn.clicked.connect(lambda:db_hymn.add_one_record_in_db(self))
         self.pushButton_delete_hymn.clicked.connect(lambda:db_hymn.delete_one_record_in_db(self))
+        self.pushButton_download_from_youtube.clicked.connect(lambda:db_hymn.download_file(self))
+        #setup youtube downloader
+        self.download = DownloadYoutube(self.statusbar, self)
+        self.thread_download = QtCore.QThread()
+        self.download.moveToThread(self.thread_download)
+        self.thread_download.started.connect(self.download.download)
+        #setup mp3 player
+        ####qmediaplayer settings from this line on####
+        self.player = QMediaPlayer()
+        self.player.error.connect(partial(player_api.erroralert, self))
+        self.player.play()
+        self.playlist = QMediaPlaylist()
+        self.player.setPlaylist(self.playlist)
+        # self.player.setVideoOutput(self.videowidget)
+        self.playButton.pressed.connect(self.player.play)
+        self.pauseButton.pressed.connect(self.player.pause)
+        self.stopButton.pressed.connect(self.player.stop)
+        self.volumeSlider.valueChanged.connect(self.player.setVolume)
+        self.previousButton.pressed.connect(self.playlist.previous)
+        self.nextButton.pressed.connect(self.playlist.next)
+
+        self.model = PlaylistModel(self.playlist)
+        self.playlistView.setModel(self.model)
+        self.playlist.currentIndexChanged.connect(partial(player_api.playlist_position_changed,self))
+        selection_model = self.playlistView.selectionModel()
+        selection_model.selectionChanged.connect(partial(player_api.playlist_selection_changed,self))
+
+        self.player.durationChanged.connect(partial(player_api.update_duration, self))
+        self.player.positionChanged.connect(partial(player_api.update_position, self))
+        self.timeSlider.valueChanged.connect(self.player.setPosition)
+
+        self.pushButton_load_file.clicked.connect(partial(player_api.open_file, self))
+        self.pushButton_empty.clicked.connect(partial(player_api.empty_files, self))
+        self.dragEnterEvent = partial(player_api.dragEnterEvent, self)
+        self.dropEvent = partial(player_api.dropEvent, self)
+        self.setAcceptDrops(True)
 
     def format_input_text(self, lineEditWidget_name):
         lineEditWidget = getattr(self, lineEditWidget_name)
