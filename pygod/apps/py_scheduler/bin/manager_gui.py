@@ -21,6 +21,14 @@ from ..core.db_opts import db_opts_hymn as db_hymn
 from ..core import graph_operations as graph
 from ...py_scheduler.core.util import DownloadYoutube, PlaylistModel, player_api
 
+db_api_map = {'图书': db_book,
+              '人事': db_pe,
+              '服事': db_task,
+              '财务': db_fin,
+              'PPT': db_ppt,
+              '月报': db_bulletin,
+              '诗歌': db_hymn }
+
 class MyMainWindow(QMainWindow):
     def __init__(self, parent = None):
         super(MyMainWindow, self).__init__(parent)
@@ -163,6 +171,23 @@ class MyMainWindow(QMainWindow):
         self.dragEnterEvent = partial(player_api.dragEnterEvent, self)
         self.dropEvent = partial(player_api.dropEvent, self)
         self.setAcceptDrops(True)
+        #search func
+        self.pushButton_search_target.clicked.connect(self.search_field)
+
+    def search_field(self):
+        if hasattr(self, 'pandas_model'):
+            db_api = db_api_map[self.database_type]
+            if self.database_type == '服事':
+                return
+            if len(self.pandas_model._data)!=0:
+                collection_name = list(self.db_config_info['db_types'][self.database_type]['table_viewer'].keys())[0]
+                name_map = list(self.db_config_info['db_types'][self.database_type]['table_viewer'].values())[0]
+                name_map = dict([(value, key) for key, value in name_map.items()])
+                field_name = name_map[self.comboBox_search_item.currentText()]
+                field_value = self.lineEdit_search_item_value.text()
+                pandas_data = self.pandas_model._data[self.pandas_model._data[field_name].str.contains(field_value, case=False)]
+                if hasattr(db_api,'rerender_tableview'):
+                    db_api.rerender_tableview(self, pandas_data.reset_index(drop=True))
 
     def format_input_text(self, lineEditWidget_name):
         lineEditWidget = getattr(self, lineEditWidget_name)
@@ -226,7 +251,7 @@ class MyMainWindow(QMainWindow):
                 event.accept()
             print('remove all database index.....')
             for each in self.index_names:
-                db_nm, coll = each
+                db_nm, coll, *k = each
                 self.mongo_client[db_nm][coll].drop_index(self.index_names[each])
                 print(self.index_names[each], 'deleted!')
             print('all done!')

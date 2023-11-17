@@ -7,16 +7,22 @@ import codecs
 from PIL import ImageGrab
 from ..util import error_pop_up, image_string_to_qimage, image_to_64base_string, disable_all_tabs_but_one, PandasModel
 
-def init_pandas_model_from_db_base(self, tab_indx, single_collection, contrains, onclicked_func, update_func = None, tab_widget_name = 'tabWidget_2', table_view_widget_name='tableView_book_info'):
+def init_pandas_model_from_db_base(self, tab_indx, single_collection, contrains, onclicked_func, update_func = None, pandas_data = None, tab_widget_name = 'tabWidget_2', table_view_widget_name='tableView_book_info'):
     #disable_all_tabs_but_one(self, tab_widget_name, tab_indx)
     getattr(self, tab_widget_name).setCurrentIndex(tab_indx)
-    data = create_pandas_data_from_db(self, db_type=self.database_type, single_collection= single_collection, constrains=contrains)
+    if type(pandas_data)!=pd.DataFrame:
+        data = create_pandas_data_from_db(self, db_type=self.database_type, single_collection= single_collection, constrains=contrains)
+    else:
+        data = pandas_data
     header_name_map = {}
     if len(data)!=0:
         header_name_map = list(self.db_config_info['db_types'][self.database_type]['table_viewer'].values())[0]
     self.pandas_model = PandasModel(data = data, tableviewer = getattr(self, table_view_widget_name), main_gui = self, column_names=header_name_map)
     #sort the table according to the first column
-    self.pandas_model.sort(0, False)
+    try:#for some db, first column is bool checked values
+        self.pandas_model.sort(0, False)
+    except:
+        pass
     if update_func!=None:
         self.pandas_model.dataChanged.connect(partial(update_func,self))
     getattr(self, table_view_widget_name).setModel(self.pandas_model)
@@ -28,6 +34,13 @@ def init_pandas_model_from_db_base(self, tab_indx, single_collection, contrains,
     except:
         pass
     getattr(self, table_view_widget_name).clicked.connect(partial(onclicked_func,self))
+    populate_search_field(self, )
+
+def populate_search_field(self, field_comboBox_widget_name='comboBox_search_item'):
+    name_map = list(self.db_config_info['db_types'][self.database_type]['table_viewer'].values())[0]
+    fields = list(name_map.values())
+    getattr(self, field_comboBox_widget_name).clear()
+    getattr(self, field_comboBox_widget_name).addItems(fields)
     
 def get_collection_list_from_yaml(self, db_type):
     return list(self.db_config_info['db_types'][db_type]['collections'].keys()) + \
@@ -321,7 +334,7 @@ def text_query_by_field(self, field, query_string, target_field, collection_name
     """
     if database == None:
         database = self.database
-    index_key = (database.name, collection_name)
+    index_key = (database.name, collection_name, field)
     if index_key not in self.index_names:
         index_name = database[collection_name].create_index([(field,'text')])
         self.index_names[index_key] = index_name
@@ -358,11 +371,11 @@ def logical_query_within_two_fields(self, collection, logical_opt, field_value_c
 #logical_opt = 'gt', field = 'year', limit = 1983
 def logical_query_one_field(self, collection, logical_opt, field, limit, return_fields = None):
     if return_fields==None:
-        return self.database[collection].find({field,
+        return self.database[collection].find({field:
             {f"${logical_opt}": limit}
         })
     else:
-        return self.database[collection].find({field,
+        return self.database[collection].find({field:
             {f"${logical_opt}":limit}
         }, dict(zip(return_fields,[1]*len(return_fields))))
     
@@ -371,16 +384,16 @@ def logical_query_one_field(self, collection, logical_opt, field, limit, return_
 def logical_range_query_one_field(self, collection, logical_opts, field, limits, return_fields = None):
     assert len(logical_opts)==len(limits), "operators and limits should be of a same number!"
     if return_fields==None:
-        return self.database[collection].find({"$and",
+        return self.database[collection].find({"$and":
             [
-            {field, {f"${logical_opts[i]}": limits[i]}}
+            {field: {f"${logical_opts[i]}": limits[i]}}
             for i in range(len(limits))
             ]
         })
     else:
-        return self.database[collection].find({"$and",
+        return self.database[collection].find({"$and":
             [
-            {field, {f"${logical_opts[i]}": limits[i]}}
+            {field: {f"${logical_opts[i]}": limits[i]}}
             for i in range(len(limits))
             ]
         }, dict(zip(return_fields,[1]*len(return_fields))))

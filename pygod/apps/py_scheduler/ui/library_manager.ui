@@ -4008,7 +4008,7 @@ p, li { white-space: pre-wrap; }
                        </widget>
                       </item>
                       <item>
-                       <widget class="QPushButton" name="pushButton_select_all">
+                       <widget class="QPushButton" name="pushButton_show_all">
                         <property name="font">
                          <font>
                           <family>KaiTi</family>
@@ -4016,7 +4016,7 @@ p, li { white-space: pre-wrap; }
                          </font>
                         </property>
                         <property name="text">
-                         <string>查看全部</string>
+                         <string>全部</string>
                         </property>
                        </widget>
                       </item>
@@ -4029,7 +4029,7 @@ p, li { white-space: pre-wrap; }
                          </font>
                         </property>
                         <property name="text">
-                         <string>查看首页</string>
+                         <string>首页</string>
                         </property>
                        </widget>
                       </item>
@@ -4042,7 +4042,7 @@ p, li { white-space: pre-wrap; }
                          </font>
                         </property>
                         <property name="text">
-                         <string>往后翻页</string>
+                         <string>后翻</string>
                         </property>
                        </widget>
                       </item>
@@ -4055,7 +4055,7 @@ p, li { white-space: pre-wrap; }
                          </font>
                         </property>
                         <property name="text">
-                         <string>往前翻页</string>
+                         <string>前翻</string>
                         </property>
                        </widget>
                       </item>
@@ -4068,12 +4068,12 @@ p, li { white-space: pre-wrap; }
                          </font>
                         </property>
                         <property name="text">
-                         <string>查看尾页</string>
+                         <string>尾页</string>
                         </property>
                        </widget>
                       </item>
                       <item>
-                       <widget class="QPushButton" name="pushButton_19">
+                       <widget class="QLabel" name="label_129">
                         <property name="font">
                          <font>
                           <family>KaiTi</family>
@@ -4081,7 +4081,59 @@ p, li { white-space: pre-wrap; }
                          </font>
                         </property>
                         <property name="text">
-                         <string>搜索数据库</string>
+                         <string>搜索字段</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
+                       <widget class="QComboBox" name="comboBox_search_item">
+                        <property name="sizePolicy">
+                         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                          <horstretch>0</horstretch>
+                          <verstretch>0</verstretch>
+                         </sizepolicy>
+                        </property>
+                        <property name="font">
+                         <font>
+                          <family>KaiTi</family>
+                          <pointsize>12</pointsize>
+                         </font>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
+                       <widget class="QLabel" name="label_131">
+                        <property name="font">
+                         <font>
+                          <family>KaiTi</family>
+                          <pointsize>12</pointsize>
+                         </font>
+                        </property>
+                        <property name="text">
+                         <string>字段值</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
+                       <widget class="QLineEdit" name="lineEdit_search_item_value">
+                        <property name="font">
+                         <font>
+                          <family>KaiTi</family>
+                          <pointsize>12</pointsize>
+                         </font>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
+                       <widget class="QPushButton" name="pushButton_search_target">
+                        <property name="font">
+                         <font>
+                          <family>KaiTi</family>
+                          <pointsize>12</pointsize>
+                         </font>
+                        </property>
+                        <property name="text">
+                         <string>搜索</string>
                         </property>
                        </widget>
                       </item>

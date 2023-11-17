@@ -7,21 +7,25 @@ from ..db_opts.common_db_opts import *
 from datetime import timedelta
 from pygod.apps.ppt_worker.scripts.ppt_worker import main as ppt
 
-def init_pandas_model_from_db(self):
+def init_pandas_model_from_db(self, pandas_data = None):
     args = {'self': self, 
             'tab_indx': 6, 
             'single_collection': True, 
             'contrains': [], 
             'onclicked_func': update_selected_record,
-            'update_func': update_recored_upon_change_in_pd_model}
+            'update_func': update_recored_upon_change_in_pd_model,
+            'pandas_data': pandas_data}
     init_pandas_model_from_db_base(**args)
 
-def load_db_hymn(self):
+def load_db_hymn(self, pandas_data = None):
     # update_cache(self)
-    init_pandas_model_from_db(self)
+    init_pandas_model_from_db(self, pandas_data)
     update_selected_record(self)
     self.tableView_book_info.resizeColumnsToContents()
     #extract_all_song_titles(self)
+
+def rerender_tableview(self, pandas_data):
+    load_db_hymn(self, pandas_data)
 
 def resume_pos_after_change_table(self, row = 0, tableview_widget_name = 'tableView_book_info'):
     tableView = getattr(self, tableview_widget_name)
