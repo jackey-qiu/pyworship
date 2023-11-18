@@ -160,7 +160,20 @@
             </font>
            </property>
            <property name="plainText">
-            <string/>
+            <string>简易使用教程
+
+1. 连接云数据库，点击云图标，输入登录信息
+2. 登录成功后，将看到各个数据库列表项
+3. 选择需要连接的数据库后，点击加载
+
+数据库名称说明如下
+ccg-PPT：用于制作教会敬拜PPT
+ccg-book：图书馆数据库
+ccg-bulletin：教会月报
+ccg-finance：教会财务
+ccg-hymn：赞美诗库
+ccg-personal：教会人事
+ccg-task：教会服事安排</string>
            </property>
           </widget>
          </widget>
