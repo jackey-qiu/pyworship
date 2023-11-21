@@ -62,6 +62,11 @@ def delete_one_record_in_db(self):
     delete_one_record(self, self.database_type, extra_info, cbs = cbs)
 
 def add_one_record_in_db(self):
+    #make today the archive date
+    today = datetime.datetime.today()
+    date_str = f'{today.year}-{today.month}-{today.day}'
+    self.lineEdit_archived_date_note.setText(date_str)
+
     current_row = self.tableView_book_info.selectionModel().selectedIndexes()[1].row()
     if (self.lineEdit_hymn_name_note.text()==''):
         error_pop_up('歌名不能为空，请填充', 'Error')
@@ -70,6 +75,9 @@ def add_one_record_in_db(self):
     if self.database['hymn_info'].count_documents(extra_info)==1:
         update_one_record(self, '诗歌', 'hymn_info', constrain= extra_info, cbs=cbs)
     elif self.database['hymn_info'].count_documents(extra_info)==0:    
+        #delete the old one first
+        delete_one_record(self, self.database_type, {'group_id':self.key_of_current_selected_item}, cbs = [], silent=True)
+        #then add the new one
         add_one_record(self, self.database_type,'hymn_info',extra_info, cbs)
 
 def update_recored_upon_change_in_pd_model(self):
@@ -86,6 +94,7 @@ def update_selected_record(self, index = 0):
         extra_info = {'group_id':f'{name}_{album}_{band}'} 
         # extract_one_record(self, self.database_type, collection, extra_info, cache=self.cache[index.row()])
         extract_one_record(self, self.database_type, collection, extra_info)
+        self.key_of_current_selected_item = f'{name}_{album}_{band}'
         
     else:
         if len(self.pandas_model._data)>index:
@@ -96,6 +105,7 @@ def update_selected_record(self, index = 0):
             extra_info = {'group_id':f'{name}_{album}_{band}'} 
             # extract_one_record(self, self.database_type, collection, extra_info, cache=self.cache[0]) 
             extract_one_record(self, self.database_type, collection, extra_info) 
+            self.key_of_current_selected_item = f'{name}_{album}_{band}'
 
 #get data for this attr to be saved in db
 def get_data_for_x_check_status(self):

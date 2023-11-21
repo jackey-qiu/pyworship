@@ -63,7 +63,8 @@ def extract_workers(self):
     set_data_for_x_workers_note(self)
 
 def extract_all_song_titles(self):
-    songs = [each['song_id'] for each in self.database.song_info.find()]
+    # songs = [each['song_id'] for each in self.database.song_info.find()]
+    songs = [each['name'] for each in self.mongo_client['ccg-hymn'].hymn_info.find()]
     self.songs = songs
     for i in range(1, 5):
         getattr(self,f'comboBox_song{i}').clear()
@@ -83,29 +84,10 @@ def extract_targeted_songs_from_cache(self, signature, comboBox_widget):
 
 def extract_one_song(self, song_title, which):
     self.which_song_widget = which
-    extract_one_record(self, self.database_type, 'song_info', {'song_id': song_title})
-
-def add_one_song(self, which):
-    self.which_song_widget = which
-    txt = getattr(self, f'textEdit_song{which}_note').toPlainText().rsplit('\n')[0]
-    text, ok = QInputDialog.getText(self, 'input dialog', '请输入歌曲名称?', text = txt)
-    if ok:
-        song_title = text
-    else:
-        return
-    set_song_title = lambda self:getattr(self,f'comboBox_song{self.which_song_widget}').setCurrentText(text)
-    append_song_title = lambda self:add_one_song_title_to_cache(self, text)
-    # cbs = [extract_all_song_titles, set_song_title]
-    cbs = [append_song_title, set_song_title]
-    collection = 'song_info'
-    constrain = {'song_id': song_title}
-    if self.database[collection].count_documents(constrain)==1:
-        update_one_record(self, 'PPT', collection, constrain= constrain, cbs=[])
-    elif self.database[collection].count_documents(constrain)==0:
-        add_one_record(self, 'PPT', collection, extra_info= constrain, cbs=cbs)
-
-def delete_one_song(self, song_title):
-    delete_one_record(self, self.database_type, {'song_id': song_title})
+    #extract record from ccg-hymn database
+    extract_one_record(self, '诗歌', 'hymn_info', {'name': song_title}, db='ccg-hymn')
+    #transfer the text from hymn tab to ppt tab
+    getattr(self, f'textEdit_song{which}_note').setPlainText(self.textEdit_script_ppt_note.toPlainText())
 
 def set_data_for_x_song_script_note(self, content):
     #collection = 'song_info'

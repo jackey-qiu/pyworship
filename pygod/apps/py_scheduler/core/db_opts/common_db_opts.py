@@ -160,10 +160,14 @@ def load_img_from_base64(self, widget_view_name, base64_string, base64_string_va
     view.loadImages([qimage])
     view.show()
 
-def extract_one_record(self, db_type, collection, constrain, cache = None):
+def extract_one_record(self, db_type, collection, constrain, cache = None, db = None):
+    #specify the db name if you are not using the context database
     doc_info = get_document_info_from_yaml(self, db_type=db_type, collection = collection)
     if cache==None:
-        data_from_db = self.database[collection].find_one(constrain)
+        if db!=None:
+            data_from_db = self.mongo_client[db][collection].find_one(constrain)
+        else:
+            data_from_db = self.database[collection].find_one(constrain)
     else:
         data_from_db = cache
     NO_RECORD = False
@@ -202,9 +206,20 @@ def extract_one_record(self, db_type, collection, constrain, cache = None):
 
     return not NO_RECORD
 
-def delete_one_record(self, db_type, constrain, cbs = []):
-    reply = QMessageBox.question(self, 'Message', 'Are you sure to delete this paper?', QMessageBox.Yes | QMessageBox.No, QMessageBox.Yes)
-    if reply == QMessageBox.Yes:
+def delete_one_record(self, db_type, constrain, cbs = [], silent = False):
+    if not silent:
+        reply = QMessageBox.question(self, 'Message', 'Are you sure to delete this paper?', QMessageBox.Yes | QMessageBox.No, QMessageBox.Yes)
+        if reply == QMessageBox.Yes:
+            try:
+                for collection in self.database.list_collection_names():
+                    self.database[collection].delete_many(constrain)
+                self.statusbar.clearMessage()
+                self.statusbar.showMessage(f'The record {constrain} is deleted from DB successfully.')
+                for cb in cbs:
+                    cb(self)
+            except Exception as e:
+                error_pop_up('Failure to append paper info!\n{}'.format(str(e)),'Error') 
+    else:
         try:
             for collection in self.database.list_collection_names():
                 self.database[collection].delete_many(constrain)

@@ -111,10 +111,6 @@ class MyMainWindow(QMainWindow):
         self.pushButton_delete_ppt_record.clicked.connect(lambda:db_ppt.delete_ppt_record(self))
         self.pushButton_load_db_info.clicked.connect(lambda:db_ppt.extract_ppt_record(self))
         self.pushButton_save_ppt_info_to_db.clicked.connect(lambda:db_ppt.add_one_ppt_record(self))
-        self.pushButton_update_song1.clicked.connect(lambda:db_ppt.add_one_song(self, which = '1'))
-        self.pushButton_update_song2.clicked.connect(lambda:db_ppt.add_one_song(self, which = '2'))
-        self.pushButton_update_song3.clicked.connect(lambda:db_ppt.add_one_song(self, which = '3'))
-        self.pushButton_update_song4.clicked.connect(lambda:db_ppt.add_one_song(self, which = '4'))
         self.pushButton_extract_worker_info.clicked.connect(lambda:db_ppt.extract_workers(self))
         self.comboBox_song1.currentIndexChanged.connect(lambda:db_ppt.extract_one_song(self, self.comboBox_song1.currentText(),1))
         self.comboBox_song2.currentIndexChanged.connect(lambda:db_ppt.extract_one_song(self, self.comboBox_song2.currentText(),2))
@@ -134,6 +130,7 @@ class MyMainWindow(QMainWindow):
         #song manager
         self.pushButton_clear_field.clicked.connect(lambda:db_hymn.clear_all_text_field(self))
         self.pushButton_update_hymn.clicked.connect(lambda:db_hymn.add_one_record_in_db(self))
+        self.pushButton_add_hymn.clicked.connect(lambda:db_hymn.add_one_record_in_db(self))
         self.pushButton_delete_hymn.clicked.connect(lambda:db_hymn.delete_one_record_in_db(self))
         self.pushButton_download_from_youtube.clicked.connect(lambda:db_hymn.download_file(self))
         #setup youtube downloader

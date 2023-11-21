@@ -251,8 +251,10 @@ db_types:
                 preach_contents: textEdit_preach_note
                 reports: textEdit_report_note
                 #workers: x_workers_note
-            song_info:
-                script: x_song_script_note
+            #song_info:
+            #    script: x_song_script_note
+            # hymn_info:
+                # script_text_for_ppt_worker: x_song_script_note
         table_viewer: 
             ppt_info:
                 group_id: 年月周

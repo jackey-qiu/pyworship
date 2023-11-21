@@ -125,7 +125,8 @@ class MakeWorkshipPpt(object):
         if not os.path.exists(file):
             print(f'{file} is not existing!')
             return        
-        with open(file, 'r', encoding= 'utf8') as f:
+        # with open(file, 'r', encoding= 'utf8') as f:
+        with open(file, 'r', encoding="utf8") as f:
             lines = f.readlines()
             section_index_list = [i for i in range(len(lines)) if lines[i].startswith('#')]+[len(lines)]
             section_index_range = [(section_index_list[i], section_index_list[i+1]) for i in range(len(section_index_list)-1)]
@@ -133,7 +134,7 @@ class MakeWorkshipPpt(object):
                 lf, rt = ix_range
                 self.scripture_list.append([each.rstrip() for each in lines[lf+1:rt]])
 
-        with open(json_file, 'r') as f:
+        with open(json_file, 'r', encoding='utf8') as f:
             bible = json.load(f)
             #modify first list (xuan zao scripture)
             sig = self.scripture_list[0][0]

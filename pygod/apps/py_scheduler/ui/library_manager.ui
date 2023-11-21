@@ -2318,7 +2318,7 @@ p, li { white-space: pre-wrap; }
                      <rect>
                       <x>0</x>
                       <y>0</y>
-                      <width>93</width>
+                      <width>98</width>
                       <height>53</height>
                      </rect>
                     </property>
@@ -2518,7 +2518,7 @@ p, li { white-space: pre-wrap; }
                  <item>
                   <widget class="QTabWidget" name="tabWidget_note">
                    <property name="currentIndex">
-                    <number>2</number>
+                    <number>3</number>
                    </property>
                    <widget class="QWidget" name="tab_14">
                     <attribute name="title">
@@ -2956,16 +2956,9 @@ p, li { white-space: pre-wrap; }
                           </widget>
                          </item>
                          <item>
-                          <widget class="QPushButton" name="pushButton_update_song1">
+                          <widget class="QLabel" name="label_132">
                            <property name="text">
-                            <string>歌曲入库更新</string>
-                           </property>
-                          </widget>
-                         </item>
-                         <item>
-                          <widget class="QPushButton" name="pushButton_delete_song1">
-                           <property name="text">
-                            <string>删除歌曲</string>
+                            <string>搜索</string>
                            </property>
                           </widget>
                          </item>
@@ -3000,16 +2993,9 @@ p, li { white-space: pre-wrap; }
                           </widget>
                          </item>
                          <item>
-                          <widget class="QPushButton" name="pushButton_update_song2">
+                          <widget class="QLabel" name="label_133">
                            <property name="text">
-                            <string>歌曲入库更新</string>
-                           </property>
-                          </widget>
-                         </item>
-                         <item>
-                          <widget class="QPushButton" name="pushButton_delete_song2">
-                           <property name="text">
-                            <string>删除歌曲</string>
+                            <string>搜索</string>
                            </property>
                           </widget>
                          </item>
@@ -3038,16 +3024,9 @@ p, li { white-space: pre-wrap; }
                           </widget>
                          </item>
                          <item>
-                          <widget class="QPushButton" name="pushButton_update_song3">
+                          <widget class="QLabel" name="label_134">
                            <property name="text">
-                            <string>歌曲入库更新</string>
-                           </property>
-                          </widget>
-                         </item>
-                         <item>
-                          <widget class="QPushButton" name="pushButton_delete_song3">
-                           <property name="text">
-                            <string>删除歌曲</string>
+                            <string>搜索</string>
                            </property>
                           </widget>
                          </item>
@@ -3076,16 +3055,9 @@ p, li { white-space: pre-wrap; }
                           </widget>
                          </item>
                          <item>
-                          <widget class="QPushButton" name="pushButton_update_song4">
+                          <widget class="QLabel" name="label_135">
                            <property name="text">
-                            <string>歌曲入库更新</string>
-                           </property>
-                          </widget>
-                         </item>
-                         <item>
-                          <widget class="QPushButton" name="pushButton_delete_song4">
-                           <property name="text">
-                            <string>删除歌曲</string>
+                            <string>搜索</string>
                            </property>
                           </widget>
                          </item>
@@ -3533,9 +3505,16 @@ p, li { white-space: pre-wrap; }
                     </widget>
                    </item>
                    <item>
+                    <widget class="QPushButton" name="pushButton_add_hymn">
+                     <property name="text">
+                      <string>新建</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
                     <widget class="QPushButton" name="pushButton_update_hymn">
                      <property name="text">
-                      <string>新建或更新</string>
+                      <string>更新</string>
                      </property>
                     </widget>
                    </item>
