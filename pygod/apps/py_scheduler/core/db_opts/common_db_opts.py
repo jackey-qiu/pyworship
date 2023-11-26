@@ -206,9 +206,9 @@ def extract_one_record(self, db_type, collection, constrain, cache = None, db = 
 
     return not NO_RECORD
 
-def delete_one_record(self, db_type, constrain, cbs = [], silent = False):
+def delete_one_record(self, db_type, constrain, cbs = [], silent = False, msg = 'Are you sure to delete this paper?'):
     if not silent:
-        reply = QMessageBox.question(self, 'Message', 'Are you sure to delete this paper?', QMessageBox.Yes | QMessageBox.No, QMessageBox.Yes)
+        reply = QMessageBox.question(self, 'Message', msg, QMessageBox.Yes | QMessageBox.No, QMessageBox.Yes)
         if reply == QMessageBox.Yes:
             try:
                 for collection in self.database.list_collection_names():

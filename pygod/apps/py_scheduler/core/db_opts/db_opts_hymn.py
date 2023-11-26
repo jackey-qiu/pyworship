@@ -76,7 +76,9 @@ def add_one_record_in_db(self):
         update_one_record(self, '诗歌', 'hymn_info', constrain= extra_info, cbs=cbs)
     elif self.database['hymn_info'].count_documents(extra_info)==0:    
         #delete the old one first
-        delete_one_record(self, self.database_type, {'group_id':self.key_of_current_selected_item}, cbs = [], silent=True)
+        if hasattr(self, 'key_of_current_selected_item') and (self.lineEdit_hymn_name_note.text() in self.key_of_current_selected_item.rsplit('_')[0]):
+            delete_one_record(self, self.database_type, {'group_id':self.key_of_current_selected_item}, cbs = [], silent=False, \
+                              msg = f"新建一条记录：{extra_info['group_id']}; 同时删除旧记录：{self.key_of_current_selected_item},确认？")
         #then add the new one
         add_one_record(self, self.database_type,'hymn_info',extra_info, cbs)
 
