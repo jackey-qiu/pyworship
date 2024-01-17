@@ -1,6 +1,6 @@
 from ..util import error_pop_up, get_date_from_nth_week
 from pathlib import Path
-import datetime
+import datetime, copy
 from PyQt5.QtWidgets import QInputDialog, QTextEdit, QLineEdit
 from pathlib import Path
 from ..db_opts.common_db_opts import *
@@ -26,11 +26,14 @@ def load_db_hymn(self, pandas_data = None):
 
 def rerender_tableview(self, pandas_data):
     load_db_hymn(self, pandas_data)
+    self.tableView_book_info.selectRow(0)
 
 def resume_pos_after_change_table(self, row = 0, tableview_widget_name = 'tableView_book_info'):
     tableView = getattr(self, tableview_widget_name)
     if tableView.selectionModel().hasSelection():
-        row = tableView.selectionModel().selectedIndexes()[1].row()
+        _row = tableView.selectionModel().selectedIndexes()[1].row()
+        if _row!=0:
+            row = _row
     if row>=len(tableView.model()._data):
         row = len(tableView.model()._data)
     tableView.selectRow(row)
@@ -67,7 +70,7 @@ def add_one_record_in_db(self):
     date_str = f'{today.year}-{today.month}-{today.day}'
     self.lineEdit_archived_date_note.setText(date_str)
 
-    current_row = self.tableView_book_info.selectionModel().selectedIndexes()[1].row()
+    current_row = copy.deepcopy(self.tableView_book_info.selectionModel().selectedIndexes()[1].row())
     if (self.lineEdit_hymn_name_note.text()==''):
         error_pop_up('歌名不能为空，请填充', 'Error')
     extra_info = {'group_id':f'{self.lineEdit_hymn_name_note.text()}_{self.lineEdit_album_note.text()}_{self.lineEdit_band_note.text()}'} 
@@ -100,6 +103,7 @@ def update_selected_record(self, index = 0):
         
     else:
         if len(self.pandas_model._data)>index:
+            # self.tableView_book_info.selectRow(index)
             name = self.pandas_model._data['name'].tolist()[index]
             album = self.pandas_model._data['album'].tolist()[index]
             band = self.pandas_model._data['band'].tolist()[index]

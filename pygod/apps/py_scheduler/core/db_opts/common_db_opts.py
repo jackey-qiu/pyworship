@@ -34,6 +34,8 @@ def init_pandas_model_from_db_base(self, tab_indx, single_collection, contrains,
     except:
         pass
     getattr(self, table_view_widget_name).clicked.connect(partial(onclicked_func,self))
+    #select the first row upon init
+    getattr(self, table_view_widget_name).selectRow(0)
     populate_search_field(self, )
 
 def populate_search_field(self, field_comboBox_widget_name='comboBox_search_item'):
