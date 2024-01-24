@@ -7,7 +7,8 @@ from functools import partial
 import datetime
 
 def create_piechart(self, accordingto = 'income'):
-    year = datetime.date.today().year
+    # year = datetime.date.today().year
+    year = self.lineEdit_year_finance.text()
     group_id = f'{year}_{self.comboBox_finance_month.currentText()}'
     series = QPieSeries()
     data = self.pandas_model._data[self.pandas_model._data['group_id']==group_id]
@@ -138,6 +139,7 @@ def mouseMoved_slot(self,evt):
         self.ax_right_curves[1].setData(x=[x], y=[y2])
         #update the combo item, 2023_ --> 1月
         self.comboBox_finance_month.setCurrentText(list(pd_df['group_id'])[which].rsplit('_')[1])
+        self.lineEdit_year_finance.setText(list(pd_df['group_id'])[which].rsplit('_')[0])
         create_piechart(self)
 
 def _updateViews(p2, p):

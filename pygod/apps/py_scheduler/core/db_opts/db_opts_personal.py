@@ -9,7 +9,7 @@ def init_pandas_model_from_db(self):
             'onclicked_func': update_selected_person_info}
     init_pandas_model_from_db_base(**args)
 
-def load_db_pe(self):
+def load_db_pe(self, **kwargs):
     init_pandas_model_from_db(self)
 
 #apis for personal database

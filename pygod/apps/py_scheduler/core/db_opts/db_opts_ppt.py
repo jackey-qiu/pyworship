@@ -15,7 +15,7 @@ def init_pandas_model_from_db(self):
             'onclicked_func': update_selected_PPT_info}
     init_pandas_model_from_db_base(**args)
 
-def load_db_ppt(self):
+def load_db_ppt(self, **kwargs):
     init_pandas_model_from_db(self)
     extract_all_song_titles(self)
 
@@ -28,7 +28,8 @@ def clear_all_text_field(self, tabWidget = 'tabWidget_note'):
     
 def extract_ppt_record(self):
     month = self.comboBox_ppt_month.currentText()
-    year = datetime.date.today().year
+    year = self.lineEdit_year_bulletin.text()
+    #year = datetime.date.today().year
     week_map = dict([('第一周','1st_week'),('第二周','2nd_week'),('第三周','3rd_week'),('第四周','4th_week'),('第五周','5th_week')])
     week = week_map[self.comboBox_ppt_week.currentText()]
     group_id = f'{year}_{month}+{week}'
@@ -40,7 +41,8 @@ def extract_ppt_record(self):
 def delete_ppt_record(self):
     cbs = [init_pandas_model_from_db,clear_all_text_field]
     month = self.comboBox_ppt_month.currentText()
-    year = datetime.date.today().year
+    year = self.lineEdit_year_bulletin.text()
+    # year = datetime.date.today().year
     week_map = dict([('第一周','1st_week'),('第二周','2nd_week'),('第三周','3rd_week'),('第四周','4th_week'),('第五周','5th_week')])
     week = week_map[self.comboBox_ppt_week.currentText()]
     group_id = f'{year}_{month}+{week}'
@@ -48,7 +50,8 @@ def delete_ppt_record(self):
 
 def add_one_ppt_record(self):
     month = self.comboBox_ppt_month.currentText()
-    year = datetime.date.today().year
+    year = self.lineEdit_year_bulletin.text()
+    # year = datetime.date.today().year
     week_map = dict([('第一周','1st_week'),('第二周','2nd_week'),('第三周','3rd_week'),('第四周','4th_week'),('第五周','5th_week')])
     week = week_map[self.comboBox_ppt_week.currentText()]
     group_id = f'{year}_{month}+{week}'
@@ -153,10 +156,11 @@ def set_data_for_x_workers_note(self, db_name = 'ccg-task'):
                                 ])
     
     month = self.comboBox_ppt_month.currentText()
-    year = datetime.date.today().year
+    year = self.lineEdit_year_ppt.text()
+    # year = datetime.date.today().year
     week_map = dict([('第一周','1st_week'),('第二周','2nd_week'),('第三周','3rd_week'),('第四周','4th_week'),('第五周','5th_week')])
     week = week_map[self.comboBox_ppt_week.currentText()]
-    year_, month_, nextweek = _next_week(week, month, year)
+    year_, month_, nextweek = _next_week(week, month, int(year))
     group_id_next_week = f'{year_}_{month_}'
     group_id = f'{year}_{month}'
     constrain = {'group_id':group_id}
@@ -182,14 +186,16 @@ def update_selected_PPT_info(self, index = None):
     y, m = y_m.rsplit('_')
     week_map = dict([('1st_week','第一周'),('2nd_week','第二周'),('3rd_week','第三周'),('4th_week','第四周'),('5th_week','第五周')])
     self.comboBox_ppt_month.setCurrentText(m)
+    self.lineEdit_year_ppt.setText(y)
     self.comboBox_ppt_week.setCurrentText(week_map[week])
     collection =  'ppt_info'
     constrain = {'group_id': group_id}
     extract_one_record(self, self.database_type, collection, constrain)
 
 def save_ppt_content_in_txt_format(self):
-    year, month = str(datetime.date.today().year), self.comboBox_ppt_month.currentText()
-    day = get_date_from_nth_week(self.comboBox_ppt_week.currentText(),int(month))
+    year = self.lineEdit_year_bulletin.text()
+    month = self.comboBox_ppt_month.currentText()
+    day = get_date_from_nth_week(self.comboBox_ppt_week.currentText(),int(month), year = int(year))
     txt_file_name_end = f'_{year}-{month}-{day}.txt'
     #content_folder = Path(__file__).parent.parent.parent / 'ppt_worker' / 'src' / 'contents'
     content_folder = Path.home() / 'pygodAppData' / 'content_files'

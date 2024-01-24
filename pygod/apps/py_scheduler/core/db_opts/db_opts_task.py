@@ -12,7 +12,8 @@ def init_pandas_model_from_db(self):
             'onclicked_func': update_selected_task_info}
     init_pandas_model_from_db_base(**args)
 
-def load_db_task(self):
+def load_db_task(self, **kwargs):
+    self.lineEdit_year_task.setText(str(datetime.date.today().year))
     init_pandas_model_from_db(self)
 
 def get_collection_name_lookup_map(self, db_type):
@@ -27,7 +28,8 @@ def get_collection_name_lookup_map(self, db_type):
 def get_current_task_constrain(self):
     collection_name_map = get_collection_name_lookup_map(self, db_type = '服事')
     month = self.comboBox_month.currentText()
-    year = datetime.date.today().year
+    #year = datetime.date.today().year
+    year = self.lineEdit_year_task.text()
     return ['group_id', f'{year}_{month}']
 
 def add_task_info(self):
@@ -35,7 +37,8 @@ def add_task_info(self):
     collection_name_map = get_collection_name_lookup_map(self, db_type = '服事')
     collection = collection_name_map[self.comboBox_group.currentText()]
     month = self.comboBox_month.currentText()
-    year = datetime.date.today().year
+    # year = datetime.date.today().year
+    year = self.lineEdit_year_task.text()
     group_id = f'{year}_{month}'
     if self.database[collection].count_documents({'group_id': group_id})==1:
         update_one_record(self, '服事', collection, constrain= {'group_id': group_id}, cbs=cbs)
@@ -48,7 +51,8 @@ def add_task_info(self):
 def update_selected_task_info(self, index = None):
     self.comboBox_group.setCurrentText(self.pandas_model._data['collections'].tolist()[index.row()])
     collection =  get_collection_name_lookup_map(self, self.database_type)[self.comboBox_group.currentText()]
-    year = datetime.date.today().year
+    # year = datetime.date.today().year
+    year = self.lineEdit_year_task.text()
     group_id = f'{year}_{self.comboBox_month.currentText()}'
     constrain = {'group_id': group_id}
     extract_one_record(self, self.database_type, collection, constrain)

@@ -17,11 +17,12 @@ def init_pandas_model_from_db(self, pandas_data = None):
             'pandas_data': pandas_data}
     init_pandas_model_from_db_base(**args)
 
-def load_db_hymn(self, pandas_data = None):
+def load_db_hymn(self, pandas_data = None, resize = True):
     # update_cache(self)
     init_pandas_model_from_db(self, pandas_data)
     update_selected_record(self)
-    self.tableView_book_info.resizeColumnsToContents()
+    if resize:
+        self.tableView_book_info.resizeColumnsToContents()
     #extract_all_song_titles(self)
 
 def rerender_tableview(self, pandas_data):

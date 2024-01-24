@@ -46,7 +46,7 @@
             </property>
             <property name="font">
              <font>
-              <family>KaiTi</family>
+              <family>FZKai-Z03S</family>
               <pointsize>12</pointsize>
              </font>
             </property>
@@ -68,7 +68,7 @@
             </property>
             <property name="font">
              <font>
-              <family>KaiTi</family>
+              <family>FZKai-Z03S</family>
               <pointsize>12</pointsize>
              </font>
             </property>
@@ -87,7 +87,7 @@
             </property>
             <property name="font">
              <font>
-              <family>KaiTi</family>
+              <family>FZKai-Z03S</family>
               <pointsize>12</pointsize>
              </font>
             </property>
@@ -104,7 +104,7 @@
            <widget class="QLabel" name="label">
             <property name="font">
              <font>
-              <family>KaiTi</family>
+              <family>FZKai-Z03S</family>
               <pointsize>12</pointsize>
              </font>
             </property>
@@ -130,7 +130,7 @@
            <widget class="QPushButton" name="pushButton_update_project_info">
             <property name="font">
              <font>
-              <family>KaiTi</family>
+              <family>FZKai-Z03S</family>
               <pointsize>12</pointsize>
              </font>
             </property>
@@ -155,7 +155,7 @@
            </property>
            <property name="font">
             <font>
-             <family>KaiTi</family>
+             <family>FZKai-Z03S</family>
              <pointsize>13</pointsize>
             </font>
            </property>
@@ -171,7 +171,7 @@
            <widget class="QLabel" name="label_3">
             <property name="font">
              <font>
-              <family>KaiTi</family>
+              <family>FZKai-Z03S</family>
               <pointsize>12</pointsize>
              </font>
             </property>
@@ -225,7 +225,7 @@
              <widget class="QTabWidget" name="tabWidget">
               <property name="font">
                <font>
-                <family>KaiTi</family>
+                <family>FZKai-Z03S</family>
                 <pointsize>12</pointsize>
                </font>
               </property>
@@ -243,7 +243,7 @@
                    <widget class="QLabel" name="label_26">
                     <property name="font">
                      <font>
-                      <family>KaiTi</family>
+                      <family>FZKai-Z03S</family>
                       <pointsize>12</pointsize>
                      </font>
                     </property>
@@ -256,7 +256,7 @@
                    <widget class="QLabel" name="label_8">
                     <property name="font">
                      <font>
-                      <family>KaiTi</family>
+                      <family>FZKai-Z03S</family>
                       <pointsize>12</pointsize>
                      </font>
                     </property>
@@ -290,7 +290,7 @@
                    <widget class="QLabel" name="label_29">
                     <property name="font">
                      <font>
-                      <family>KaiTi</family>
+                      <family>FZKai-Z03S</family>
                       <pointsize>12</pointsize>
                      </font>
                     </property>
@@ -313,7 +313,7 @@
                    <widget class="QLabel" name="label_19">
                     <property name="font">
                      <font>
-                      <family>KaiTi</family>
+                      <family>FZKai-Z03S</family>
                       <pointsize>12</pointsize>
                      </font>
                     </property>
@@ -326,7 +326,7 @@
                    <widget class="QLabel" name="label_32">
                     <property name="font">
                      <font>
-                      <family>KaiTi</family>
+                      <family>FZKai-Z03S</family>
                       <pointsize>12</pointsize>
                      </font>
                     </property>
@@ -339,7 +339,7 @@
                    <widget class="QLabel" name="label_28">
                     <property name="font">
                      <font>
-                      <family>KaiTi</family>
+                      <family>FZKai-Z03S</family>
                       <pointsize>12</pointsize>
                      </font>
                     </property>
@@ -352,7 +352,7 @@
                    <widget class="QLabel" name="label_27">
                     <property name="font">
                      <font>
-                      <family>KaiTi</family>
+                      <family>FZKai-Z03S</family>
                       <pointsize>12</pointsize>
                      </font>
                     </property>
@@ -372,7 +372,7 @@
                    <widget class="QLabel" name="label_18">
                     <property name="font">
                      <font>
-                      <family>KaiTi</family>
+                      <family>FZKai-Z03S</family>
                       <pointsize>12</pointsize>
                      </font>
                     </property>
@@ -405,7 +405,7 @@
                     </property>
                     <property name="font">
                      <font>
-                      <family>KaiTi</family>
+                      <family>FZKai-Z03S</family>
                       <pointsize>12</pointsize>
                      </font>
                     </property>
@@ -418,7 +418,7 @@
                    <widget class="QLabel" name="label_6">
                     <property name="font">
                      <font>
-                      <family>KaiTi</family>
+                      <family>FZKai-Z03S</family>
                       <pointsize>12</pointsize>
                      </font>
                     </property>
@@ -438,7 +438,7 @@
                    <widget class="QLabel" name="label_7">
                     <property name="font">
                      <font>
-                      <family>KaiTi</family>
+                      <family>FZKai-Z03S</family>
                       <pointsize>12</pointsize>
                      </font>
                     </property>
@@ -471,7 +471,7 @@
              <widget class="QTabWidget" name="tabWidget_2">
               <property name="font">
                <font>
-                <family>KaiTi</family>
+                <family>FZKai-Z03S</family>
                 <pointsize>12</pointsize>
                </font>
               </property>
@@ -500,7 +500,7 @@
                    <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'KaiTi'; font-size:12pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'FZKai-Z03S'; font-size:12pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                   </property>
                   <property name="acceptRichText">
@@ -517,7 +517,7 @@ p, li { white-space: pre-wrap; }
           <widget class="QFrame" name="frame_3">
            <property name="font">
             <font>
-             <family>KaiTi</family>
+             <family>FZKai-Z03S</family>
              <pointsize>12</pointsize>
             </font>
            </property>
@@ -534,7 +534,7 @@ p, li { white-space: pre-wrap; }
                <widget class="QLabel" name="label_31">
                 <property name="font">
                  <font>
-                  <family>KaiTi</family>
+                  <family>FZKai-Z03S</family>
                   <pointsize>12</pointsize>
                  </font>
                 </property>
@@ -553,7 +553,7 @@ p, li { white-space: pre-wrap; }
                 </property>
                 <property name="font">
                  <font>
-                  <family>KaiTi</family>
+                  <family>FZKai-Z03S</family>
                   <pointsize>12</pointsize>
                  </font>
                 </property>
@@ -563,7 +563,7 @@ p, li { white-space: pre-wrap; }
                <widget class="QPushButton" name="pushButton_new">
                 <property name="font">
                  <font>
-                  <family>KaiTi</family>
+                  <family>FZKai-Z03S</family>
                   <pointsize>12</pointsize>
                  </font>
                 </property>
@@ -576,7 +576,7 @@ p, li { white-space: pre-wrap; }
                <widget class="QPushButton" name="pushButton_update">
                 <property name="font">
                  <font>
-                  <family>KaiTi</family>
+                  <family>FZKai-Z03S</family>
                   <pointsize>12</pointsize>
                  </font>
                 </property>
@@ -589,7 +589,7 @@ p, li { white-space: pre-wrap; }
                <widget class="QPushButton" name="pushButton_remove">
                 <property name="font">
                  <font>
-                  <family>KaiTi</family>
+                  <family>FZKai-Z03S</family>
                   <pointsize>12</pointsize>
                  </font>
                 </property>
@@ -602,7 +602,7 @@ p, li { white-space: pre-wrap; }
                <widget class="QPushButton" name="pushButton_lend">
                 <property name="font">
                  <font>
-                  <family>KaiTi</family>
+                  <family>FZKai-Z03S</family>
                   <pointsize>12</pointsize>
                  </font>
                 </property>
@@ -615,7 +615,7 @@ p, li { white-space: pre-wrap; }
                <widget class="QPushButton" name="pushButton_return">
                 <property name="font">
                  <font>
-                  <family>KaiTi</family>
+                  <family>FZKai-Z03S</family>
                   <pointsize>12</pointsize>
                  </font>
                 </property>
@@ -628,7 +628,7 @@ p, li { white-space: pre-wrap; }
                <widget class="QPushButton" name="pushButton_reserve">
                 <property name="font">
                  <font>
-                  <family>KaiTi</family>
+                  <family>FZKai-Z03S</family>
                   <pointsize>12</pointsize>
                  </font>
                 </property>
@@ -641,7 +641,7 @@ p, li { white-space: pre-wrap; }
                <widget class="QLabel" name="label_9">
                 <property name="font">
                  <font>
-                  <family>KaiTi</family>
+                  <family>FZKai-Z03S</family>
                   <pointsize>12</pointsize>
                  </font>
                 </property>
@@ -660,7 +660,7 @@ p, li { white-space: pre-wrap; }
                 </property>
                 <property name="font">
                  <font>
-                  <family>KaiTi</family>
+                  <family>FZKai-Z03S</family>
                   <pointsize>12</pointsize>
                  </font>
                 </property>
@@ -701,7 +701,7 @@ p, li { white-space: pre-wrap; }
                 </property>
                 <property name="font">
                  <font>
-                  <family>KaiTi</family>
+                  <family>FZKai-Z03S</family>
                   <pointsize>12</pointsize>
                  </font>
                 </property>
@@ -711,7 +711,7 @@ p, li { white-space: pre-wrap; }
                <widget class="QPushButton" name="pushButton_search">
                 <property name="font">
                  <font>
-                  <family>KaiTi</family>
+                  <family>FZKai-Z03S</family>
                   <pointsize>12</pointsize>
                  </font>
                 </property>
@@ -726,7 +726,7 @@ p, li { white-space: pre-wrap; }
              <widget class="QTableView" name="tableView_book_info">
               <property name="font">
                <font>
-                <family>KaiTi</family>
+                <family>FZKai-Z03S</family>
                 <pointsize>12</pointsize>
                </font>
               </property>
@@ -741,7 +741,7 @@ p, li { white-space: pre-wrap; }
                <widget class="QPushButton" name="pushButton_select_all">
                 <property name="font">
                  <font>
-                  <family>KaiTi</family>
+                  <family>FZKai-Z03S</family>
                   <pointsize>12</pointsize>
                  </font>
                 </property>
@@ -754,7 +754,7 @@ p, li { white-space: pre-wrap; }
                <widget class="QPushButton" name="pushButton_2">
                 <property name="font">
                  <font>
-                  <family>KaiTi</family>
+                  <family>FZKai-Z03S</family>
                   <pointsize>12</pointsize>
                  </font>
                 </property>
@@ -767,7 +767,7 @@ p, li { white-space: pre-wrap; }
                <widget class="QPushButton" name="pushButton_select_none">
                 <property name="font">
                  <font>
-                  <family>KaiTi</family>
+                  <family>FZKai-Z03S</family>
                   <pointsize>12</pointsize>
                  </font>
                 </property>
@@ -780,7 +780,7 @@ p, li { white-space: pre-wrap; }
                <widget class="QPushButton" name="pushButton_parse_row">
                 <property name="font">
                  <font>
-                  <family>KaiTi</family>
+                  <family>FZKai-Z03S</family>
                   <pointsize>12</pointsize>
                  </font>
                 </property>
@@ -793,7 +793,7 @@ p, li { white-space: pre-wrap; }
                <widget class="QPushButton" name="pushButton_3">
                 <property name="font">
                  <font>
-                  <family>KaiTi</family>
+                  <family>FZKai-Z03S</family>
                   <pointsize>12</pointsize>
                  </font>
                 </property>

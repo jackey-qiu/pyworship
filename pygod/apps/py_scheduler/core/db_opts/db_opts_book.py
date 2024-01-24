@@ -11,7 +11,7 @@ def init_pandas_model_from_db(self):
             'onclicked_func': update_selected_book_info}
     init_pandas_model_from_db_base(**args)
 
-def load_db_book(self):
+def load_db_book(self, **kwargs):
     init_pandas_model_from_db(self)
     update_paper_list_in_combobox(self)
     extract_paper_info(self)

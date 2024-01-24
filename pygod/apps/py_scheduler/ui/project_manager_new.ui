@@ -186,7 +186,7 @@
               <widget class="QTabWidget" name="tabWidget_2">
                <property name="font">
                 <font>
-                 <family>KaiTi</family>
+                 <family>FZKai-Z03S</family>
                  <pointsize>10</pointsize>
                 </font>
                </property>
@@ -209,7 +209,7 @@
                       <widget class="QLabel" name="label_8">
                        <property name="font">
                         <font>
-                         <family>KaiTi</family>
+                         <family>FZKai-Z03S</family>
                          <pointsize>10</pointsize>
                         </font>
                        </property>
@@ -231,7 +231,7 @@
                       <widget class="QLabel" name="label_26">
                        <property name="font">
                         <font>
-                         <family>KaiTi</family>
+                         <family>FZKai-Z03S</family>
                          <pointsize>10</pointsize>
                         </font>
                        </property>
@@ -244,7 +244,7 @@
                       <widget class="QLabel" name="label_29">
                        <property name="font">
                         <font>
-                         <family>KaiTi</family>
+                         <family>FZKai-Z03S</family>
                          <pointsize>10</pointsize>
                         </font>
                        </property>
@@ -260,7 +260,7 @@
                       <widget class="QLabel" name="label_18">
                        <property name="font">
                         <font>
-                         <family>KaiTi</family>
+                         <family>FZKai-Z03S</family>
                          <pointsize>10</pointsize>
                         </font>
                        </property>
@@ -273,7 +273,7 @@
                       <widget class="QLabel" name="label_27">
                        <property name="font">
                         <font>
-                         <family>KaiTi</family>
+                         <family>FZKai-Z03S</family>
                          <pointsize>10</pointsize>
                         </font>
                        </property>
@@ -286,7 +286,7 @@
                       <widget class="QLabel" name="label_28">
                        <property name="font">
                         <font>
-                         <family>KaiTi</family>
+                         <family>FZKai-Z03S</family>
                          <pointsize>10</pointsize>
                         </font>
                        </property>
@@ -305,7 +305,7 @@
                       <widget class="QLabel" name="label_32">
                        <property name="font">
                         <font>
-                         <family>KaiTi</family>
+                         <family>FZKai-Z03S</family>
                          <pointsize>10</pointsize>
                         </font>
                        </property>
@@ -321,7 +321,7 @@
                       <widget class="QLabel" name="label_19">
                        <property name="font">
                         <font>
-                         <family>KaiTi</family>
+                         <family>FZKai-Z03S</family>
                          <pointsize>10</pointsize>
                         </font>
                        </property>
@@ -337,7 +337,7 @@
                       <widget class="QLabel" name="label_20">
                        <property name="font">
                         <font>
-                         <family>KaiTi</family>
+                         <family>FZKai-Z03S</family>
                          <pointsize>10</pointsize>
                         </font>
                        </property>
@@ -353,7 +353,7 @@
                       <widget class="QLabel" name="label_21">
                        <property name="font">
                         <font>
-                         <family>KaiTi</family>
+                         <family>FZKai-Z03S</family>
                          <pointsize>10</pointsize>
                         </font>
                        </property>
@@ -379,7 +379,7 @@
                       <widget class="QLabel" name="label_11">
                        <property name="font">
                         <font>
-                         <family>KaiTi</family>
+                         <family>FZKai-Z03S</family>
                          <pointsize>10</pointsize>
                         </font>
                        </property>
@@ -396,7 +396,7 @@
                    <widget class="QTabWidget" name="tabWidget_3">
                     <property name="font">
                      <font>
-                      <family>KaiTi</family>
+                      <family>FZKai-Z03S</family>
                       <pointsize>10</pointsize>
                      </font>
                     </property>

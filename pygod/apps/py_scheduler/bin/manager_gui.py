@@ -84,6 +84,7 @@ class MyMainWindow(QMainWindow):
         self.comboBox_books.activated.connect(lambda:db_book.extract_paper_info(self))
         # task
         self.comboBox_month.activated.connect(lambda:db_task.init_pandas_model_from_db(self))
+        self.lineEdit_year_task.returnPressed.connect(lambda:db_task.init_pandas_model_from_db(self))
         self.comboBox_group.activated.connect(lambda:db_task.update_worker_names_info(self))
         self.pushButton_add_task_record.clicked.connect(lambda:db_task.add_task_info(self))
         self.lineEdit_1st_week_note.mousePressEvent = lambda x:self.set_activated_input_widget(self.lineEdit_1st_week_note)
@@ -177,6 +178,8 @@ class MyMainWindow(QMainWindow):
             if self.database_type == '服事':
                 return
             if len(self.pandas_model._data)!=0:
+                #reload db
+                db_prj.load_project(self, resize = False)
                 collection_name = list(self.db_config_info['db_types'][self.database_type]['table_viewer'].keys())[0]
                 name_map = list(self.db_config_info['db_types'][self.database_type]['table_viewer'].values())[0]
                 name_map = dict([(value, key) for key, value in name_map.items()])

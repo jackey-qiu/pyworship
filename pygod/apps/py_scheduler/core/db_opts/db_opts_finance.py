@@ -10,7 +10,7 @@ def init_pandas_model_from_db(self):
             'onclicked_func': update_selected_finance_info}
     init_pandas_model_from_db_base(**args)
 
-def load_db_fin(self):
+def load_db_fin(self, **kwargs):
     init_pandas_model_from_db(self)
 
 # apis for finance info
@@ -19,7 +19,8 @@ def add_finance_info(self):
     cbs = [init_pandas_model_from_db]
     collection = 'finance_info'
     month = self.comboBox_finance_month.currentText()
-    year = datetime.date.today().year
+    #year = datetime.date.today().year
+    year = self.lineEdit_year_finance.text()
     group_id = f'{year}_{month}'
     if self.database[collection].count_documents({'group_id': group_id})==1:
         update_one_record(self, '财务', collection, constrain= {'group_id': group_id}, cbs=cbs)
@@ -29,6 +30,7 @@ def add_finance_info(self):
 def update_selected_finance_info(self, index = None):
     group_id = self.pandas_model._data['group_id'].tolist()[index.row()]
     self.comboBox_finance_month.setCurrentText(group_id.rsplit('_')[-1])
+    self.lineEdit_year_finance.setText(group_id.rsplit('_')[0])
     collection =  'finance_info'
     constrain = {'group_id': group_id}
     extract_one_record(self, self.database_type, collection, constrain)
@@ -36,7 +38,8 @@ def update_selected_finance_info(self, index = None):
 
 def delete_finance_info(self):
     month = self.comboBox_finance_month.currentText()
-    year = datetime.date.today().year
+    year = self.lineEdit_year_finance.text()
+    # year = datetime.date.today().year
     group_id = f'{year}_{month}'
     delete_one_record(self, self.database_type, {'group_id':group_id}, cbs = [init_pandas_model_from_db])
 

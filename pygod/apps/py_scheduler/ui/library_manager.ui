@@ -46,7 +46,7 @@
             </property>
             <property name="font">
              <font>
-              <family>KaiTi</family>
+              <family>FZKai-Z03S</family>
               <pointsize>12</pointsize>
              </font>
             </property>
@@ -68,7 +68,7 @@
             </property>
             <property name="font">
              <font>
-              <family>KaiTi</family>
+              <family>FZKai-Z03S</family>
               <pointsize>12</pointsize>
              </font>
             </property>
@@ -87,7 +87,7 @@
             </property>
             <property name="font">
              <font>
-              <family>KaiTi</family>
+              <family>FZKai-Z03S</family>
               <pointsize>12</pointsize>
              </font>
             </property>
@@ -104,7 +104,7 @@
            <widget class="QLabel" name="label">
             <property name="font">
              <font>
-              <family>KaiTi</family>
+              <family>FZKai-Z03S</family>
               <pointsize>12</pointsize>
              </font>
             </property>
@@ -130,7 +130,7 @@
            <widget class="QPushButton" name="pushButton_update_project_info">
             <property name="font">
              <font>
-              <family>KaiTi</family>
+              <family>FZKai-Z03S</family>
               <pointsize>12</pointsize>
              </font>
             </property>
@@ -155,7 +155,7 @@
            </property>
            <property name="font">
             <font>
-             <family>KaiTi</family>
+             <family>FZKai-Z03S</family>
              <pointsize>13</pointsize>
             </font>
            </property>
@@ -184,7 +184,7 @@ ccg-task：教会服事安排</string>
            <widget class="QLabel" name="label_3">
             <property name="font">
              <font>
-              <family>KaiTi</family>
+              <family>FZKai-Z03S</family>
               <pointsize>12</pointsize>
              </font>
             </property>
@@ -245,12 +245,12 @@ ccg-task：教会服事安排</string>
               <widget class="QTabWidget" name="tabWidget_2">
                <property name="font">
                 <font>
-                 <family>KaiTi</family>
+                 <family>FZKai-Z03S</family>
                  <pointsize>12</pointsize>
                 </font>
                </property>
                <property name="currentIndex">
-                <number>6</number>
+                <number>5</number>
                </property>
                <widget class="QWidget" name="tab_5">
                 <attribute name="title">
@@ -268,7 +268,7 @@ ccg-task：教会服事安排</string>
                       <widget class="QLabel" name="label_26">
                        <property name="font">
                         <font>
-                         <family>KaiTi</family>
+                         <family>FZKai-Z03S</family>
                          <pointsize>12</pointsize>
                         </font>
                        </property>
@@ -281,7 +281,7 @@ ccg-task：教会服事安排</string>
                       <widget class="QLabel" name="label_8">
                        <property name="font">
                         <font>
-                         <family>KaiTi</family>
+                         <family>FZKai-Z03S</family>
                          <pointsize>12</pointsize>
                         </font>
                        </property>
@@ -315,7 +315,7 @@ ccg-task：教会服事安排</string>
                       <widget class="QLabel" name="label_29">
                        <property name="font">
                         <font>
-                         <family>KaiTi</family>
+                         <family>FZKai-Z03S</family>
                          <pointsize>12</pointsize>
                         </font>
                        </property>
@@ -338,7 +338,7 @@ ccg-task：教会服事安排</string>
                       <widget class="QLabel" name="label_19">
                        <property name="font">
                         <font>
-                         <family>KaiTi</family>
+                         <family>FZKai-Z03S</family>
                          <pointsize>12</pointsize>
                         </font>
                        </property>
@@ -351,7 +351,7 @@ ccg-task：教会服事安排</string>
                       <widget class="QLabel" name="label_32">
                        <property name="font">
                         <font>
-                         <family>KaiTi</family>
+                         <family>FZKai-Z03S</family>
                          <pointsize>12</pointsize>
                         </font>
                        </property>
@@ -364,7 +364,7 @@ ccg-task：教会服事安排</string>
                       <widget class="QLabel" name="label_28">
                        <property name="font">
                         <font>
-                         <family>KaiTi</family>
+                         <family>FZKai-Z03S</family>
                          <pointsize>12</pointsize>
                         </font>
                        </property>
@@ -377,7 +377,7 @@ ccg-task：教会服事安排</string>
                       <widget class="QLabel" name="label_27">
                        <property name="font">
                         <font>
-                         <family>KaiTi</family>
+                         <family>FZKai-Z03S</family>
                          <pointsize>12</pointsize>
                         </font>
                        </property>
@@ -397,7 +397,7 @@ ccg-task：教会服事安排</string>
                       <widget class="QLabel" name="label_18">
                        <property name="font">
                         <font>
-                         <family>KaiTi</family>
+                         <family>FZKai-Z03S</family>
                          <pointsize>12</pointsize>
                         </font>
                        </property>
@@ -473,7 +473,7 @@ ccg-task：教会服事安排</string>
                    <widget class="QTabWidget" name="tabWidget_3">
                     <property name="font">
                      <font>
-                      <family>KaiTi</family>
+                      <family>FZKai-Z03S</family>
                       <pointsize>12</pointsize>
                      </font>
                     </property>
@@ -502,7 +502,7 @@ ccg-task：教会服事安排</string>
                          <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'KaiTi'; font-size:12pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'FZKai-Z03S'; font-size:12pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                         </property>
                         <property name="acceptRichText">
@@ -530,7 +530,7 @@ p, li { white-space: pre-wrap; }
                            </property>
                            <property name="font">
                             <font>
-                             <family>KaiTi</family>
+                             <family>FZKai-Z03S</family>
                              <pointsize>12</pointsize>
                             </font>
                            </property>
@@ -568,7 +568,7 @@ p, li { white-space: pre-wrap; }
                           <widget class="QLabel" name="label_10">
                            <property name="font">
                             <font>
-                             <family>KaiTi</family>
+                             <family>FZKai-Z03S</family>
                              <pointsize>12</pointsize>
                             </font>
                            </property>
@@ -581,7 +581,7 @@ p, li { white-space: pre-wrap; }
                           <widget class="QLabel" name="label_9">
                            <property name="font">
                             <font>
-                             <family>KaiTi</family>
+                             <family>FZKai-Z03S</family>
                              <pointsize>12</pointsize>
                             </font>
                            </property>
@@ -607,7 +607,7 @@ p, li { white-space: pre-wrap; }
                           <widget class="QPushButton" name="pushButton_search">
                            <property name="font">
                             <font>
-                             <family>KaiTi</family>
+                             <family>FZKai-Z03S</family>
                              <pointsize>12</pointsize>
                             </font>
                            </property>
@@ -1174,6 +1174,23 @@ p, li { white-space: pre-wrap; }
                     </widget>
                    </item>
                    <item>
+                    <widget class="QLabel" name="label_136">
+                     <property name="text">
+                      <string>安排年份</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QLineEdit" name="lineEdit_year_task">
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
                     <widget class="QLabel" name="label_30">
                      <property name="text">
                       <string>安排月份</string>
@@ -1431,7 +1448,7 @@ p, li { white-space: pre-wrap; }
                       <x>0</x>
                       <y>0</y>
                       <width>1018</width>
-                      <height>617</height>
+                      <height>613</height>
                      </rect>
                     </property>
                     <attribute name="label">
@@ -1440,6 +1457,16 @@ p, li { white-space: pre-wrap; }
                     <layout class="QVBoxLayout" name="verticalLayout_5">
                      <item>
                       <layout class="QHBoxLayout" name="horizontalLayout_8">
+                       <item>
+                        <widget class="QLabel" name="label_137">
+                         <property name="text">
+                          <string>年份</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item>
+                        <widget class="QLineEdit" name="lineEdit_year_finance"/>
+                       </item>
                        <item>
                         <widget class="QLabel" name="label_39">
                          <property name="sizePolicy">
@@ -2319,7 +2346,7 @@ p, li { white-space: pre-wrap; }
                       <x>0</x>
                       <y>0</y>
                       <width>98</width>
-                      <height>53</height>
+                      <height>55</height>
                      </rect>
                     </property>
                     <attribute name="label">
@@ -2393,6 +2420,23 @@ p, li { white-space: pre-wrap; }
                  </item>
                  <item>
                   <layout class="QHBoxLayout" name="horizontalLayout_17">
+                   <item>
+                    <widget class="QLabel" name="label_138">
+                     <property name="text">
+                      <string>年份</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QLineEdit" name="lineEdit_year_ppt">
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
+                    </widget>
+                   </item>
                    <item>
                     <widget class="QLabel" name="label_97">
                      <property name="text">
@@ -2898,7 +2942,7 @@ p, li { white-space: pre-wrap; }
                           <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'KaiTi'; font-size:12pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'FZKai-Z03S'; font-size:12pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;请插入歌曲信息&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                          </property>
                         </widget>
@@ -2909,7 +2953,7 @@ p, li { white-space: pre-wrap; }
                           <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'KaiTi'; font-size:12pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'FZKai-Z03S'; font-size:12pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;请插入歌曲信息&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                          </property>
                         </widget>
@@ -2920,7 +2964,7 @@ p, li { white-space: pre-wrap; }
                           <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'KaiTi'; font-size:12pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'FZKai-Z03S'; font-size:12pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;请插入歌曲信息&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                          </property>
                         </widget>
@@ -2931,7 +2975,7 @@ p, li { white-space: pre-wrap; }
                           <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'KaiTi'; font-size:12pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'FZKai-Z03S'; font-size:12pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;请插入歌曲信息&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                          </property>
                         </widget>
@@ -3101,6 +3145,16 @@ p, li { white-space: pre-wrap; }
                 <layout class="QVBoxLayout" name="verticalLayout_26">
                  <item>
                   <layout class="QHBoxLayout" name="horizontalLayout_26">
+                   <item>
+                    <widget class="QLabel" name="label_139">
+                     <property name="text">
+                      <string>年份</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QLineEdit" name="lineEdit_year_bulletin"/>
+                   </item>
                    <item>
                     <widget class="QLabel" name="label_104">
                      <property name="text">
@@ -3990,7 +4044,7 @@ p, li { white-space: pre-wrap; }
                         </property>
                         <property name="font">
                          <font>
-                          <family>KaiTi</family>
+                          <family>FZKai-Z03S</family>
                           <pointsize>12</pointsize>
                          </font>
                         </property>
@@ -4003,7 +4057,7 @@ p, li { white-space: pre-wrap; }
                        <widget class="QPushButton" name="pushButton_show_all">
                         <property name="font">
                          <font>
-                          <family>KaiTi</family>
+                          <family>FZKai-Z03S</family>
                           <pointsize>12</pointsize>
                          </font>
                         </property>
@@ -4016,7 +4070,7 @@ p, li { white-space: pre-wrap; }
                        <widget class="QPushButton" name="pushButton_2">
                         <property name="font">
                          <font>
-                          <family>KaiTi</family>
+                          <family>FZKai-Z03S</family>
                           <pointsize>12</pointsize>
                          </font>
                         </property>
@@ -4029,7 +4083,7 @@ p, li { white-space: pre-wrap; }
                        <widget class="QPushButton" name="pushButton_select_none">
                         <property name="font">
                          <font>
-                          <family>KaiTi</family>
+                          <family>FZKai-Z03S</family>
                           <pointsize>12</pointsize>
                          </font>
                         </property>
@@ -4042,7 +4096,7 @@ p, li { white-space: pre-wrap; }
                        <widget class="QPushButton" name="pushButton_parse_row">
                         <property name="font">
                          <font>
-                          <family>KaiTi</family>
+                          <family>FZKai-Z03S</family>
                           <pointsize>12</pointsize>
                          </font>
                         </property>
@@ -4055,7 +4109,7 @@ p, li { white-space: pre-wrap; }
                        <widget class="QPushButton" name="pushButton_3">
                         <property name="font">
                          <font>
-                          <family>KaiTi</family>
+                          <family>FZKai-Z03S</family>
                           <pointsize>12</pointsize>
                          </font>
                         </property>
@@ -4068,7 +4122,7 @@ p, li { white-space: pre-wrap; }
                        <widget class="QLabel" name="label_129">
                         <property name="font">
                          <font>
-                          <family>KaiTi</family>
+                          <family>FZKai-Z03S</family>
                           <pointsize>12</pointsize>
                          </font>
                         </property>
@@ -4087,7 +4141,7 @@ p, li { white-space: pre-wrap; }
                         </property>
                         <property name="font">
                          <font>
-                          <family>KaiTi</family>
+                          <family>FZKai-Z03S</family>
                           <pointsize>12</pointsize>
                          </font>
                         </property>
@@ -4097,7 +4151,7 @@ p, li { white-space: pre-wrap; }
                        <widget class="QLabel" name="label_131">
                         <property name="font">
                          <font>
-                          <family>KaiTi</family>
+                          <family>FZKai-Z03S</family>
                           <pointsize>12</pointsize>
                          </font>
                         </property>
@@ -4110,7 +4164,7 @@ p, li { white-space: pre-wrap; }
                        <widget class="QLineEdit" name="lineEdit_search_item_value">
                         <property name="font">
                          <font>
-                          <family>KaiTi</family>
+                          <family>FZKai-Z03S</family>
                           <pointsize>12</pointsize>
                          </font>
                         </property>
@@ -4120,7 +4174,7 @@ p, li { white-space: pre-wrap; }
                        <widget class="QPushButton" name="pushButton_search_target">
                         <property name="font">
                          <font>
-                          <family>KaiTi</family>
+                          <family>FZKai-Z03S</family>
                           <pointsize>12</pointsize>
                          </font>
                         </property>
@@ -4148,7 +4202,7 @@ p, li { white-space: pre-wrap; }
                      <widget class="QTableView" name="tableView_book_info">
                       <property name="font">
                        <font>
-                        <family>KaiTi</family>
+                        <family>FZKai-Z03S</family>
                         <pointsize>12</pointsize>
                        </font>
                       </property>

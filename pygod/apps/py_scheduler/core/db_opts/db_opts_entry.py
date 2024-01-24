@@ -13,7 +13,7 @@ def extract_project_info(self):
     all = self.database.project_info.find()
     self.plainTextEdit_project_info.setPlainText('\n'.join([each['project_info'] for each in all]))
 
-def load_project(self):
+def load_project(self, resize = True):
     self.database = self.mongo_client[self.comboBox_project_list.currentText()]
     extract_project_info(self)
     if 'db_type' in self.database.project_info.find_one():
@@ -29,7 +29,7 @@ def load_project(self):
                     '诗歌': load_db_hymn,
                     }
     assert self.database_type in maps_load_db, self.database_type+' is not in the maps!'
-    maps_load_db[self.database_type](self)
+    maps_load_db[self.database_type](self, resize = resize)
 
 def update_project_info(self):
     try:

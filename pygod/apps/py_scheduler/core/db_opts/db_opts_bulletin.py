@@ -13,13 +13,14 @@ def init_pandas_model_from_db(self):
             'onclicked_func': update_selected_bulletin_info}
     init_pandas_model_from_db_base(**args)
 
-def load_db_bulletin(self):
+def load_db_bulletin(self, **kwargs):
     init_pandas_model_from_db(self)
 
 #api functions for bulletin creator
 def extract_bulletin_record(self):
     month = self.comboBox_bulletin_month.currentText()
-    year = datetime.date.today().year
+    year = self.lineEdit_year_bulletin.text()
+    #year = datetime.date.today().year
     group_id = f'{year}_{month}'
     constrain = {'group_id':group_id}    
     extract_one_record(self, self.database_type, 'bulletin_info', constrain)
@@ -29,13 +30,15 @@ def extract_bulletin_record(self):
 
 def delete_bulletin_record(self):
     month = self.comboBox_bulletin_month.currentText()
-    year = datetime.date.today().year
+    year = self.lineEdit_year_bulletin.text()
+    # year = datetime.date.today().year
     group_id = f'{year}_{month}'
     delete_one_record(self, self.database_type, {'group_id':group_id}, cbs = [partial(clear_all_text_field, tabWidget='tabWidget_bulletin'), init_pandas_model_from_db])
 
 def add_one_bulletin_record(self):
     month = self.comboBox_bulletin_month.currentText()
-    year = datetime.date.today().year
+    year = self.lineEdit_year_bulletin.text()
+    # year = datetime.date.today().year
     group_id = f'{year}_{month}'
     extra_info = {'group_id':group_id}
     cbs = [init_pandas_model_from_db]
@@ -72,7 +75,8 @@ def get_task_content(self, key):
     return '\n'.join([dates]+contents_formated)
 
 def get_finance_content(self, key):
-    year, month = str(datetime.date.today().year), self.comboBox_bulletin_month.currentText()
+    month = self.comboBox_bulletin_month.currentText()
+    year = self.lineEdit_year_bulletin.text()
     collection = 'finance_info'
     docs =  list(get_document_info_from_yaml(self, '财务', collection).keys())
     db_temp = self.mongo_client[self.lineEdit_db_finance.text()]
@@ -109,8 +113,9 @@ def get_last_month_record(self):
 
 def update_selected_bulletin_info(self, index = None):
     group_id = self.pandas_model._data['group_id'].tolist()[index.row()]
-    _, m = group_id.rsplit('_')
+    y, m = group_id.rsplit('_')
     self.comboBox_bulletin_month.setCurrentText(m)
+    self.lineEdit_year_bulletin.setText(y)
     collection =  'bulletin_info'
     constrain = {'group_id': group_id}
     extract_one_record(self, self.database_type, collection, constrain)
@@ -151,7 +156,8 @@ def get_preach_content(self, key):
     return '\n'.join(contents_formated)
 
 def save_bulletin_content_in_txt_format_and_make_bulletin(self):
-    year, month = str(datetime.date.today().year), self.comboBox_bulletin_month.currentText()
+    year = self.lineEdit_year_bulletin.text()
+    month = self.comboBox_bulletin_month.currentText()
     txt_file_name = f'bulletin_{year}-{month}.txt'
     doc_file_name = f'bulletin_{year}-{month}.docx'
     #content_folder = Path(__file__).parent.parent.parent / 'ppt_worker' / 'src' / 'contents'
