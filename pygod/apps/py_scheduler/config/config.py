@@ -1,0 +1,1 @@
+hidden_pushButtons_normal_user = ['new_project','update_project_info','new','update','remove','lend','return']
