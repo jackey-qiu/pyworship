@@ -88,6 +88,10 @@ def add_one_record_in_db(self):
 
 def update_recored_upon_change_in_pd_model(self):
     extra_info = {'group_id':f'{self.lineEdit_hymn_name_note.text()}_{self.lineEdit_album_note.text()}_{self.lineEdit_band_note.text()}'} 
+    # if extra_info['group_id'] != self.key_of_current_selected_item:
+        # error_pop_up('该记录中的key已经更新，所以必须先入库才能校验!先点击更新。')
+        # return
+    # else:
     update_one_record(self, '诗歌', 'hymn_info', constrain= extra_info, cbs=[], silent=True)
     # self.tableView_book_info.resizeColumnsToContents() 
 
