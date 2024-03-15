@@ -28,7 +28,7 @@ def clear_all_text_field(self, tabWidget = 'tabWidget_note'):
     
 def extract_ppt_record(self):
     month = self.comboBox_ppt_month.currentText()
-    year = self.lineEdit_year_bulletin.text()
+    year = self.lineEdit_year_ppt.text()
     #year = datetime.date.today().year
     week_map = dict([('第一周','1st_week'),('第二周','2nd_week'),('第三周','3rd_week'),('第四周','4th_week'),('第五周','5th_week')])
     week = week_map[self.comboBox_ppt_week.currentText()]
@@ -41,7 +41,7 @@ def extract_ppt_record(self):
 def delete_ppt_record(self):
     cbs = [init_pandas_model_from_db,clear_all_text_field]
     month = self.comboBox_ppt_month.currentText()
-    year = self.lineEdit_year_bulletin.text()
+    year = self.lineEdit_year_ppt.text()
     # year = datetime.date.today().year
     week_map = dict([('第一周','1st_week'),('第二周','2nd_week'),('第三周','3rd_week'),('第四周','4th_week'),('第五周','5th_week')])
     week = week_map[self.comboBox_ppt_week.currentText()]
@@ -50,7 +50,7 @@ def delete_ppt_record(self):
 
 def add_one_ppt_record(self):
     month = self.comboBox_ppt_month.currentText()
-    year = self.lineEdit_year_bulletin.text()
+    year = self.lineEdit_year_ppt.text()
     # year = datetime.date.today().year
     week_map = dict([('第一周','1st_week'),('第二周','2nd_week'),('第三周','3rd_week'),('第四周','4th_week'),('第五周','5th_week')])
     week = week_map[self.comboBox_ppt_week.currentText()]
@@ -193,7 +193,7 @@ def update_selected_PPT_info(self, index = None):
     extract_one_record(self, self.database_type, collection, constrain)
 
 def save_ppt_content_in_txt_format(self):
-    year = self.lineEdit_year_bulletin.text()
+    year = self.lineEdit_year_ppt.text()
     month = self.comboBox_ppt_month.currentText()
     day = get_date_from_nth_week(self.comboBox_ppt_week.currentText(),int(month), year = int(year))
     txt_file_name_end = f'_{year}-{month}-{day}.txt'
