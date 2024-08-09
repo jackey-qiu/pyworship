@@ -148,6 +148,10 @@ class MakeWorkshipPpt(object):
             second_list = _get_responsive_scripture_from_json(self.scripture_list[1][0])
             if second_list != None:
                 self.scripture_list[1] = second_list
+                print('second_list',second_list)
+            else:#启应经文从圣经中提取
+                title_info, scripture_list = _get_scripture_from_json(self.scripture_list[1][0], bible)
+                self.scripture_list[1] = [title_info] + scripture_list
 
     def add_empty_slide(self, bkg_img = None):
         self.make_one_slide(blocks = [], bkg_img= bkg_img)

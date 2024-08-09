@@ -222,6 +222,11 @@ db_types:
                 expense_other_cost_3: lineEdit_expense_other_cost_3
                 expense_other_cost_4: lineEdit_expense_other_cost_4
                 expense_other_cost_5: lineEdit_expense_other_cost_5
+                expense_other_cost_6: lineEdit_expense_other_cost_6
+                expense_other_cost_7: lineEdit_expense_other_cost_7
+                expense_other_cost_8: lineEdit_expense_other_cost_8
+                expense_other_cost_9: lineEdit_expense_other_cost_9
+                expense_other_cost_10: lineEdit_expense_other_cost_10
                 expense_pastor_wu_note: lineEdit_expense_pastor_wu_note
                 expense_pastor_guan_note: lineEdit_expense_pastor_guan_note
                 expense_pastor_chuandao_note: lineEdit_expense_pastor_chuandao_note
@@ -234,6 +239,11 @@ db_types:
                 expense_other_cost_3_note: lineEdit_expense_other_cost_3_note
                 expense_other_cost_4_note: lineEdit_expense_other_cost_4_note
                 expense_other_cost_5_note: lineEdit_expense_other_cost_5_note
+                expense_other_cost_6_note: lineEdit_expense_other_cost_6_note
+                expense_other_cost_7_note: lineEdit_expense_other_cost_7_note
+                expense_other_cost_8_note: lineEdit_expense_other_cost_8_note
+                expense_other_cost_9_note: lineEdit_expense_other_cost_9_note
+                expense_other_cost_10_note: lineEdit_expense_other_cost_10_note
         table_viewer: 
             finance_info:
                 group_id: 年月

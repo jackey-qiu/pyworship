@@ -52,7 +52,9 @@ def calculate_sum(self, total_income_widget = 'lineEdit_total_income', total_exp
     expense_widgets = ['lineEdit_expense_pastor_wu','lineEdit_expense_pastor_guan','lineEdit_expense_pastor_chuandao',
                        'lineEdit_expense_kiel','lineEdit_expense_lubeck','lineEdit_expense_nebenkosten','lineEdit_expense_software_subscribe',
                        'lineEdit_expense_other_cost_1', 'lineEdit_expense_other_cost_2','lineEdit_expense_other_cost_3',
-                       'lineEdit_expense_other_cost_4','lineEdit_expense_other_cost_5']
+                       'lineEdit_expense_other_cost_4','lineEdit_expense_other_cost_5',
+                       'lineEdit_expense_other_cost_6','lineEdit_expense_other_cost_7',
+                       'lineEdit_expense_other_cost_8','lineEdit_expense_other_cost_9','lineEdit_expense_other_cost_10']
     for each in income_widgets:
         try:
             temp = float(eval(f'self.{each}.text()'))
