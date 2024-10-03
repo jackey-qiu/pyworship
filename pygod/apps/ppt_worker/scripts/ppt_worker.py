@@ -379,7 +379,8 @@ class MakeWorkshipPpt(object):
                           'font_global':f'{self.font_type_kaiti}'+'+44+True',
                           'font_run':f'{self.font_type_kaiti}'+'+48+True',
                           'alignment':'LEFT+52+12+0+0',
-                          'textbox': ['Cm(1.44)','Cm(1.44)','Cm(22.91)','Cm(15.72)']}
+                          'textbox': ['Cm(0.5)','Cm(0.5)','Cm(25.4)','Cm(15.72)']}
+                        #   'textbox': ['Cm(1.44)','Cm(1.44)','Cm(22.91)','Cm(15.72)']}
         
         footnote_format = {'cont':'',
                            'font_global':f'{self.font_type_kaiti}'+'+24+True',
@@ -402,6 +403,10 @@ class MakeWorkshipPpt(object):
         for i in range(1, len(pray_items)):
             if sum([len(pray_items[j]) for j in range(previous_ix, i)])>max_chars_per_slide:
                 content_format['cont'] = pray_items[previous_ix: i]
+                if len(' '.join(content_format['cont']))<120:
+                    content_format['textbox'] = ['Cm(1.44)','Cm(1.44)','Cm(22.91)','Cm(15.72)']
+                else:
+                    content_format['textbox'] = ['Cm(0.5)','Cm(0.5)','Cm(25.4)','Cm(15.72)']
                 slide = self.make_one_slide(blocks = [content_format, footnote_format], middle_vertical=False)
                 previous_ix = i
         #make one more slide at the end boundary
@@ -415,7 +420,8 @@ class MakeWorkshipPpt(object):
                             'font_global':f'{self.font_type_zhunyuan}'+'+80+True',
                             'font_run':f'{self.font_type_zhunyuan}'+'+80+True',
                             'alignment':'CENTER+94+0+0+0',
-                            'textbox': ['Cm(1.75)','Cm(5.24)','Cm(21.91)','Cm(3.68)']}
+                            'textbox': ['Cm(0)','Cm(5.24)','Cm(25.4)','Cm(3.68)']}
+                            # 'textbox': ['Cm(1.75)','Cm(5.24)','Cm(21.91)','Cm(3.68)']}
 
         subtitle_format = {'cont':'',
                             'font_global':'方正准圆简体+40+False',
@@ -427,7 +433,8 @@ class MakeWorkshipPpt(object):
                             'font_global':f'{self.font_type_zhunyuan}'+'+48+False',
                             'font_run':f'{self.font_type_zhunyuan}'+'+48+False',
                             'alignment':'CENTER+70+0+0+0',
-                            'textbox': ['Cm(1.03)','Cm(1.13)','Cm(23.87)','Cm(15.6)']}
+                            'textbox': ['Cm(0)','Cm(1.13)','Cm(25.4)','Cm(15.6)']}
+                            # 'textbox': ['Cm(1.03)','Cm(1.13)','Cm(23.87)','Cm(15.6)']}
 
         script_footnote_format = {'cont':'',
                             'font_global':f'{self.font_type_kaiti}'+'+24+False',
