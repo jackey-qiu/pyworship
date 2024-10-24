@@ -406,7 +406,7 @@ class MakeWorkshipPpt(object):
                 if len(' '.join(content_format['cont']))<120:
                     content_format['textbox'] = ['Cm(1.44)','Cm(1.44)','Cm(22.91)','Cm(15.72)']
                 else:
-                    content_format['textbox'] = ['Cm(0.5)','Cm(0.5)','Cm(25.4)','Cm(15.72)']
+                    content_format['textbox'] = ['Cm(0.5)','Cm(0.5)','Cm(24.9)','Cm(15.72)']
                 slide = self.make_one_slide(blocks = [content_format, footnote_format], middle_vertical=False)
                 previous_ix = i
         #make one more slide at the end boundary

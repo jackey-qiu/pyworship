@@ -12,6 +12,70 @@ from pypinyin import pinyin, Style
 import yt_dlp as youtube_dl
 from pathlib import Path
 
+from itertools import groupby
+
+def process_lyrics_dynamic_optimized(lyrics_text, text_edit_widget):
+    # Split lyrics by paragraphs, ignoring only the first line (title)
+    lyrics_paragraphs = [para.strip() for para in lyrics_text.split('\n\n')[1:] if para.strip()]  # read title of song
+    
+    # Dictionary to map unique groups of paragraphs to letter variables
+    paragraph_to_letter = {}
+    letter_sequence = []
+    current_letter = ord('A')
+    
+    for para in lyrics_paragraphs:
+        # Compare current paragraph with existing ones, it must be identical to use the same letter
+        if para in paragraph_to_letter:
+            letter_sequence.append(paragraph_to_letter[para])
+        else:
+            # Assign new letter if paragraph is unique
+            letter = chr(current_letter)
+            paragraph_to_letter[para] = letter
+            letter_sequence.append(letter)
+            current_letter += 1
+    
+    # First optimization: basic letter sequence
+    basic_combined_sequence = ''.join(letter_sequence)
+    
+    # Second optimization: merge consecutive repeating segments, including patterns like ABAB -> [AB]x2
+    optimized_combined_sequence = []
+    i = 0
+    while i < len(letter_sequence):
+        pattern_len = 1
+        # Check for repeating patterns in the sequence
+        while i + pattern_len * 2 <= len(letter_sequence):
+            pattern = letter_sequence[i:i + pattern_len]
+            next_pattern = letter_sequence[i + pattern_len:i + pattern_len * 2]
+            if pattern == next_pattern:
+                optimized_combined_sequence.append(f"[{''.join(pattern)}]x2")
+                i += pattern_len * 2
+                break
+            pattern_len += 1
+        else:
+            optimized_combined_sequence.append(letter_sequence[i])
+            i += 1
+
+    optimized_combined_sequence_str = ''.join(optimized_combined_sequence)
+    
+    # Prepare output
+    output_lines = []
+    title = lyrics_text.split('\n')[0]  # First line as the title (lyrics title)
+    output_lines.append(f"Lyrics Title: {title}")
+    
+    output_lines.append("\nLetter Variables (Paragraphs):\n")
+    for paragraph, letter in paragraph_to_letter.items():
+        output_lines.append(f"{letter}:\n{paragraph}\n")
+    
+    # Output the basic letter pattern (first optimization)
+    output_lines.append("\nBasic Letter Combination Pattern (First Optimization):\n")
+    output_lines.append(basic_combined_sequence)
+    
+    # Output the fully optimized pattern (second optimization)
+    output_lines.append("\nOptimized Letter Combination Pattern (Second Optimization):\n")
+    output_lines.append(optimized_combined_sequence_str)
+    
+    text_edit_widget.setPlainText('\n'.join(output_lines))
+
 def clear_all_text_field(self, tabWidget = 'tabWidget_note'):
     for each in getattr(self, tabWidget).findChildren(QLineEdit):
         each.setText('')

@@ -250,7 +250,7 @@ ccg-task：教会服事安排</string>
                 </font>
                </property>
                <property name="currentIndex">
-                <number>3</number>
+                <number>6</number>
                </property>
                <widget class="QWidget" name="tab_5">
                 <attribute name="title">
@@ -2493,7 +2493,7 @@ p, li { white-space: pre-wrap; }
                      <rect>
                       <x>0</x>
                       <y>0</y>
-                      <width>98</width>
+                      <width>93</width>
                       <height>55</height>
                      </rect>
                     </property>
@@ -2710,7 +2710,7 @@ p, li { white-space: pre-wrap; }
                  <item>
                   <widget class="QTabWidget" name="tabWidget_note">
                    <property name="currentIndex">
-                    <number>3</number>
+                    <number>0</number>
                    </property>
                    <widget class="QWidget" name="tab_14">
                     <attribute name="title">
@@ -3946,9 +3946,40 @@ p, li { white-space: pre-wrap; }
                      <attribute name="title">
                       <string>歌词谱</string>
                      </attribute>
-                     <layout class="QHBoxLayout" name="horizontalLayout_30">
+                     <layout class="QVBoxLayout" name="verticalLayout_29">
                       <item>
                        <widget class="QTextEdit" name="textEdit_script_text_note"/>
+                      </item>
+                      <item>
+                       <layout class="QHBoxLayout" name="horizontalLayout_30">
+                        <item>
+                         <spacer name="horizontalSpacer_15">
+                          <property name="orientation">
+                           <enum>Qt::Horizontal</enum>
+                          </property>
+                          <property name="sizeHint" stdset="0">
+                           <size>
+                            <width>40</width>
+                            <height>20</height>
+                           </size>
+                          </property>
+                         </spacer>
+                        </item>
+                        <item>
+                         <widget class="QPushButton" name="pushButton_make_script">
+                          <property name="text">
+                           <string>生成歌词谱</string>
+                          </property>
+                         </widget>
+                        </item>
+                        <item>
+                         <widget class="QPushButton" name="pushButton_print">
+                          <property name="text">
+                           <string>打印</string>
+                          </property>
+                         </widget>
+                        </item>
+                       </layout>
                       </item>
                      </layout>
                     </widget>

@@ -8,6 +8,7 @@ import click
 import qpageview.viewactions
 from PyQt5.QtWidgets import QMainWindow,QApplication, QLabel
 from PyQt5.QtMultimedia import QMediaPlayer, QMediaPlaylist
+from PyQt5.QtPrintSupport import QPrinter, QPrintDialog
 sys.path.append(str(Path(__file__).parent.parent.parent))
 from ..core.db_opts import db_opts_entry as db_prj
 from ..core.db_opts import db_opts_bulletin as db_bulletin
@@ -19,7 +20,7 @@ from ..core.db_opts import db_opts_task as db_task
 from ..core.db_opts import init_db_opts as db_reg
 from ..core.db_opts import db_opts_hymn as db_hymn
 from ..core import graph_operations as graph
-from ...py_scheduler.core.util import DownloadYoutube, PlaylistModel, player_api
+from ...py_scheduler.core.util import DownloadYoutube, PlaylistModel, player_api, process_lyrics_dynamic_optimized
 
 db_api_map = {'图书': db_book,
               '人事': db_pe,
@@ -134,6 +135,8 @@ class MyMainWindow(QMainWindow):
         self.pushButton_add_hymn.clicked.connect(lambda:db_hymn.add_one_record_in_db(self))
         self.pushButton_delete_hymn.clicked.connect(lambda:db_hymn.delete_one_record_in_db(self))
         self.pushButton_download_from_youtube.clicked.connect(lambda:db_hymn.download_file(self))
+        self.pushButton_print.clicked.connect(self.print_lyrics)
+        self.pushButton_make_script.clicked.connect(lambda: process_lyrics_dynamic_optimized(self.textEdit_script_ppt_note.toPlainText(), self.textEdit_script_text_note))
         #setup youtube downloader
         self.download = DownloadYoutube(self.statusbar, self)
         self.thread_download = QtCore.QThread()
@@ -241,6 +244,12 @@ class MyMainWindow(QMainWindow):
         self.set_data_for_x_check_status = partial(db_hymn.set_data_for_x_check_status, self)
         self.get_data_for_x_correct_status = partial(db_hymn.get_data_for_x_correct_status, self)
         self.set_data_for_x_correct_status = partial(db_hymn.set_data_for_x_correct_status, self)
+
+    def print_lyrics(self):
+        printer = QPrinter(QPrinter.HighResolution)
+        dialog = QPrintDialog(printer, self)
+        if dialog.exec_()==QPrintDialog.accepted:
+            self.textEdit_script_text_note.print(printer)
 
     def closeEvent(self, event) -> None:
         quit_msg = "Are you sure you want to exit the program? If yes, all text indexes will be deleted!"
