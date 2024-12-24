@@ -1,6 +1,6 @@
 import sys, json
 from PyQt5 import QtGui, uic, QtCore
-from PyQt5.QtWidgets import QMessageBox
+from PyQt5.QtWidgets import QMessageBox, QDialog
 from pyqtgraph.Qt import QtGui
 from pathlib import Path
 from functools import partial
@@ -248,7 +248,7 @@ class MyMainWindow(QMainWindow):
     def print_lyrics(self):
         printer = QPrinter(QPrinter.HighResolution)
         dialog = QPrintDialog(printer, self)
-        if dialog.exec_()==QPrintDialog.accepted:
+        if dialog.exec_()==QDialog.Accepted:
             self.textEdit_script_text_note.print(printer)
 
     def closeEvent(self, event) -> None:
