@@ -1,6 +1,59 @@
 import datetime
 from ..db_opts.common_db_opts import *
 from ..graph_operations import create_piechart
+from openpyxl import Workbook, load_workbook
+
+def load_content_from_excel_file(self):
+    file = self.lineEdit_excel_file_path.text()
+    income_dict = {}
+    expense_dict = {}
+    wb = load_workbook(file)
+    ws = wb.active
+    def _fix_text_ref(txt):
+        if txt.startswith('='):
+            items = txt[1:].rsplit(' & ')
+            for i, item in enumerate(items):
+                if item.startswith('"'):
+                    items[i] = item[1:-1]
+                else:
+                    items[i] = str(ws[item].value)
+            return ''.join(items)
+        else:
+            return txt
+        
+    pointer = 2
+    while True:
+        value = ws[f'B{pointer}'].value
+        if value==None:
+            break
+        value = _fix_text_ref(ws[f'B{pointer}'].value)
+        income_dict[value] = ws[f'C{pointer}'].value
+        pointer += 1
+    pointer += 2
+    while True:
+        value = ws[f'B{pointer}'].value
+        if value==None:
+            break
+        value = _fix_text_ref(ws[f'B{pointer}'].value)
+        expense_dict[value] = ws[f'D{pointer}'].value
+        pointer += 1
+    #fill the content
+    for i, key in enumerate(income_dict.keys()):
+        if i>6:
+            error_pop_up('There are more than 7 items in the income. Cut off items>7. You should manually add them')
+            break
+        line_edit_note = f'lineEdit_income_{i+1}_note'
+        line_edit_income = f'lineEdit_income_{i+1}'
+        getattr(self, line_edit_note).setText(key)
+        getattr(self, line_edit_income).setText(str(income_dict[key]))
+    for i, key in enumerate(expense_dict.keys()):
+        if i>16:
+            error_pop_up('There are more than 17 items in the expense. Cut off items>17. You should manually add them')
+            break
+        line_edit_note = f'lineEdit_expense_{i+1}_note'
+        line_edit_expense = f'lineEdit_expense_{i+1}'
+        getattr(self, line_edit_note).setText(key)
+        getattr(self, line_edit_expense).setText(str(expense_dict[key]))
 
 def init_pandas_model_from_db(self):
     args = {'self': self, 
@@ -46,15 +99,9 @@ def delete_finance_info(self):
 def calculate_sum(self, total_income_widget = 'lineEdit_total_income', total_expense_widget = 'lineEdit_total_expense', net_income_widget = 'lineEdit_net_income'):
     income = 0
     expense = 0
-    income_widgets = ['lineEdit_income_offering_onside','lineEdit_income_offering_online',
-                      'lineEdit_income_offering_lubeck','lineEdit_income_offering_kiel',
-                      'lineEdit_income_offering_korea','lineEdit_income_offering_others','lineEdit_income_offering_others2']
-    expense_widgets = ['lineEdit_expense_pastor_wu','lineEdit_expense_pastor_guan','lineEdit_expense_pastor_chuandao',
-                       'lineEdit_expense_kiel','lineEdit_expense_lubeck','lineEdit_expense_nebenkosten','lineEdit_expense_software_subscribe',
-                       'lineEdit_expense_other_cost_1', 'lineEdit_expense_other_cost_2','lineEdit_expense_other_cost_3',
-                       'lineEdit_expense_other_cost_4','lineEdit_expense_other_cost_5',
-                       'lineEdit_expense_other_cost_6','lineEdit_expense_other_cost_7',
-                       'lineEdit_expense_other_cost_8','lineEdit_expense_other_cost_9','lineEdit_expense_other_cost_10']
+    income_widgets = [f'lineEdit_income_{i}' for i in range(1,8)]
+    expense_widgets = [f'lineEdit_expense_{i}' for i in range(1,18)]
+
     for each in income_widgets:
         try:
             temp = float(eval(f'self.{each}.text()'))

@@ -105,6 +105,7 @@ class MyMainWindow(QMainWindow):
         self.pushButton_add_finance_info.clicked.connect(lambda:db_fin.add_finance_info(self))
         self.pushButton_cal_sum.clicked.connect(lambda:db_fin.calculate_sum(self))
         self.pushButton_finance_info.clicked.connect(lambda:db_fin.delete_finance_info(self))
+        self.pushButton_load_excel.clicked.connect(lambda:db_fin.load_content_from_excel_file(self))
         #plot
         self.pushButton_plot.clicked.connect(lambda:graph.create_piechart(self))
         self.pushButton_plot.clicked.connect(lambda:graph.plot_finance_details(self))

@@ -198,19 +198,20 @@ class makeBulletin(object):
         tb = self.add_table(font_size=10, content=main, alignments=[WD_TABLE_ALIGNMENT.LEFT,WD_TABLE_ALIGNMENT.RIGHT])
         #tb.add_row()
         #tb.rows[-1].cells[0].merge(tb.rows[-1].cells[1])
-        ntb = self.add_table(font_size=10, content = [['','总进','总支','结余']]+table_data['summary'],alignments=[WD_TABLE_ALIGNMENT.LEFT,WD_TABLE_ALIGNMENT.RIGHT,WD_TABLE_ALIGNMENT.RIGHT,WD_TABLE_ALIGNMENT.RIGHT])
-        self.add_paragraphs([f'* 堂址维护基金：{self.month-2}月提拨金为???欧。至{self.month-2}月??日止，总进为????欧，总支为????欧，结余为????欧。\n* 神学教育基金：至8月31日止，结余为????欧。 '], format=self.format_body, font_size = 9, alignment=WD_ALIGN_PARAGRAPH.LEFT)
+        ntb = self.add_table(font_size=10, content = [['','总进','总支','结余']]+table_data['summary']+[["202？（?-?月)年度",'?? €','?? €','?? €']],alignments=[WD_TABLE_ALIGNMENT.LEFT,WD_TABLE_ALIGNMENT.RIGHT,WD_TABLE_ALIGNMENT.RIGHT,WD_TABLE_ALIGNMENT.RIGHT])
+        self.add_paragraphs([f'* 堂址维护基金：{self.month-2}月提拨金为???欧。至{self.month-2}月??日止，总进为????欧，总支为????欧，结余为????欧。\
+                             \n* 神学教育基金：支持 CCG Bremen 神学生支出 400 欧，至{self.month-2}月?日止，结余为????欧。 \n* 教会宣教广传事工基金：至 {self.month-2} 月 ？？ 日止，结余 ？？ 欧。'], format=self.format_body, font_size = 9, alignment=WD_ALIGN_PARAGRAPH.LEFT)
 
     def add_corresponding_table(self):
         self.add_paragraphs(['教会牧者执事联络电话'],self.format_title_big, font_size = 12)
         table_content = [
                         ['吴振忠牧师温淑芳师母','04068860416','管惠萍牧师','04076900694'],
                         ['校园事工宣教士吴雨洁','015753937836','青少年事工宣教士葛美恩'],
-                        ['主　席','王　榛弟兄','01796843477','财务组','马内利弟兄','017655495554'],
-                        ['秘　书','施　逸弟兄','017662844246','服务组','余余子姊妹','01796852241'],
-                        ['礼拜组','李　帆弟兄','017670728016','教育组','赵海静姊妹','01794186027'],
-                        ['图书组','邵　颢弟兄','017634968872','福音事工组',	'王泽宇弟兄','015735390792'],
-                        ['管堂组','刘朗朗弟兄','017664073888','x','x','x'],
+                        ['主　席','邵　颢弟兄','017634968872','财务组','马内利弟兄','017655495554'],
+                        ['秘　书','王泽宇弟兄','015735390792','服务组','余余子姊妹','01796852241'],
+                        ['礼拜组','李　帆弟兄','017670728016','教育组','王　榛弟兄','01796843477'],
+                        ['图书组','黄罗佳弟兄','017660470014','福音事工组','刘朗朗弟兄','017664073888'],
+                        ['管堂组','施　逸弟兄','017662844246','x','x','x'],
         ]
         self.add_table(font_size = 9, content = [table_content[0]], alignments=WD_TABLE_ALIGNMENT.LEFT)
         self.add_table(font_size = 9, content = [table_content[1]], alignments=WD_TABLE_ALIGNMENT.LEFT)
@@ -233,22 +234,22 @@ class makeBulletin(object):
 
     def add_meetup_info(self):
         contents = ['福音性查经    每周五19:30 （实体）',
-        '联络：吴振忠牧师（688 604 16）   📍Dulsberg-Süd 26    👉U1 Straßburger Str.',
+        '联络：吴振忠牧师（688 604 16）   ⚓Dulsberg-Süd 26    ➡️U1 Straßburger Str.',
         '',
         '线上查经班    每月第二、四个周三19:30 （线上ZOOM）',
         '联络：管惠萍牧师（769 006 94）',
         '',
         '长青团契	     每月第一、三个周五10:00-14:00',
-        '联络：吴振忠牧师（688 604 16）   📍Blumenau 29   👉U1 Wartenau',
+        '联络：吴振忠牧师（688 604 16）   ⚓Blumenau 29   ➡️U1 Wartenau',
         '',
         '青年团契	     每月周六14:00-16:00 （实体）',
-        '联络：王泽宇弟兄（015735390792）    Dulsberg-Süd 26   👉U1 Straßburger Str.',
+        '联络：刘朗朗弟兄（017664073888）    📭Dulsberg-Süd 26   ➡️U1 Straßburger Str.',
         '',
         '伉俪团契	     每月第二个周六14:00-16:30 （实体）',
         '联络：施逸弟兄、崔乃心姊妹（017662844246） 黄罗佳弟兄、杨琪姊妹（017660470014）',
         '',
         '妈妈小组	     每月第一、三个周四9:30-12:00 （线上ZOOM）',
-        '联络：赵海静姊妹（01794186027）   📍Dulsberg-Süd26    👉U1 Straßburger Str.',
+        '联络：徐圣佳姊妹（017670728041）   📭Dulsberg-Süd26    ➡️U1 Straßburger Str.',
         '',
         '🎦Zoom ID: 5861908437，会议室密码: 903600']
         self.add_paragraphs(contents, format = self.format_body)
@@ -256,10 +257,10 @@ class makeBulletin(object):
     def add_preach_table(self, contents):
         #append icon at the beginning place
         if len(contents)==4:
-            contents = [['📅']+contents[0],\
+            contents = [['🗓']+contents[0],\
                         ['✒️']+contents[1],\
                         ["🤵"]+contents[2],\
-                        ['✝️']+contents[3]]
+                        ['🏷️']+contents[3]]
         tb = self.add_table(font_size= 10, content = contents, alignments=WD_TABLE_ALIGNMENT.CENTER)
         self.shade_row(tb, 0, self.shade_color_code, None)
         self.shade_row(tb, 2, self.shade_color_code, None)
@@ -441,8 +442,8 @@ def main(year, month, content_file, doc_file=None):
 emojs = ['🏠','🚉','🎁','📅''✝️','🕮','🌍','🏴󠁢󠁲󠁧󠁯󠁿','📍','👉','✬','♛','👨🏻‍🏫','✍🏽','🏛','💎','📝','📧','📙','📖','📃','✒️','🎦','🌐',\
          '➡️','💬','🤍','☞', '🏳️','⌨️','📪']
 if __name__ == '__main__':
-    worker = makeBulletin(2023, 10)
-    worker.make_doc_in_one_go("C:\\Users\\qiucanro\\pygodAppData\\content_files\\bulletin_2023-10.txt")
+    worker = makeBulletin(2025, 1)
+    worker.make_doc_in_one_go("C:\\Users\\qiucanro\\pygodAppData\\content_files\\bulletin_2025-1.txt")
     '''
     worker.add_monthly_scripture(contents=['只要你们行事为人与基督的福音相称，叫我或来见你们，或不在你们那里，可以听见你们的景况，知道你们同有一个心志，站立得稳，为所信的福音齐心努力。 腓立比书1:27 '])
     worker.add_spacing(line_spacing = 10)

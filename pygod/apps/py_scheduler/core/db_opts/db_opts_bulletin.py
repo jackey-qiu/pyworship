@@ -4,6 +4,8 @@ from pathlib import Path
 from functools import partial
 from .common_db_opts import * 
 from pygod.apps.bulletin_worker.scripts.bulletin_worker import main as bulletin
+import locale
+locale.setlocale(locale.LC_ALL, 'de_DE.UTF-8')
 
 def init_pandas_model_from_db(self):
     args = {'self': self, 
@@ -84,7 +86,15 @@ def get_finance_content(self, key):
     expense = []
     summary = [f'{year}年{month}月份']
     for doc in ['total_income','total_expense','net_income']:
-        summary.append(text_query_by_field(self, 'group_id', key, doc, collection, db_temp)[0])
+        sign = '+' if doc=='total_income' else '-'
+        
+        value = float(text_query_by_field(self, 'group_id', key, doc, collection, db_temp)[0])
+        if doc=='net_income':
+            if value<=0:
+                sign = '-'
+            else:
+                sign = '+'
+        summary.append(sign+locale.currency(value,grouping=True))
     for doc in docs:
         if not doc.endswith('note'):
             if doc not in ['total_income','total_expense','net_income']:
@@ -93,11 +103,11 @@ def get_finance_content(self, key):
                 if note == ['']:
                     note = [doc]
                 if doc.startswith('income'):
-                    if value!=['0.0']:
-                        income.append([note[0], '+'+str(value[0])])
+                    if float(value[0])!=0:
+                        income.append([note[0], '+'+locale.currency(float(value[0]),grouping=True)])
                 else:
-                    if value!=['0.0']:
-                        expense.append([note[0], '-'+str(value[0])])
+                    if float(value[0])!=0:
+                        expense.append([note[0], '-'+locale.currency(float(value[0]),grouping=True)])
     income = '\n'.join(['&'.join(each) for each in income])
     expense = '\n'.join(['&'.join(each) for each in expense])
     summary = '&'.join(list(map(str,summary)))
@@ -156,8 +166,12 @@ def get_preach_content(self, key):
     return '\n'.join(contents_formated)
 
 def save_bulletin_content_in_txt_format_and_make_bulletin(self):
-    year = self.lineEdit_year_bulletin.text()
-    month = self.comboBox_bulletin_month.currentText()
+    year = int(self.lineEdit_year_bulletin.text())
+    month = int(self.comboBox_bulletin_month.currentText())
+    year_next_month = year if month!=12 else year + 1
+    year_pre_month = year if month!=1 else year - 1
+    next_month = month + 1 if month!=12 else 1
+    pre_month = month - 1 if month!=1 else 12
     txt_file_name = f'bulletin_{year}-{month}.txt'
     doc_file_name = f'bulletin_{year}-{month}.docx'
     #content_folder = Path(__file__).parent.parent.parent / 'ppt_worker' / 'src' / 'contents'
@@ -170,9 +184,9 @@ def save_bulletin_content_in_txt_format_and_make_bulletin(self):
                   'Report':'self.textEdit_reports_note.toPlainText()',
                   'Pray': 'self.textEdit_prays_note.toPlainText()',
                   'LastMonthRecord':'get_last_month_record(self)',
-                  'PreachTable':f"get_preach_content(self,'{year}_{month}')",
-                  'MonthlyServiceTable':f"get_task_content(self,'{year}_{month}')",
-                  'FinanceTable':f"get_finance_content(self, '{year}_{month}月')"
+                  'PreachTable':f"get_preach_content(self,'{year_next_month}_{next_month}')",
+                  'MonthlyServiceTable':f"get_task_content(self,'{year_next_month}_{next_month}')",
+                  'FinanceTable':f"get_finance_content(self, '{year_pre_month}_{pre_month}月')"
                   }
     try:    
         with open(str(content_folder / txt_file_name), 'w', encoding='utf8') as f:

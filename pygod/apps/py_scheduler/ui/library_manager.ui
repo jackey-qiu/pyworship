@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1448</width>
+    <width>1316</width>
     <height>1063</height>
    </rect>
   </property>
@@ -250,7 +250,7 @@ ccg-task：教会服事安排</string>
                 </font>
                </property>
                <property name="currentIndex">
-                <number>6</number>
+                <number>3</number>
                </property>
                <widget class="QWidget" name="tab_5">
                 <attribute name="title">
@@ -1447,7 +1447,7 @@ p, li { white-space: pre-wrap; }
                      <rect>
                       <x>0</x>
                       <y>0</y>
-                      <width>1001</width>
+                      <width>869</width>
                       <height>664</height>
                      </rect>
                     </property>
@@ -1648,296 +1648,327 @@ p, li { white-space: pre-wrap; }
                         <property name="frameShadow">
                          <enum>QFrame::Raised</enum>
                         </property>
-                        <layout class="QHBoxLayout" name="horizontalLayout_11">
+                        <layout class="QVBoxLayout" name="verticalLayout_3">
                          <item>
-                          <layout class="QVBoxLayout" name="verticalLayout_3">
-                           <item>
-                            <widget class="QLabel" name="label_40">
+                          <widget class="QLabel" name="label_40">
+                           <property name="sizePolicy">
+                            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                             <horstretch>0</horstretch>
+                             <verstretch>0</verstretch>
+                            </sizepolicy>
+                           </property>
+                           <property name="text">
+                            <string>进项</string>
+                           </property>
+                          </widget>
+                         </item>
+                         <item>
+                          <layout class="QGridLayout" name="gridLayout_3">
+                           <item row="7" column="0">
+                            <widget class="QLabel" name="label_102">
                              <property name="sizePolicy">
-                              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
                                <horstretch>0</horstretch>
                                <verstretch>0</verstretch>
                               </sizepolicy>
                              </property>
                              <property name="text">
-                              <string>进项</string>
+                              <string>其它进项2</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="7" column="1">
+                            <widget class="QLineEdit" name="lineEdit_income_7">
+                             <property name="maximumSize">
+                              <size>
+                               <width>100</width>
+                               <height>16777215</height>
+                              </size>
+                             </property>
+                             <property name="text">
+                              <string>0</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="0" column="1">
+                            <widget class="QLabel" name="label_45">
+                             <property name="sizePolicy">
+                              <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+                               <horstretch>0</horstretch>
+                               <verstretch>0</verstretch>
+                              </sizepolicy>
+                             </property>
+                             <property name="layoutDirection">
+                              <enum>Qt::LeftToRight</enum>
+                             </property>
+                             <property name="text">
+                              <string>进项数额 €</string>
+                             </property>
+                             <property name="alignment">
+                              <set>Qt::AlignCenter</set>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="0" column="0">
+                            <widget class="QLabel" name="label_44">
+                             <property name="text">
+                              <string>项目</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="1" column="0">
+                            <widget class="QLabel" name="label_42">
+                             <property name="text">
+                              <string>主日敬拜奉献</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="3" column="2">
+                            <widget class="QLineEdit" name="lineEdit_income_3_note">
+                             <property name="text">
+                              <string>吕贝克查经班奉献</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="0" column="2">
+                            <widget class="QLabel" name="label_46">
+                             <property name="text">
+                              <string>说明</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="4" column="0">
+                            <widget class="QLabel" name="label_48">
+                             <property name="text">
+                              <string>基尔查经班奉献</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="3" column="0">
+                            <widget class="QLabel" name="label_47">
+                             <property name="text">
+                              <string>吕贝克奉献</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="3" column="1">
+                            <widget class="QLineEdit" name="lineEdit_income_3">
+                             <property name="maximumSize">
+                              <size>
+                               <width>100</width>
+                               <height>16777215</height>
+                              </size>
+                             </property>
+                             <property name="text">
+                              <string>0</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="5" column="1">
+                            <widget class="QLineEdit" name="lineEdit_income_5">
+                             <property name="maximumSize">
+                              <size>
+                               <width>100</width>
+                               <height>16777215</height>
+                              </size>
+                             </property>
+                             <property name="text">
+                              <string>0</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="4" column="2">
+                            <widget class="QLineEdit" name="lineEdit_income_4_note">
+                             <property name="text">
+                              <string>基尔查经班奉献</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="5" column="2">
+                            <widget class="QLineEdit" name="lineEdit_income_5_note">
+                             <property name="text">
+                              <string>汉堡韩国教会奉献</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="5" column="0">
+                            <widget class="QLabel" name="label_49">
+                             <property name="text">
+                              <string>韩国教会奉献</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="4" column="1">
+                            <widget class="QLineEdit" name="lineEdit_income_4">
+                             <property name="maximumSize">
+                              <size>
+                               <width>100</width>
+                               <height>16777215</height>
+                              </size>
+                             </property>
+                             <property name="text">
+                              <string>0</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="1" column="1">
+                            <widget class="QLineEdit" name="lineEdit_income_1">
+                             <property name="maximumSize">
+                              <size>
+                               <width>100</width>
+                               <height>16777215</height>
+                              </size>
+                             </property>
+                             <property name="text">
+                              <string>0</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="2" column="0">
+                            <widget class="QLabel" name="label_43">
+                             <property name="text">
+                              <string>教会汇款奉献</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="11" column="0">
+                            <widget class="QLabel" name="label_64">
+                             <property name="text">
+                              <string>本月结余</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="11" column="1" colspan="2">
+                            <widget class="QLineEdit" name="lineEdit_net_income"/>
+                           </item>
+                           <item row="2" column="1">
+                            <widget class="QLineEdit" name="lineEdit_income_2">
+                             <property name="maximumSize">
+                              <size>
+                               <width>100</width>
+                               <height>16777215</height>
+                              </size>
+                             </property>
+                             <property name="text">
+                              <string>0</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="9" column="1" colspan="2">
+                            <widget class="QLineEdit" name="lineEdit_total_income"/>
+                           </item>
+                           <item row="1" column="2">
+                            <widget class="QLineEdit" name="lineEdit_income_1_note">
+                             <property name="text">
+                              <string>主日回应奉献/敬拜奉献</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="9" column="0">
+                            <widget class="QLabel" name="label_62">
+                             <property name="text">
+                              <string>总计入账</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="2" column="2">
+                            <widget class="QLineEdit" name="lineEdit_income_2_note">
+                             <property name="text">
+                              <string>汇款奉献</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="6" column="0">
+                            <widget class="QLabel" name="label_50">
+                             <property name="text">
+                              <string>其它进项1</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="6" column="2">
+                            <widget class="QLineEdit" name="lineEdit_income_6_note">
+                             <property name="text">
+                              <string>其它进项1</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="6" column="1">
+                            <widget class="QLineEdit" name="lineEdit_income_6">
+                             <property name="maximumSize">
+                              <size>
+                               <width>100</width>
+                               <height>16777215</height>
+                              </size>
+                             </property>
+                             <property name="text">
+                              <string>0</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="10" column="0">
+                            <widget class="QLabel" name="label_63">
+                             <property name="text">
+                              <string>本月支出</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="10" column="1" colspan="2">
+                            <widget class="QLineEdit" name="lineEdit_total_expense"/>
+                           </item>
+                           <item row="7" column="2">
+                            <widget class="QLineEdit" name="lineEdit_income_7_note">
+                             <property name="text">
+                              <string>其它进项2</string>
+                             </property>
+                            </widget>
+                           </item>
+                          </layout>
+                         </item>
+                         <item>
+                          <spacer name="verticalSpacer_14">
+                           <property name="orientation">
+                            <enum>Qt::Vertical</enum>
+                           </property>
+                           <property name="sizeHint" stdset="0">
+                            <size>
+                             <width>20</width>
+                             <height>145</height>
+                            </size>
+                           </property>
+                          </spacer>
+                         </item>
+                         <item>
+                          <widget class="QLabel" name="label_145">
+                           <property name="text">
+                            <string>从EXEL文件导入信息</string>
+                           </property>
+                          </widget>
+                         </item>
+                         <item>
+                          <layout class="QHBoxLayout" name="horizontalLayout_11">
+                           <item>
+                            <widget class="QLabel" name="label_146">
+                             <property name="text">
+                              <string>文件路径</string>
                              </property>
                             </widget>
                            </item>
                            <item>
-                            <layout class="QGridLayout" name="gridLayout_3">
-                             <item row="7" column="0">
-                              <widget class="QLabel" name="label_102">
-                               <property name="sizePolicy">
-                                <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                                 <horstretch>0</horstretch>
-                                 <verstretch>0</verstretch>
-                                </sizepolicy>
-                               </property>
-                               <property name="text">
-                                <string>其它进项2</string>
-                               </property>
-                              </widget>
-                             </item>
-                             <item row="7" column="1">
-                              <widget class="QLineEdit" name="lineEdit_income_offering_others2">
-                               <property name="maximumSize">
-                                <size>
-                                 <width>100</width>
-                                 <height>16777215</height>
-                                </size>
-                               </property>
-                               <property name="text">
-                                <string>0</string>
-                               </property>
-                              </widget>
-                             </item>
-                             <item row="0" column="1">
-                              <widget class="QLabel" name="label_45">
-                               <property name="sizePolicy">
-                                <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-                                 <horstretch>0</horstretch>
-                                 <verstretch>0</verstretch>
-                                </sizepolicy>
-                               </property>
-                               <property name="layoutDirection">
-                                <enum>Qt::LeftToRight</enum>
-                               </property>
-                               <property name="text">
-                                <string>进项数额 €</string>
-                               </property>
-                               <property name="alignment">
-                                <set>Qt::AlignCenter</set>
-                               </property>
-                              </widget>
-                             </item>
-                             <item row="0" column="0">
-                              <widget class="QLabel" name="label_44">
-                               <property name="text">
-                                <string>项目</string>
-                               </property>
-                              </widget>
-                             </item>
-                             <item row="1" column="0">
-                              <widget class="QLabel" name="label_42">
-                               <property name="text">
-                                <string>主日敬拜奉献</string>
-                               </property>
-                              </widget>
-                             </item>
-                             <item row="3" column="2">
-                              <widget class="QLineEdit" name="lineEdit_income_offering_lubeck_note">
-                               <property name="text">
-                                <string>吕贝克查经班奉献</string>
-                               </property>
-                              </widget>
-                             </item>
-                             <item row="0" column="2">
-                              <widget class="QLabel" name="label_46">
-                               <property name="text">
-                                <string>说明</string>
-                               </property>
-                              </widget>
-                             </item>
-                             <item row="4" column="0">
-                              <widget class="QLabel" name="label_48">
-                               <property name="text">
-                                <string>基尔查经班奉献</string>
-                               </property>
-                              </widget>
-                             </item>
-                             <item row="3" column="0">
-                              <widget class="QLabel" name="label_47">
-                               <property name="text">
-                                <string>吕贝克奉献</string>
-                               </property>
-                              </widget>
-                             </item>
-                             <item row="3" column="1">
-                              <widget class="QLineEdit" name="lineEdit_income_offering_lubeck">
-                               <property name="maximumSize">
-                                <size>
-                                 <width>100</width>
-                                 <height>16777215</height>
-                                </size>
-                               </property>
-                               <property name="text">
-                                <string>0</string>
-                               </property>
-                              </widget>
-                             </item>
-                             <item row="5" column="1">
-                              <widget class="QLineEdit" name="lineEdit_income_offering_korea">
-                               <property name="maximumSize">
-                                <size>
-                                 <width>100</width>
-                                 <height>16777215</height>
-                                </size>
-                               </property>
-                               <property name="text">
-                                <string>0</string>
-                               </property>
-                              </widget>
-                             </item>
-                             <item row="4" column="2">
-                              <widget class="QLineEdit" name="lineEdit_income_offering_kiel_note">
-                               <property name="text">
-                                <string>基尔查经班奉献</string>
-                               </property>
-                              </widget>
-                             </item>
-                             <item row="5" column="2">
-                              <widget class="QLineEdit" name="lineEdit_income_offering_korea_note">
-                               <property name="text">
-                                <string>汉堡韩国教会奉献</string>
-                               </property>
-                              </widget>
-                             </item>
-                             <item row="5" column="0">
-                              <widget class="QLabel" name="label_49">
-                               <property name="text">
-                                <string>韩国教会奉献</string>
-                               </property>
-                              </widget>
-                             </item>
-                             <item row="4" column="1">
-                              <widget class="QLineEdit" name="lineEdit_income_offering_kiel">
-                               <property name="maximumSize">
-                                <size>
-                                 <width>100</width>
-                                 <height>16777215</height>
-                                </size>
-                               </property>
-                               <property name="text">
-                                <string>0</string>
-                               </property>
-                              </widget>
-                             </item>
-                             <item row="1" column="1">
-                              <widget class="QLineEdit" name="lineEdit_income_offering_onside">
-                               <property name="maximumSize">
-                                <size>
-                                 <width>100</width>
-                                 <height>16777215</height>
-                                </size>
-                               </property>
-                               <property name="text">
-                                <string>0</string>
-                               </property>
-                              </widget>
-                             </item>
-                             <item row="2" column="0">
-                              <widget class="QLabel" name="label_43">
-                               <property name="text">
-                                <string>教会汇款奉献</string>
-                               </property>
-                              </widget>
-                             </item>
-                             <item row="11" column="0">
-                              <widget class="QLabel" name="label_64">
-                               <property name="text">
-                                <string>本月结余</string>
-                               </property>
-                              </widget>
-                             </item>
-                             <item row="11" column="1" colspan="2">
-                              <widget class="QLineEdit" name="lineEdit_net_income"/>
-                             </item>
-                             <item row="2" column="1">
-                              <widget class="QLineEdit" name="lineEdit_income_offering_online">
-                               <property name="maximumSize">
-                                <size>
-                                 <width>100</width>
-                                 <height>16777215</height>
-                                </size>
-                               </property>
-                               <property name="text">
-                                <string>0</string>
-                               </property>
-                              </widget>
-                             </item>
-                             <item row="9" column="1" colspan="2">
-                              <widget class="QLineEdit" name="lineEdit_total_income"/>
-                             </item>
-                             <item row="1" column="2">
-                              <widget class="QLineEdit" name="lineEdit_income_offering_onside_note">
-                               <property name="text">
-                                <string>主日回应奉献/敬拜奉献</string>
-                               </property>
-                              </widget>
-                             </item>
-                             <item row="9" column="0">
-                              <widget class="QLabel" name="label_62">
-                               <property name="text">
-                                <string>总计入账</string>
-                               </property>
-                              </widget>
-                             </item>
-                             <item row="2" column="2">
-                              <widget class="QLineEdit" name="lineEdit_income_offering_online_note">
-                               <property name="text">
-                                <string>汇款奉献</string>
-                               </property>
-                              </widget>
-                             </item>
-                             <item row="6" column="0">
-                              <widget class="QLabel" name="label_50">
-                               <property name="text">
-                                <string>其它进项1</string>
-                               </property>
-                              </widget>
-                             </item>
-                             <item row="6" column="2">
-                              <widget class="QLineEdit" name="lineEdit_income_offering_others_note">
-                               <property name="text">
-                                <string>其它进项1</string>
-                               </property>
-                              </widget>
-                             </item>
-                             <item row="6" column="1">
-                              <widget class="QLineEdit" name="lineEdit_income_offering_others">
-                               <property name="maximumSize">
-                                <size>
-                                 <width>100</width>
-                                 <height>16777215</height>
-                                </size>
-                               </property>
-                               <property name="text">
-                                <string>0</string>
-                               </property>
-                              </widget>
-                             </item>
-                             <item row="10" column="0">
-                              <widget class="QLabel" name="label_63">
-                               <property name="text">
-                                <string>本月支出</string>
-                               </property>
-                              </widget>
-                             </item>
-                             <item row="10" column="1" colspan="2">
-                              <widget class="QLineEdit" name="lineEdit_total_expense"/>
-                             </item>
-                             <item row="7" column="2">
-                              <widget class="QLineEdit" name="lineEdit_income_offering_others2_note">
-                               <property name="text">
-                                <string>其它进项2</string>
-                               </property>
-                              </widget>
-                             </item>
-                            </layout>
+                            <widget class="QLineEdit" name="lineEdit_excel_file_path">
+                             <property name="text">
+                              <string>C:\\Users\\qiucanro\\Downloads\\十二月财务报告2024.xlsx</string>
+                             </property>
+                             <property name="placeholderText">
+                              <string>请在此输入excel文件完整的路径</string>
+                             </property>
+                            </widget>
                            </item>
                            <item>
-                            <spacer name="verticalSpacer_14">
-                             <property name="orientation">
-                              <enum>Qt::Vertical</enum>
+                            <widget class="QPushButton" name="pushButton_load_excel">
+                             <property name="text">
+                              <string>导入</string>
                              </property>
-                             <property name="sizeHint" stdset="0">
-                              <size>
-                               <width>20</width>
-                               <height>40</height>
-                              </size>
-                             </property>
-                            </spacer>
+                            </widget>
                            </item>
                           </layout>
                          </item>
@@ -1969,14 +2000,14 @@ p, li { white-space: pre-wrap; }
                            <item>
                             <layout class="QGridLayout" name="gridLayout_4">
                              <item row="6" column="3">
-                              <widget class="QLineEdit" name="lineEdit_expense_nebenkosten_note">
+                              <widget class="QLineEdit" name="lineEdit_expense_6_note">
                                <property name="text">
                                 <string>水电暖及杂费</string>
                                </property>
                               </widget>
                              </item>
                              <item row="2" column="3">
-                              <widget class="QLineEdit" name="lineEdit_expense_pastor_guan_note">
+                              <widget class="QLineEdit" name="lineEdit_expense_2_note">
                                <property name="text">
                                 <string>奉献FMCD管惠萍牧师德国宣教事工</string>
                                </property>
@@ -1990,7 +2021,7 @@ p, li { white-space: pre-wrap; }
                               </widget>
                              </item>
                              <item row="7" column="3">
-                              <widget class="QLineEdit" name="lineEdit_expense_software_subscribe_note">
+                              <widget class="QLineEdit" name="lineEdit_expense_7_note">
                                <property name="text">
                                 <string>在线敬拜软件Zoom使用费用</string>
                                </property>
@@ -2039,7 +2070,7 @@ p, li { white-space: pre-wrap; }
                               </widget>
                              </item>
                              <item row="11" column="2">
-                              <widget class="QLineEdit" name="lineEdit_expense_other_cost_3">
+                              <widget class="QLineEdit" name="lineEdit_expense_10">
                                <property name="maximumSize">
                                 <size>
                                  <width>100</width>
@@ -2052,14 +2083,14 @@ p, li { white-space: pre-wrap; }
                               </widget>
                              </item>
                              <item row="8" column="3">
-                              <widget class="QLineEdit" name="lineEdit_expense_other_cost_1_note">
+                              <widget class="QLineEdit" name="lineEdit_expense_8_note">
                                <property name="text">
                                 <string>其它费用1</string>
                                </property>
                               </widget>
                              </item>
                              <item row="10" column="2">
-                              <widget class="QLineEdit" name="lineEdit_expense_other_cost_2">
+                              <widget class="QLineEdit" name="lineEdit_expense_9">
                                <property name="maximumSize">
                                 <size>
                                  <width>100</width>
@@ -2072,28 +2103,28 @@ p, li { white-space: pre-wrap; }
                               </widget>
                              </item>
                              <item row="11" column="3">
-                              <widget class="QLineEdit" name="lineEdit_expense_other_cost_3_note">
+                              <widget class="QLineEdit" name="lineEdit_expense_10_note">
                                <property name="text">
                                 <string>其它费用3</string>
                                </property>
                               </widget>
                              </item>
                              <item row="10" column="3">
-                              <widget class="QLineEdit" name="lineEdit_expense_other_cost_2_note">
+                              <widget class="QLineEdit" name="lineEdit_expense_9_note">
                                <property name="text">
                                 <string>其它费用2</string>
                                </property>
                               </widget>
                              </item>
                              <item row="4" column="3">
-                              <widget class="QLineEdit" name="lineEdit_expense_kiel_note">
+                              <widget class="QLineEdit" name="lineEdit_expense_4_note">
                                <property name="text">
                                 <string>基尔査经班福音事工（租金）</string>
                                </property>
                               </widget>
                              </item>
                              <item row="5" column="3">
-                              <widget class="QLineEdit" name="lineEdit_expense_lubeck_note">
+                              <widget class="QLineEdit" name="lineEdit_expense_5_note">
                                <property name="text">
                                 <string>吕贝克查经班福音事工（租金）</string>
                                </property>
@@ -2107,14 +2138,14 @@ p, li { white-space: pre-wrap; }
                               </widget>
                              </item>
                              <item row="3" column="3">
-                              <widget class="QLineEdit" name="lineEdit_expense_pastor_chuandao_note">
+                              <widget class="QLineEdit" name="lineEdit_expense_3_note">
                                <property name="text">
                                 <string>奉献FMCD吴雨洁宣教士福音事工</string>
                                </property>
                               </widget>
                              </item>
                              <item row="1" column="3">
-                              <widget class="QLineEdit" name="lineEdit_expense_pastor_wu_note">
+                              <widget class="QLineEdit" name="lineEdit_expense_1_note">
                                <property name="text">
                                 <string>奉献FMCD吴牧师德国宣教事工</string>
                                </property>
@@ -2128,7 +2159,7 @@ p, li { white-space: pre-wrap; }
                               </widget>
                              </item>
                              <item row="13" column="3">
-                              <widget class="QLineEdit" name="lineEdit_expense_other_cost_5_note">
+                              <widget class="QLineEdit" name="lineEdit_expense_12_note">
                                <property name="text">
                                 <string>其它费用5</string>
                                </property>
@@ -2142,7 +2173,7 @@ p, li { white-space: pre-wrap; }
                               </widget>
                              </item>
                              <item row="13" column="2">
-                              <widget class="QLineEdit" name="lineEdit_expense_other_cost_5">
+                              <widget class="QLineEdit" name="lineEdit_expense_12">
                                <property name="maximumSize">
                                 <size>
                                  <width>100</width>
@@ -2169,7 +2200,7 @@ p, li { white-space: pre-wrap; }
                               </widget>
                              </item>
                              <item row="2" column="2">
-                              <widget class="QLineEdit" name="lineEdit_expense_pastor_guan">
+                              <widget class="QLineEdit" name="lineEdit_expense_2">
                                <property name="maximumSize">
                                 <size>
                                  <width>100</width>
@@ -2189,7 +2220,7 @@ p, li { white-space: pre-wrap; }
                               </widget>
                              </item>
                              <item row="1" column="2">
-                              <widget class="QLineEdit" name="lineEdit_expense_pastor_wu">
+                              <widget class="QLineEdit" name="lineEdit_expense_1">
                                <property name="maximumSize">
                                 <size>
                                  <width>100</width>
@@ -2202,7 +2233,7 @@ p, li { white-space: pre-wrap; }
                               </widget>
                              </item>
                              <item row="3" column="2">
-                              <widget class="QLineEdit" name="lineEdit_expense_pastor_chuandao">
+                              <widget class="QLineEdit" name="lineEdit_expense_3">
                                <property name="maximumSize">
                                 <size>
                                  <width>100</width>
@@ -2215,7 +2246,7 @@ p, li { white-space: pre-wrap; }
                               </widget>
                              </item>
                              <item row="5" column="2">
-                              <widget class="QLineEdit" name="lineEdit_expense_lubeck">
+                              <widget class="QLineEdit" name="lineEdit_expense_5">
                                <property name="maximumSize">
                                 <size>
                                  <width>100</width>
@@ -2228,7 +2259,7 @@ p, li { white-space: pre-wrap; }
                               </widget>
                              </item>
                              <item row="7" column="2">
-                              <widget class="QLineEdit" name="lineEdit_expense_software_subscribe">
+                              <widget class="QLineEdit" name="lineEdit_expense_7">
                                <property name="maximumSize">
                                 <size>
                                  <width>100</width>
@@ -2248,7 +2279,7 @@ p, li { white-space: pre-wrap; }
                               </widget>
                              </item>
                              <item row="4" column="2">
-                              <widget class="QLineEdit" name="lineEdit_expense_kiel">
+                              <widget class="QLineEdit" name="lineEdit_expense_4">
                                <property name="maximumSize">
                                 <size>
                                  <width>100</width>
@@ -2261,7 +2292,7 @@ p, li { white-space: pre-wrap; }
                               </widget>
                              </item>
                              <item row="8" column="2">
-                              <widget class="QLineEdit" name="lineEdit_expense_other_cost_1">
+                              <widget class="QLineEdit" name="lineEdit_expense_8">
                                <property name="maximumSize">
                                 <size>
                                  <width>100</width>
@@ -2274,7 +2305,7 @@ p, li { white-space: pre-wrap; }
                               </widget>
                              </item>
                              <item row="6" column="2">
-                              <widget class="QLineEdit" name="lineEdit_expense_nebenkosten">
+                              <widget class="QLineEdit" name="lineEdit_expense_6">
                                <property name="maximumSize">
                                 <size>
                                  <width>100</width>
@@ -2294,7 +2325,7 @@ p, li { white-space: pre-wrap; }
                               </widget>
                              </item>
                              <item row="12" column="2">
-                              <widget class="QLineEdit" name="lineEdit_expense_other_cost_4">
+                              <widget class="QLineEdit" name="lineEdit_expense_11">
                                <property name="maximumSize">
                                 <size>
                                  <width>100</width>
@@ -2307,7 +2338,7 @@ p, li { white-space: pre-wrap; }
                               </widget>
                              </item>
                              <item row="12" column="3">
-                              <widget class="QLineEdit" name="lineEdit_expense_other_cost_4_note">
+                              <widget class="QLineEdit" name="lineEdit_expense_11_note">
                                <property name="text">
                                 <string>其它费用4</string>
                                </property>
@@ -2349,7 +2380,7 @@ p, li { white-space: pre-wrap; }
                               </widget>
                              </item>
                              <item row="14" column="2">
-                              <widget class="QLineEdit" name="lineEdit_expense_other_cost_6">
+                              <widget class="QLineEdit" name="lineEdit_expense_13">
                                <property name="maximumSize">
                                 <size>
                                  <width>100</width>
@@ -2362,7 +2393,7 @@ p, li { white-space: pre-wrap; }
                               </widget>
                              </item>
                              <item row="15" column="2">
-                              <widget class="QLineEdit" name="lineEdit_expense_other_cost_7">
+                              <widget class="QLineEdit" name="lineEdit_expense_14">
                                <property name="maximumSize">
                                 <size>
                                  <width>100</width>
@@ -2375,7 +2406,7 @@ p, li { white-space: pre-wrap; }
                               </widget>
                              </item>
                              <item row="16" column="2">
-                              <widget class="QLineEdit" name="lineEdit_expense_other_cost_8">
+                              <widget class="QLineEdit" name="lineEdit_expense_15">
                                <property name="maximumSize">
                                 <size>
                                  <width>100</width>
@@ -2388,7 +2419,7 @@ p, li { white-space: pre-wrap; }
                               </widget>
                              </item>
                              <item row="17" column="2">
-                              <widget class="QLineEdit" name="lineEdit_expense_other_cost_9">
+                              <widget class="QLineEdit" name="lineEdit_expense_16">
                                <property name="maximumSize">
                                 <size>
                                  <width>100</width>
@@ -2401,7 +2432,7 @@ p, li { white-space: pre-wrap; }
                               </widget>
                              </item>
                              <item row="18" column="2">
-                              <widget class="QLineEdit" name="lineEdit_expense_other_cost_10">
+                              <widget class="QLineEdit" name="lineEdit_expense_17">
                                <property name="maximumSize">
                                 <size>
                                  <width>100</width>
@@ -2414,35 +2445,35 @@ p, li { white-space: pre-wrap; }
                               </widget>
                              </item>
                              <item row="14" column="3">
-                              <widget class="QLineEdit" name="lineEdit_expense_other_cost_6_note">
+                              <widget class="QLineEdit" name="lineEdit_expense_13_note">
                                <property name="text">
                                 <string>其它费用6</string>
                                </property>
                               </widget>
                              </item>
                              <item row="15" column="3">
-                              <widget class="QLineEdit" name="lineEdit_expense_other_cost_7_note">
+                              <widget class="QLineEdit" name="lineEdit_expense_14_note">
                                <property name="text">
                                 <string>其它费用7</string>
                                </property>
                               </widget>
                              </item>
                              <item row="16" column="3">
-                              <widget class="QLineEdit" name="lineEdit_expense_other_cost_8_note">
+                              <widget class="QLineEdit" name="lineEdit_expense_15_note">
                                <property name="text">
                                 <string>其它费用8</string>
                                </property>
                               </widget>
                              </item>
                              <item row="17" column="3">
-                              <widget class="QLineEdit" name="lineEdit_expense_other_cost_9_note">
+                              <widget class="QLineEdit" name="lineEdit_expense_16_note">
                                <property name="text">
                                 <string>其它费用9</string>
                                </property>
                               </widget>
                              </item>
                              <item row="18" column="3">
-                              <widget class="QLineEdit" name="lineEdit_expense_other_cost_10_note">
+                              <widget class="QLineEdit" name="lineEdit_expense_17_note">
                                <property name="text">
                                 <string>其它费用10</string>
                                </property>
@@ -4413,7 +4444,7 @@ p, li { white-space: pre-wrap; }
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1448</width>
+     <width>1316</width>
      <height>21</height>
     </rect>
    </property>
