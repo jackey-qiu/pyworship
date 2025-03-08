@@ -198,9 +198,11 @@ class makeBulletin(object):
         tb = self.add_table(font_size=10, content=main, alignments=[WD_TABLE_ALIGNMENT.LEFT,WD_TABLE_ALIGNMENT.RIGHT])
         #tb.add_row()
         #tb.rows[-1].cells[0].merge(tb.rows[-1].cells[1])
+        month = self.month
+        pre_month = month - 1 if month!=1 else 12
         ntb = self.add_table(font_size=10, content = [['','总进','总支','结余']]+table_data['summary']+[["202？（?-?月)年度",'?? €','?? €','?? €']],alignments=[WD_TABLE_ALIGNMENT.LEFT,WD_TABLE_ALIGNMENT.RIGHT,WD_TABLE_ALIGNMENT.RIGHT,WD_TABLE_ALIGNMENT.RIGHT])
-        self.add_paragraphs([f'* 堂址维护基金：{self.month-2}月提拨金为???欧。至{self.month-2}月??日止，总进为????欧，总支为????欧，结余为????欧。\
-                             \n* 神学教育基金：支持 CCG Bremen 神学生支出 400 欧，至{self.month-2}月?日止，结余为????欧。 \n* 教会宣教广传事工基金：至 {self.month-2} 月 ？？ 日止，结余 ？？ 欧。'], format=self.format_body, font_size = 9, alignment=WD_ALIGN_PARAGRAPH.LEFT)
+        self.add_paragraphs([f'* 堂址维护基金：{month+1}月提拨金为???欧。至{pre_month}月??日止，总进为????欧，总支为????欧，结余为????欧。\
+                             \n* 神学教育基金：支持 CCG Bremen 神学生支出 400 欧，至{pre_month}月?日止，结余为????欧。 \n* 教会宣教广传事工基金：至 {pre_month} 月 ？？ 日止，结余 ？？ 欧。'], format=self.format_body, font_size = 9, alignment=WD_ALIGN_PARAGRAPH.LEFT)
 
     def add_corresponding_table(self):
         self.add_paragraphs(['教会牧者执事联络电话'],self.format_title_big, font_size = 12)
@@ -273,8 +275,11 @@ class makeBulletin(object):
         self.add_preach_table(contents)
 
     def add_header_info(self,contents = ['年度主题：复兴我灵、更新我心','我要使他们有合一的心，也要将新灵放在他们里面，又从他们肉体中除掉石心，赐给他们肉心，使他们顺从我的律例，谨守遵行我的典章。他们要作我的子民，我要作他们的　神。							以西结书11 : 19-20']):
+        year, month = self.year, self.month
+        year_next_month = year if month!=12 else year + 1
+        next_month = month + 1 if month!=12 else 1
         self.add_paragraphs( ['德国汉堡华人基督教会'], format=self.format_title_big, font_size = 24, space_before=20, space_after = 2)
-        self.add_paragraphs( [f'{self.year}年{self.month}月份月报'], format=self.format_body, font_size = 12, space_before =8, space_after =2)
+        self.add_paragraphs( [f'{year_next_month}年{next_month}月份月报'], format=self.format_body, font_size = 12, space_before =8, space_after =2)
         self.add_paragraphs( [f'年度主题：{contents[0]}'], format=self.format_body, font_size = 13,space_after = 2, space_before = 5)
         self.add_paragraphs( [contents[1]], format=self.format_body, font_size = 10, line_spacing = 15)
 
@@ -288,7 +293,7 @@ class makeBulletin(object):
 
     def add_monthly_scripture(self, contents):
         self.add_paragraphs(['†今月金句'],format = self.format_body, font_size = 12, bold = True)
-        self.add_paragraphs(contents, format = self.format_body, font_size = 9)
+        self.add_paragraphs(contents, format = self.format_body, font_size = 10)
         
     def add_monthly_service_table(self, contents):
         self.add_paragraphs(['主日崇拜服事表'],format = self.format_body, font_size = 10, bold = True)
