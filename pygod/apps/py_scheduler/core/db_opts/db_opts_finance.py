@@ -4,12 +4,16 @@ from ..graph_operations import create_piechart
 from openpyxl import Workbook, load_workbook
 
 def load_content_from_excel_file(self):
+    # map_col_name = {'B':'A','C':'B','D':'C'}
+    map_col_name = {'B':'B','C':'C','D':'D'}
     file = self.lineEdit_excel_file_path.text()
     income_dict = {}
     expense_dict = {}
     wb = load_workbook(file)
     ws = wb.active
     def _fix_text_ref(txt):
+        if type(txt)!=str:
+            return txt
         if txt.startswith('='):
             items = txt[1:].rsplit(' & ')
             for i, item in enumerate(items):
@@ -23,19 +27,19 @@ def load_content_from_excel_file(self):
         
     pointer = 2
     while True:
-        value = ws[f'B{pointer}'].value
+        value = ws[f'{map_col_name["B"]}{pointer}'].value
         if value==None:
             break
-        value = _fix_text_ref(ws[f'B{pointer}'].value)
-        income_dict[value] = ws[f'C{pointer}'].value
+        value = _fix_text_ref(ws[f'{map_col_name["B"]}{pointer}'].value)
+        income_dict[value] = ws[f'{map_col_name["C"]}{pointer}'].value
         pointer += 1
     pointer += 2
     while True:
-        value = ws[f'B{pointer}'].value
+        value = ws[f'{map_col_name["B"]}{pointer}'].value
         if value==None:
             break
-        value = _fix_text_ref(ws[f'B{pointer}'].value)
-        expense_dict[value] = ws[f'D{pointer}'].value
+        value = _fix_text_ref(ws[f'{map_col_name["B"]}{pointer}'].value)
+        expense_dict[value] = ws[f'{map_col_name["D"]}{pointer}'].value
         pointer += 1
     #fill the content
     for i, key in enumerate(income_dict.keys()):

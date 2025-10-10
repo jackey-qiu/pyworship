@@ -77,6 +77,12 @@ def get_task_content(self, key):
     return '\n'.join([dates]+contents_formated)
 
 def get_finance_content(self, key):
+    def _format_num(value):
+        tmp = locale.currency(float(value),grouping=True)
+        comma_ix = tmp.index(',')
+        tmp = list(tmp.replace('.',','))
+        tmp[comma_ix] = '.'
+        return ''.join(tmp)
     month = self.comboBox_bulletin_month.currentText()
     year = self.lineEdit_year_bulletin.text()
     collection = 'finance_info'
@@ -91,10 +97,11 @@ def get_finance_content(self, key):
         value = float(text_query_by_field(self, 'group_id', key, doc, collection, db_temp)[0])
         if doc=='net_income':
             if value<=0:
-                sign = '-'
+                sign = ''
             else:
                 sign = '+'
-        summary.append(sign+locale.currency(value,grouping=True))
+        # summary.append(sign+locale.currency(value,grouping=True))
+        summary.append(sign+_format_num(value))
     for doc in docs:
         if not doc.endswith('note'):
             if doc not in ['total_income','total_expense','net_income']:
@@ -104,10 +111,10 @@ def get_finance_content(self, key):
                     note = [doc]
                 if doc.startswith('income'):
                     if float(value[0])!=0:
-                        income.append([note[0], '+'+locale.currency(float(value[0]),grouping=True)])
+                        income.append([note[0], '+'+_format_num(value[0])])
                 else:
                     if float(value[0])!=0:
-                        expense.append([note[0], '-'+locale.currency(float(value[0]),grouping=True)])
+                        expense.append([note[0], '-'+_format_num(value[0])])
     income = '\n'.join(['&'.join(each) for each in income])
     expense = '\n'.join(['&'.join(each) for each in expense])
     summary = '&'.join(list(map(str,summary)))
