@@ -286,10 +286,10 @@ def scheduler(ui, ss, tm):
         pass
     myWin.setWindowTitle('汉堡华人基督教会数据库管理系统')
     style_sheet_path = str(Path(__file__).parent.parent/ "resources" / "stylesheets" / ss)
-    File = open(style_sheet_path,'r')
-    with File:
-        qss = File.read()
-        app.setStyleSheet(qss)    
+    # File = open(style_sheet_path,'r')
+    # with File:
+        # qss = File.read()
+        # app.setStyleSheet(qss)    
     myWin.show()
     sys.exit(app.exec_())
 

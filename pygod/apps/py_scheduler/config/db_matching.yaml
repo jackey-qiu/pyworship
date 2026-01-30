@@ -41,19 +41,19 @@ db_types:
     人事:
         collections: 
             personal_info:
-                name: lineEdit_name_ccg
-                gender: lineEdit_gender_ccg
-                birthday: lineEdit_birth_ccg
-                origin: lineEdit_origin_ccg
-                address: lineEdit_address_ccg
-                phone: lineEdit_phone_ccg
-                email: lineEdit_email_ccg
-                membersince: lineEdit_member_start
-                title: lineEdit_ccg_title
-                task: lineEdit_task_ccg
-                note: textEdit_note_ccg
-                img_format: lineEdit_img_format 
-                img: widget_img_view 
+                name: lineEdit_name_ccg_note
+                gender: lineEdit_gender_ccg_note
+                birthday: lineEdit_birth_ccg_note
+                origin: lineEdit_origin_ccg_note
+                address: lineEdit_address_ccg_note
+                phone: lineEdit_phone_ccg_note
+                email: lineEdit_email_ccg_note
+                membersince: lineEdit_member_start_note
+                title: lineEdit_ccg_title_note
+                task: lineEdit_task_ccg_note
+                note: textEdit_note_ccg_note
+                #img_format: lineEdit_img_format 
+                #img: widget_img_view 
         table_viewer: 
             personal_info:
                 name: 姓名
@@ -62,6 +62,7 @@ db_types:
                 membersince: 入会时间
                 title: 教会职务
                 task: 教会服事          
+                note: 备注
     服事:
         collections: 
             topic_info:
@@ -171,6 +172,13 @@ db_types:
                 5th_week: lineEdit_5th_week_note
             cleanup_info:
                 map_name: 管堂组（预备）
+                1st_week: lineEdit_1st_week_note
+                2nd_week: lineEdit_2nd_week_note
+                3rd_week: lineEdit_3rd_week_note
+                4th_week: lineEdit_4th_week_note
+                5th_week: lineEdit_5th_week_note
+            cleanup_after_info:
+                map_name: 管堂组（收拾）
                 1st_week: lineEdit_1st_week_note
                 2nd_week: lineEdit_2nd_week_note
                 3rd_week: lineEdit_3rd_week_note

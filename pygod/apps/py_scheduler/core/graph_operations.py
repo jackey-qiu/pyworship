@@ -12,9 +12,9 @@ def create_piechart(self, accordingto = 'income'):
     group_id = f'{year}_{self.comboBox_finance_month.currentText()}'
     series = QPieSeries()
     data = self.pandas_model._data[self.pandas_model._data['group_id']==group_id]
-    income_offering_onside = list(data['income_offering_onside'].astype(np.float))[0]
-    income_offering_online = list(data['income_offering_online'].astype(np.float))[0]
-    total_income = list(data['total_income'].astype(np.float))[0]
+    income_offering_onside = list(data['income_offering_onside'].astype(np.float64))[0]
+    income_offering_online = list(data['income_offering_online'].astype(np.float64))[0]
+    total_income = list(data['total_income'].astype(np.float64))[0]
     others = total_income - income_offering_online - income_offering_onside
     sorted_dict = {'主日奉献收入':income_offering_onside, '银行转账收入': income_offering_online, '其它收入': others}
     if accordingto == 'income':

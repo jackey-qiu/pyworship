@@ -276,8 +276,23 @@ class PandasModel(QtCore.QAbstractTableModel):
     def sort(self, Ncol, order):
         """Sort table by given column number."""
         def _to_pinyin(s):
-            return ''.join([each[:-1] for each_list in pinyin(s, style = Style.TONE3) for each in each_list])
-        self._data['sort_me'] = self._data[self._data.columns.tolist()[Ncol]].apply(_to_pinyin)
+            try:
+                return ''.join([each[:-1] for each_list in pinyin(s, style = Style.TONE3) for each in each_list])
+            except:
+                return s
+        # self._data['sort_me'] = self._data[self._data.columns.tolist()[Ncol]].apply(_to_pinyin)
+        def _format_date(s):
+            s = s[0:-1]
+            items = s.rsplit('_')
+            if len(items[1])==1:
+                items[1] = '0'+items[1]
+            return ''.join(items)
+        if self._data.columns.tolist()[Ncol]=='birthday':
+            self._data['sort_me'] = self._data[self._data.columns.tolist()[Ncol]].apply(lambda x:int(x))
+        elif self._data.columns.tolist()[Ncol]=='group_id':
+            self._data['sort_me'] = self._data[self._data.columns.tolist()[Ncol]].apply(_format_date)
+        else:
+            self._data['sort_me'] = self._data[self._data.columns.tolist()[Ncol]].apply(_to_pinyin)
         self.layoutAboutToBeChanged.emit()
         self._data = self._data.sort_values('sort_me',
                                         ascending=order == QtCore.Qt.AscendingOrder, ignore_index = True)

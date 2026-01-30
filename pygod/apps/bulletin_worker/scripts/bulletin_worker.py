@@ -15,9 +15,51 @@ import copy
 
 root = Path(__file__).parent.parent
 
+
+from docx.oxml import OxmlElement
+from docx.oxml.ns import qn
+
+def set_cell_border(cell, left = False, right = False, up = False, down = False):
+    #it is used for border control only (with(out) border lines)
+    kwargs_template = {
+        'top':{"sz": 0, "val": "nil", "color": "#060606FF", "space": "0"},
+        'bottom':{"sz": 0, "color": "#131313", "val": "nil"},
+        'start':{"sz": 0, "val": "dashed", "shadow": "true"},
+        'end':{"sz": 0, "val": "dashed"}}
+    kwargs = {'top': kwargs_template['top'] | {'val': ['nil','single'][int(up)]},
+              'bottom':kwargs_template['bottom'] | {'val': ['nil','single'][int(down)]},
+              'start':kwargs_template['start'] | {'val': ['nil','single'][int(left)]},
+              'end':kwargs_template['end'] | {'val': ['nil','single'][int(right)]}}
+
+    tc = cell._tc
+    tcPr = tc.get_or_add_tcPr()
+
+    # check for tag existnace, if none found, then create one
+    tcBorders = tcPr.first_child_found_in("w:tcBorders")
+    if tcBorders is None:
+        tcBorders = OxmlElement('w:tcBorders')
+        tcPr.append(tcBorders)
+
+    # list over all available tags
+    for edge in ('start', 'top', 'end', 'bottom', 'insideH', 'insideV'):
+        edge_data = kwargs.get(edge)
+        if edge_data:
+            tag = 'w:{}'.format(edge)
+
+            # check for tag existnace, if none found, then create one
+            element = tcBorders.find(qn(tag))
+            if element is None:
+                element = OxmlElement(tag)
+                tcBorders.append(element)
+
+            # looks like order of attributes is important
+            for key in ["sz", "val", "color", "space", "shadow"]:
+                if key in edge_data:
+                    element.set(qn('w:{}'.format(key)), str(edge_data[key]))
+
 class makeBulletin(object):
-    top_margin = Mm(5)
-    bottom_margin = Mm(5)
+    top_margin = Mm(6)
+    bottom_margin = Mm(6)
     left_margin = Mm(5)
     right_margin = Mm(5)
     shade_color_code = '9CC2E5'#'6495ED'
@@ -78,7 +120,8 @@ class makeBulletin(object):
 
     def change_orientation(self, doc):
         current_section = doc.sections[-1]
-        new_width, new_height = current_section.page_height, current_section.page_width
+        #new_width, new_height = current_section.page_height, current_section.page_width
+        new_height, new_width = Mm(210), Mm(297)
         # new_section = doc.add_section(WD_SECTION.CONTINUOUS)
         current_section.orientation = WD_ORIENT.LANDSCAPE
         current_section.page_width = new_width
@@ -124,7 +167,7 @@ class makeBulletin(object):
                 if each_item==_each[-1] and len(_each)>1:
                     run.font.bold = True
 
-    def add_table(self, font_size, content = [[]], row_base = True, width = None, alignments = WD_ALIGN_PARAGRAPH.CENTER,style = 'Table Grid'):
+    def add_table(self, font_size, content = [[]], row_base = True, width = None, alignments = WD_ALIGN_PARAGRAPH.CENTER,style = 'Table Grid', borders = {'left':False,'right':False,'up':False,'down':False}):
         assert type(content)==list, "The content of table must be in a list form"
         assert len(content)>0, "There is nothing to fill the table"
         assert len(content[0])>0, "Column or row content is empty"
@@ -155,6 +198,7 @@ class makeBulletin(object):
             # row_content = [each for each in row_content if each!='']
             cells = tb.rows[i].cells
             for j in range(cols-merge_times):
+                set_cell_border(cells[j], **borders)
                 # cells[j].alignment = alignments[j]               
                 cells[j].text = row_content[j]
                 if width!=None:
@@ -195,12 +239,12 @@ class makeBulletin(object):
         assert 'income' in table_data and 'expanse' in table_data and 'summary' in table_data, "The table data must have three keys: income and expanse and summary. One or both are missing"
         self.add_paragraphs(['财务报告（单位：EUR）'],self.format_title_big, font_size=12)
         main = [['进项','']]+table_data['income']+[['支出','']]+table_data['expanse']
-        tb = self.add_table(font_size=10, content=main, alignments=[WD_TABLE_ALIGNMENT.LEFT,WD_TABLE_ALIGNMENT.RIGHT])
+        tb = self.add_table(font_size=10, content=main, alignments=[WD_TABLE_ALIGNMENT.LEFT,WD_TABLE_ALIGNMENT.RIGHT],borders = {'left':False,'right':False,'up':False,'down':False})
         #tb.add_row()
         #tb.rows[-1].cells[0].merge(tb.rows[-1].cells[1])
         month = self.month
         pre_month = month - 1 if month!=1 else 12
-        ntb = self.add_table(font_size=10, content = [['','总进','总支','结余']]+table_data['summary']+[["202？（?-?月)年度",'?? €','?? €','?? €']],alignments=[WD_TABLE_ALIGNMENT.LEFT,WD_TABLE_ALIGNMENT.RIGHT,WD_TABLE_ALIGNMENT.RIGHT,WD_TABLE_ALIGNMENT.RIGHT])
+        ntb = self.add_table(font_size=10, content = [['','总进','总支','结余']]+table_data['summary']+[["202？（?-?月)年度",'?? €','?? €','?? €']],alignments=[WD_TABLE_ALIGNMENT.LEFT,WD_TABLE_ALIGNMENT.RIGHT,WD_TABLE_ALIGNMENT.RIGHT,WD_TABLE_ALIGNMENT.RIGHT],borders = {'left':False,'right':False,'up':False,'down':False})
         self.add_paragraphs([f'* 堂址维护基金：{month+1}月提拨金为???欧。至{pre_month}月??日止，总进为????欧，总支为????欧，结余为????欧。\
                              \n* 神学教育基金：支持 CCG Bremen 神学生支出 400 欧，至{pre_month}月?日止，结余为????欧。 \n* 教会宣教广传事工基金：至 {pre_month} 月 ？？ 日止，结余 ？？ 欧。'], format=self.format_body, font_size = 9, alignment=WD_ALIGN_PARAGRAPH.LEFT)
 
@@ -210,19 +254,19 @@ class makeBulletin(object):
                         ['吴振忠牧师温淑芳师母','04068860416','管惠萍牧师','04076900694'],
                         ['校园事工宣教士吴雨洁','015753937836','青少年事工宣教士葛美恩'],
                         ['主　席','邵　颢弟兄','017634968872','财务组','马内利弟兄','017655495554'],
-                        ['秘　书','王泽宇弟兄','015735390792','服务组','余余子姊妹','01796852241'],
+                        ['秘　书','王泽宇弟兄','015735390792','服务组','余余子姊妹','01794638359'],
                         ['礼拜组','李　帆弟兄','017670728016','教育组','王　榛弟兄','01796843477'],
                         ['图书组','黄罗佳弟兄','017660470014','福音事工组','刘朗朗弟兄','017664073888'],
-                        ['管堂组','施　逸弟兄','017662844246','x','x','x'],
+                        ['管堂组','周　斌弟兄','01796737203','x','x','x'],
         ]
-        self.add_table(font_size = 9, content = [table_content[0]], alignments=WD_TABLE_ALIGNMENT.LEFT)
-        self.add_table(font_size = 9, content = [table_content[1]], alignments=WD_TABLE_ALIGNMENT.LEFT)
-        self.add_table(font_size = 9, content = table_content[2:-1], alignments=WD_TABLE_ALIGNMENT.LEFT)
-        self.add_table(font_size = 9, content = [table_content[-1]], alignments=WD_TABLE_ALIGNMENT.LEFT)
+        self.add_table(font_size = 9, content = [table_content[0]], alignments=WD_TABLE_ALIGNMENT.LEFT,borders = {'left':False,'right':False,'up':False,'down':False})
+        self.add_table(font_size = 9, content = [table_content[1]], alignments=WD_TABLE_ALIGNMENT.LEFT,borders = {'left':False,'right':False,'up':False,'down':False})
+        self.add_table(font_size = 9, content = table_content[2:-1], alignments=WD_TABLE_ALIGNMENT.LEFT,borders = {'left':False,'right':False,'up':False,'down':False})
+        self.add_table(font_size = 9, content = [table_content[-1]], alignments=WD_TABLE_ALIGNMENT.LEFT,borders = {'left':False,'right':False,'up':False,'down':False})
 
     def add_whatsapp_info_table(self):
-        contents = [['欢迎大家加入教会的WhatsApp 通知群组',''],['bit.ly/ccgh-whatsapp 获得更多信息 ','']]
-        self.add_table(font_size=10, content = contents, alignments=WD_TABLE_ALIGNMENT.LEFT)
+        contents = [['欢迎大家加入教会的WhatsApp 通知群组'],['bit.ly/ccgh-whatsapp 获得更多信息 ']]
+        self.add_table(font_size=10, content = contents, alignments=WD_TABLE_ALIGNMENT.LEFT,borders = {'left':False,'right':False,'up':False,'down':False})
 
     def add_lesson_table(self):
         contents = [
@@ -232,38 +276,38 @@ class makeBulletin(object):
             ['🌍ccg-ham.de ccg.hamburg','儿童主日学','每周日上午10:30'],
             ['🏛chinese-library.de','少年主日学','每周日上午10:30']
         ]
-        tb = self.add_table(font_size= 10, content = contents, alignments=WD_TABLE_ALIGNMENT.LEFT)
+        tb = self.add_table(font_size= 10, content = contents, alignments=WD_TABLE_ALIGNMENT.LEFT,borders = {'left':False,'right':False,'up':False,'down':False})
 
     def add_meetup_info(self):
         contents = ['福音性查经    每周五19:30 （实体）',
-        '联络：吴振忠牧师（688 604 16）   ⚓Dulsberg-Süd 26    ➡️U1 Straßburger Str.',
+        '联络：吴振忠牧师（688 604 16）   ⚓Dulsberg-Süd 26    🚉U1 Straßburger Str.',
         '',
         '线上查经班    每月第二、四个周三19:30 （线上ZOOM）',
         '联络：管惠萍牧师（769 006 94）',
         '',
         '长青团契	     每月第一、三个周五10:00-14:00',
-        '联络：吴振忠牧师（688 604 16）   ⚓Blumenau 29   ➡️U1 Wartenau',
+        '联络：吴振忠牧师（688 604 16）   ⚓Blumenau 29   🚉U1 Wartenau',
         '',
         '青年团契	     每月周六14:00-16:00 （实体）',
-        '联络：刘朗朗弟兄（017664073888）    📭Dulsberg-Süd 26   ➡️U1 Straßburger Str.',
+        '联络：刘朗朗弟兄（017664073888）    ⚓Dulsberg-Süd 26   🚉U1 Straßburger Str.',
         '',
         '伉俪团契	     每月第二个周六14:00-16:30 （实体）',
-        '联络：施逸弟兄、崔乃心姊妹（017662844246） 黄罗佳弟兄、杨琪姊妹（017660470014）',
+        '联络：黄罗佳弟兄、杨琪姊妹（017660470014） 陈玮弟兄、蔡文彦姊妹（015142674175） 张勇弟兄、黄多姊妹（017623606936）',
         '',
         '妈妈小组	     每月第一、三个周四9:30-12:00 （线上ZOOM）',
-        '联络：徐圣佳姊妹（017670728041）   📭Dulsberg-Süd26    ➡️U1 Straßburger Str.',
+        '联络：徐圣佳姊妹（017670728041）   ⚓Dulsberg-Süd26    🚉U1 Straßburger Str.',
         '',
         '🎦Zoom ID: 5861908437，会议室密码: 903600']
-        self.add_paragraphs(contents, format = self.format_body)
+        self.add_paragraphs(contents, format = self.format_body, line_spacing = 12)
 
     def add_preach_table(self, contents):
         #append icon at the beginning place
         if len(contents)==4:
-            contents = [['🗓']+contents[0],\
+            contents = [['📅']+contents[0],\
                         ['✒️']+contents[1],\
                         ["🤵"]+contents[2],\
                         ['🏷️']+contents[3]]
-        tb = self.add_table(font_size= 10, content = contents, alignments=WD_TABLE_ALIGNMENT.CENTER)
+        tb = self.add_table(font_size= 10, content = contents, alignments=WD_TABLE_ALIGNMENT.CENTER,borders = {'left':False,'right':False,'up':True,'down':True})
         self.shade_row(tb, 0, self.shade_color_code, None)
         self.shade_row(tb, 2, self.shade_color_code, None)
 
@@ -297,20 +341,20 @@ class makeBulletin(object):
         
     def add_monthly_service_table(self, contents):
         self.add_paragraphs(['主日崇拜服事表'],format = self.format_body, font_size = 10, bold = True)
-        tb = self.add_table(font_size=10, content=contents, width = 70)
+        tb = self.add_table(font_size=10, content=contents, width = 70,borders = {'left':True,'right':True,'up':True,'down':True})
         for i in range(1, len(contents),2):
             self.shade_row(tb, i, self.shade_color_code, '000000')
 
     def add_last_month_record_table(self, offering_attendence_content, bible_study_attendence_content):
         self.add_paragraphs(['奉献纪录，主日及各查经小组出席人数'],format = self.format_body, font_size = 10, line_after = 5, line_before = 5, bold = True)
-        tb = self.add_table(font_size=10, content=offering_attendence_content, width = 70)
+        tb = self.add_table(font_size=10, content=offering_attendence_content, width = 70,borders = {'left':True,'right':True,'up':True,'down':True})
         self.shade_row(tb, 0, self.shade_color_code, '000000')
         self.add_spacing(5)
-        tb = self.add_table(font_size=10, content=bible_study_attendence_content, width = 70)
+        tb = self.add_table(font_size=10, content=bible_study_attendence_content, width = 70,borders = {'left':True,'right':True,'up':True,'down':True})
         self.shade_row(tb, 0, self.shade_color_code, '000000')
 
     def add_bank_info(self):
-        tb = self.add_table(font_size= 11, content = [['教会奉献账号 户名 CCG Hamburg e.V.银行 Ev. Kreditgenossenschaft e.G.\nIBAN DE73 5206 0410 0006 6031 30     BIC/SWIFT GENODEF1EK1' ]], alignments=WD_TABLE_ALIGNMENT.CENTER)
+        tb = self.add_table(font_size= 11, content = [['教会奉献账号 户名 CCG Hamburg e.V.银行 Ev. Kreditgenossenschaft e.G.\nIBAN DE73 5206 0410 0006 6031 30     BIC/SWIFT GENODEF1EK1' ]], alignments=WD_TABLE_ALIGNMENT.CENTER,borders = {'left':False,'right':False,'up':False,'down':False})
         self.shade_row(tb,0,self.shade_color_code,None)
 
     def test_add_finance_table(self):

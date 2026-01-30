@@ -172,7 +172,7 @@ def get_preach_content(self, key):
     contents_formated = [','.join(dates)]+[contents_formated[0],contents_formated[2],contents_formated[1]]
     return '\n'.join(contents_formated)
 
-def save_bulletin_content_in_txt_format_and_make_bulletin(self):
+def save_bulletin_content_in_txt_format_and_make_bulletin(self, create_file = True):
     year = int(self.lineEdit_year_bulletin.text())
     month = int(self.comboBox_bulletin_month.currentText())
     year_next_month = year if month!=12 else year + 1
@@ -195,10 +195,15 @@ def save_bulletin_content_in_txt_format_and_make_bulletin(self):
                   'MonthlyServiceTable':f"get_task_content(self,'{year_next_month}_{next_month}')",
                   'FinanceTable':f"get_finance_content(self, '{year_pre_month}_{pre_month}月')"
                   }
-    try:    
-        with open(str(content_folder / txt_file_name), 'w', encoding='utf8') as f:
-            for content_type in content_types:
-                f.write(f"<{content_type}>\n{eval(api_map[content_type])}\n</{content_type}>\n")
+    try:
+        if create_file:    
+            with open(str(content_folder / txt_file_name), 'w', encoding='utf-8') as f:
+                for content_type in content_types:
+                    f.write(f"<{content_type}>\n{eval(api_map[content_type])}\n</{content_type}>\n")
+                    # if content_type == 'MonthlyServiceTable':
+                        # print(eval(api_map[content_type]))
+                        # print('\n\n')
+                        # print(get_task_content(self,f'{year_next_month}_{next_month}'))
         bulletin(year, month, str(content_folder / txt_file_name), str(content_folder / doc_file_name))
         error_pop_up(f"The bulletin doc file is created and saved in {str(content_folder)}", 'Information')
     except Exception as e:

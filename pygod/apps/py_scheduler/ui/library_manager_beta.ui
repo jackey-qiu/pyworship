@@ -3501,7 +3501,57 @@ p, li { white-space: pre-wrap; }
                      <enum>QFrame::Raised</enum>
                     </property>
                     <layout class="QGridLayout" name="gridLayout_7">
-                     <item row="0" column="0">
+                     <item row="0" column="0" colspan="2">
+                      <layout class="QVBoxLayout" name="verticalLayout_23">
+                       <item>
+                        <widget class="QLabel" name="label_106">
+                         <property name="sizePolicy">
+                          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                           <horstretch>0</horstretch>
+                           <verstretch>0</verstretch>
+                          </sizepolicy>
+                         </property>
+                         <property name="text">
+                          <string>年度主题与金句</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item>
+                        <widget class="QTextEdit" name="textEdit_year_scripture_note">
+                         <property name="maximumSize">
+                          <size>
+                           <width>16777215</width>
+                           <height>80</height>
+                          </size>
+                         </property>
+                        </widget>
+                       </item>
+                       <item>
+                        <widget class="QLabel" name="label_105">
+                         <property name="sizePolicy">
+                          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                           <horstretch>0</horstretch>
+                           <verstretch>0</verstretch>
+                          </sizepolicy>
+                         </property>
+                         <property name="text">
+                          <string>本月金句</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item>
+                        <widget class="QTextEdit" name="textEdit_month_scripture_note">
+                         <property name="maximumSize">
+                          <size>
+                           <width>16777215</width>
+                           <height>80</height>
+                          </size>
+                         </property>
+                        </widget>
+                       </item>
+                      </layout>
+                     </item>
+                     <item row="1" column="0">
                       <layout class="QVBoxLayout" name="verticalLayout_24">
                        <item>
                         <widget class="QLabel" name="label_107">
@@ -3534,7 +3584,7 @@ p, li { white-space: pre-wrap; }
                        </item>
                       </layout>
                      </item>
-                     <item row="0" column="1">
+                     <item row="1" column="1">
                       <layout class="QVBoxLayout" name="verticalLayout_25">
                        <item>
                         <widget class="QLabel" name="label_108">
@@ -3577,13 +3627,10 @@ p, li { white-space: pre-wrap; }
                      <enum>QFrame::Raised</enum>
                     </property>
                     <layout class="QGridLayout" name="gridLayout_8">
-                     <item row="9" column="1">
+                     <item row="6" column="1">
                       <widget class="QLineEdit" name="lineEdit_dates_2_note"/>
                      </item>
-                     <item row="10" column="1">
-                      <widget class="QLineEdit" name="lineEdit_attendence_onsite_note"/>
-                     </item>
-                     <item row="3" column="0">
+                     <item row="0" column="0">
                       <widget class="QLabel" name="label_109">
                        <property name="sizePolicy">
                         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
@@ -3596,14 +3643,34 @@ p, li { white-space: pre-wrap; }
                        </property>
                       </widget>
                      </item>
-                     <item row="6" column="0">
+                     <item row="7" column="1">
+                      <widget class="QLineEdit" name="lineEdit_attendence_onsite_note"/>
+                     </item>
+                     <item row="8" column="1">
+                      <widget class="QLineEdit" name="lineEdit_attendence_online_note"/>
+                     </item>
+                     <item row="3" column="0">
                       <widget class="QLabel" name="label_115">
                        <property name="text">
                         <string>成人/少儿</string>
                        </property>
                       </widget>
                      </item>
-                     <item row="9" column="0">
+                     <item row="1" column="0">
+                      <widget class="QLabel" name="label_114">
+                       <property name="text">
+                        <string>日期</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="4" column="0">
+                      <widget class="QLabel" name="label_116">
+                       <property name="text">
+                        <string>奉献</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="6" column="0">
                       <widget class="QLabel" name="label_117">
                        <property name="text">
                         <string>日期</string>
@@ -3611,50 +3678,33 @@ p, li { white-space: pre-wrap; }
                       </widget>
                      </item>
                      <item row="7" column="0">
-                      <widget class="QLabel" name="label_116">
-                       <property name="text">
-                        <string>奉献</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item row="4" column="0">
-                      <widget class="QLabel" name="label_114">
-                       <property name="text">
-                        <string>日期</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item row="11" column="1">
-                      <widget class="QLineEdit" name="lineEdit_attendence_online_note"/>
-                     </item>
-                     <item row="11" column="0">
-                      <widget class="QLabel" name="label_119">
-                       <property name="text">
-                        <string>线上查经</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item row="4" column="1">
-                      <widget class="QLineEdit" name="lineEdit_dates_1_note">
-                       <property name="text">
-                        <string/>
-                       </property>
-                      </widget>
-                     </item>
-                     <item row="10" column="0">
                       <widget class="QLabel" name="label_118">
                        <property name="text">
                         <string>福音查经</string>
                        </property>
                       </widget>
                      </item>
-                     <item row="6" column="1">
+                     <item row="8" column="0">
+                      <widget class="QLabel" name="label_119">
+                       <property name="text">
+                        <string>线上查经</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="1" column="1">
+                      <widget class="QLineEdit" name="lineEdit_dates_1_note">
+                       <property name="text">
+                        <string/>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="3" column="1">
                       <widget class="QLineEdit" name="lineEdit_attendence_note"/>
                      </item>
-                     <item row="7" column="1">
+                     <item row="4" column="1">
                       <widget class="QLineEdit" name="lineEdit_offerings_note"/>
                      </item>
-                     <item row="8" column="0">
+                     <item row="5" column="0">
                       <widget class="QLabel" name="label_110">
                        <property name="sizePolicy">
                         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
@@ -3664,52 +3714,6 @@ p, li { white-space: pre-wrap; }
                        </property>
                        <property name="text">
                         <string>出席记录（查经）</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item row="1" column="0">
-                      <widget class="QLabel" name="label_106">
-                       <property name="sizePolicy">
-                        <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                         <horstretch>0</horstretch>
-                         <verstretch>0</verstretch>
-                        </sizepolicy>
-                       </property>
-                       <property name="text">
-                        <string>年度主题与金句</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item row="1" column="1">
-                      <widget class="QTextEdit" name="textEdit_year_scripture_note">
-                       <property name="maximumSize">
-                        <size>
-                         <width>16777215</width>
-                         <height>80</height>
-                        </size>
-                       </property>
-                      </widget>
-                     </item>
-                     <item row="2" column="0">
-                      <widget class="QLabel" name="label_105">
-                       <property name="sizePolicy">
-                        <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                         <horstretch>0</horstretch>
-                         <verstretch>0</verstretch>
-                        </sizepolicy>
-                       </property>
-                       <property name="text">
-                        <string>本月金句</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item row="2" column="1">
-                      <widget class="QTextEdit" name="textEdit_month_scripture_note">
-                       <property name="maximumSize">
-                        <size>
-                         <width>16777215</width>
-                         <height>80</height>
-                        </size>
                        </property>
                       </widget>
                      </item>

@@ -1,3 +1,4 @@
+import calendar
 from ..util import error_pop_up, get_date_from_nth_week
 from pathlib import Path
 import datetime
@@ -129,7 +130,8 @@ def get_data_for_x_song_items_note(self):
 def set_data_for_x_workers_note(self, db_name = 'ccg-task'):
     def _next_week(this_week, month, year):
         nextweek = None
-        if this_week.startswith('5'):
+        # if this_week.startswith('5'):
+        if this_week[0] == str(len([1 for i in calendar.monthcalendar(int(year),int(month)) if i[6]!=0])):
             nextweek = '1st_week'
             month = str(int(int(month)+1))
             if month=='13':
