@@ -99,7 +99,8 @@ class makeBulletin(object):
     format_list = [format_title_big, format_body, format_report]
     format_style_list = ['FontTitleBigStyle','FontBodyStyle','FontReportStyle']
 
-    def __init__(self, year, month):
+    def __init__(self, year, month, font_scale=1.0):
+        self.font_scale = font_scale
         self.doc = Document()
         self.year = year
         self.month = month
@@ -148,7 +149,8 @@ class makeBulletin(object):
     def add_paragraphs(self, par_text_list, format, **kwargs):
         format = copy.copy(format)
         format.update(kwargs)
-        # self.make_two_columns()
+        format['font_size'] = format['font_size'] * self.font_scale
+        format['line_spacing'] = format['line_spacing'] * self.font_scale
         for each in par_text_list:
             pg = self.doc.add_paragraph(style = format['style'])
             pg.paragraph_format.line_spacing = Pt(format['line_spacing'])
@@ -156,21 +158,22 @@ class makeBulletin(object):
             pg.paragraph_format.space_before = Pt(format['space_before'])
             pg.paragraph_format.alignment = format['alignment']
             _each = each.rsplit('+')
-            for each_item in _each:
+            for idx, each_item in enumerate(_each):
                 run = pg.add_run(each_item, style = format['font_style'])
                 run.font.name = 'Times New Roman'
-                #run.font.language_id = MSO_LANGUAGE_ID.SIMPLIFIED_CHINESE
-                #run.font.name = format['font_name']
                 run._element.rPr.rFonts.set(qn('w:eastAsia'), format['font_name'])
                 run.font.size = Pt(format['font_size'])
-                run.font.bold = format['bold']
-                if each_item==_each[-1] and len(_each)>1:
+                # first segment is bold when '+' is used as bold/normal separator
+                if idx == 0 and len(_each) > 1:
                     run.font.bold = True
+                else:
+                    run.font.bold = format['bold']
 
-    def add_table(self, font_size, content = [[]], row_base = True, width = None, alignments = WD_ALIGN_PARAGRAPH.CENTER,style = 'Table Grid', borders = {'left':False,'right':False,'up':False,'down':False}):
+    def add_table(self, font_size, content = [[]], row_base = True, width = None, alignments = WD_ALIGN_PARAGRAPH.CENTER,style = 'Table Grid', borders = {'left':False,'right':False,'up':False,'down':False}, row_height_factor=1.5, bold_cols=None, bold_rows=None):
         assert type(content)==list, "The content of table must be in a list form"
         assert len(content)>0, "There is nothing to fill the table"
         assert len(content[0])>0, "Column or row content is empty"
+        font_size = font_size * self.font_scale
         if row_base:
             rows = len(content)
             cols = len(content[0])
@@ -188,7 +191,7 @@ class makeBulletin(object):
                 row_content = content[i]
             else:
                 row_content = [each[i] for each in content]
-            tb.rows[i].height = Pt(font_size*2)
+            tb.rows[i].height = Pt(font_size * row_height_factor)
             merge_times = 0
             #merge_times = len([each for each in row_content if each==''])
             #if merge_times!=0:
@@ -203,14 +206,16 @@ class makeBulletin(object):
                 cells[j].text = row_content[j]
                 if width!=None:
                     cells[j].width = Pt(width)
+                is_bold = ((bold_cols is not None and j in bold_cols) or
+                           (bold_rows is not None and i in bold_rows))
                 for pg in cells[j].paragraphs:
-                    pg.paragraph_format.line_spacing = Pt(font_size*1.2)
+                    pg.paragraph_format.line_spacing = Pt(font_size * 1.2)
                     pg.alignment = alignments[j]
                     for run in pg.runs:
                         run.font.name = 'Times New Roman'
                         run._element.rPr.rFonts.set(qn('w:eastAsia'), "FZShuSong-Z01S")
-                        #run.font.name = "FZShuSong-Z01S"
                         run.font.size = Pt(font_size)
+                        run.font.bold = is_bold
         return tb
 
     def _shade_cell(self, cell, fill=None, color=None):
@@ -238,13 +243,12 @@ class makeBulletin(object):
         assert type(table_data)==dict, 'The table data has to be given in dict format'
         assert 'income' in table_data and 'expanse' in table_data and 'summary' in table_data, "The table data must have three keys: income and expanse and summary. One or both are missing"
         self.add_paragraphs(['财务报告（单位：EUR）'],self.format_title_big, font_size=12)
+        income_end = len(table_data['income'])
         main = [['进项','']]+table_data['income']+[['支出','']]+table_data['expanse']
-        tb = self.add_table(font_size=10, content=main, alignments=[WD_TABLE_ALIGNMENT.LEFT,WD_TABLE_ALIGNMENT.RIGHT],borders = {'left':False,'right':False,'up':False,'down':False})
-        #tb.add_row()
-        #tb.rows[-1].cells[0].merge(tb.rows[-1].cells[1])
+        tb = self.add_table(font_size=10, content=main, alignments=[WD_TABLE_ALIGNMENT.LEFT,WD_TABLE_ALIGNMENT.RIGHT],borders = {'left':False,'right':False,'up':False,'down':False}, bold_rows=[0, income_end+1])
         month = self.month
         pre_month = month - 1 if month!=1 else 12
-        ntb = self.add_table(font_size=10, content = [['','总进','总支','结余']]+table_data['summary']+[["202？（?-?月)年度",'?? €','?? €','?? €']],alignments=[WD_TABLE_ALIGNMENT.LEFT,WD_TABLE_ALIGNMENT.RIGHT,WD_TABLE_ALIGNMENT.RIGHT,WD_TABLE_ALIGNMENT.RIGHT],borders = {'left':False,'right':False,'up':False,'down':False})
+        ntb = self.add_table(font_size=10, content = [['','总进','总支','结余']]+table_data['summary']+[["202？（?-?月)年度",'?? €','?? €','?? €']],alignments=[WD_TABLE_ALIGNMENT.LEFT,WD_TABLE_ALIGNMENT.RIGHT,WD_TABLE_ALIGNMENT.RIGHT,WD_TABLE_ALIGNMENT.RIGHT],borders = {'left':False,'right':False,'up':False,'down':False}, bold_rows=[0])
         self.add_paragraphs([f'* 堂址维护基金：{month+1}月提拨金为???欧。至{pre_month}月??日止，总进为????欧，总支为????欧，结余为????欧。\
                              \n* 神学教育基金：支持 CCG Bremen 神学生支出 400 欧，至{pre_month}月?日止，结余为????欧。 \n* 教会宣教广传事工基金：至 {pre_month} 月 ？？ 日止，结余 ？？ 欧。'], format=self.format_body, font_size = 9, alignment=WD_ALIGN_PARAGRAPH.LEFT)
 
@@ -259,10 +263,10 @@ class makeBulletin(object):
                         ['图书组','黄罗佳弟兄','017660470014','福音事工组','刘朗朗弟兄','017664073888'],
                         ['管堂组','周　斌弟兄','01796737203','x','x','x'],
         ]
-        self.add_table(font_size = 9, content = [table_content[0]], alignments=WD_TABLE_ALIGNMENT.LEFT,borders = {'left':False,'right':False,'up':False,'down':False})
-        self.add_table(font_size = 9, content = [table_content[1]], alignments=WD_TABLE_ALIGNMENT.LEFT,borders = {'left':False,'right':False,'up':False,'down':False})
-        self.add_table(font_size = 9, content = table_content[2:-1], alignments=WD_TABLE_ALIGNMENT.LEFT,borders = {'left':False,'right':False,'up':False,'down':False})
-        self.add_table(font_size = 9, content = [table_content[-1]], alignments=WD_TABLE_ALIGNMENT.LEFT,borders = {'left':False,'right':False,'up':False,'down':False})
+        self.add_table(font_size = 9, content = [table_content[0]], alignments=WD_TABLE_ALIGNMENT.LEFT,borders = {'left':False,'right':False,'up':False,'down':False}, bold_cols=[0, 2])
+        self.add_table(font_size = 9, content = [table_content[1]], alignments=WD_TABLE_ALIGNMENT.LEFT,borders = {'left':False,'right':False,'up':False,'down':False}, bold_cols=[0, 2])
+        self.add_table(font_size = 9, content = table_content[2:-1], alignments=WD_TABLE_ALIGNMENT.LEFT,borders = {'left':False,'right':False,'up':False,'down':False}, bold_cols=[0, 3])
+        self.add_table(font_size = 9, content = [table_content[-1]], alignments=WD_TABLE_ALIGNMENT.LEFT,borders = {'left':False,'right':False,'up':False,'down':False}, bold_cols=[0])
 
     def add_whatsapp_info_table(self):
         contents = [['欢迎大家加入教会的WhatsApp 通知群组'],['bit.ly/ccgh-whatsapp 获得更多信息 ']]
@@ -276,29 +280,29 @@ class makeBulletin(object):
             ['🌍ccg-ham.de ccg.hamburg','儿童主日学','每周日上午10:30'],
             ['🏛chinese-library.de','少年主日学','每周日上午10:30']
         ]
-        tb = self.add_table(font_size= 10, content = contents, alignments=WD_TABLE_ALIGNMENT.LEFT,borders = {'left':False,'right':False,'up':False,'down':False})
+        tb = self.add_table(font_size= 10, content = contents, alignments=WD_TABLE_ALIGNMENT.LEFT,borders = {'left':False,'right':False,'up':False,'down':False}, bold_cols=[1])
 
     def add_meetup_info(self):
-        contents = ['福音性查经    每周五19:30 （实体）',
+        contents = ['福音性查经+    每周五19:30 （实体）',
         '联络：吴振忠牧师（688 604 16）   ⚓Dulsberg-Süd 26    🚉U1 Straßburger Str.',
         '',
-        '线上查经班    每月第二、四个周三19:30 （线上ZOOM）',
+        '线上查经班+    每月第二、四个周三19:30 （线上ZOOM）',
         '联络：管惠萍牧师（769 006 94）',
         '',
-        '长青团契	     每月第一、三个周五10:00-14:00',
+        '长青团契+\t     每月第一、三个周五10:00-14:00',
         '联络：吴振忠牧师（688 604 16）   ⚓Blumenau 29   🚉U1 Wartenau',
         '',
-        '青年团契	     每月周六14:00-16:00 （实体）',
+        '青年团契+\t     每月周六14:00-16:00 （实体）',
         '联络：刘朗朗弟兄（017664073888）    ⚓Dulsberg-Süd 26   🚉U1 Straßburger Str.',
         '',
-        '伉俪团契	     每月第二个周六14:00-16:30 （实体）',
+        '伉俪团契+\t     每月第二个周六14:00-16:30 （实体）',
         '联络：黄罗佳弟兄、杨琪姊妹（017660470014） 陈玮弟兄、蔡文彦姊妹（015142674175） 张勇弟兄、黄多姊妹（017623606936）',
         '',
-        '妈妈小组	     每月第一、三个周四9:30-12:00 （线上ZOOM）',
+        '妈妈小组+\t     每月第一、三个周四9:30-12:00 （线上ZOOM）',
         '联络：徐圣佳姊妹（017670728041）   ⚓Dulsberg-Süd26    🚉U1 Straßburger Str.',
         '',
         '🎦Zoom ID: 5861908437，会议室密码: 903600']
-        self.add_paragraphs(contents, format = self.format_body, line_spacing = 12)
+        self.add_paragraphs(contents, format = self.format_body)
 
     def add_preach_table(self, contents):
         #append icon at the beginning place
@@ -341,16 +345,16 @@ class makeBulletin(object):
         
     def add_monthly_service_table(self, contents):
         self.add_paragraphs(['主日崇拜服事表'],format = self.format_body, font_size = 10, bold = True)
-        tb = self.add_table(font_size=10, content=contents, width = 70,borders = {'left':True,'right':True,'up':True,'down':True})
+        tb = self.add_table(font_size=10, content=contents, width = 70,borders = {'left':True,'right':True,'up':True,'down':True}, bold_cols=[0], bold_rows=[0])
         for i in range(1, len(contents),2):
             self.shade_row(tb, i, self.shade_color_code, '000000')
 
     def add_last_month_record_table(self, offering_attendence_content, bible_study_attendence_content):
         self.add_paragraphs(['奉献纪录，主日及各查经小组出席人数'],format = self.format_body, font_size = 10, line_after = 5, line_before = 5, bold = True)
-        tb = self.add_table(font_size=10, content=offering_attendence_content, width = 70,borders = {'left':True,'right':True,'up':True,'down':True})
+        tb = self.add_table(font_size=10, content=offering_attendence_content, width = 70,borders = {'left':True,'right':True,'up':True,'down':True}, bold_cols=[0], bold_rows=[0])
         self.shade_row(tb, 0, self.shade_color_code, '000000')
         self.add_spacing(5)
-        tb = self.add_table(font_size=10, content=bible_study_attendence_content, width = 70,borders = {'left':True,'right':True,'up':True,'down':True})
+        tb = self.add_table(font_size=10, content=bible_study_attendence_content, width = 70,borders = {'left':True,'right':True,'up':True,'down':True}, bold_cols=[0], bold_rows=[0])
         self.shade_row(tb, 0, self.shade_color_code, '000000')
 
     def add_bank_info(self):
@@ -448,7 +452,7 @@ class makeBulletin(object):
         for content_type in  ['YearScripture','MonthlyScripture','MonthlyServiceTable','Report','Pray','LastMonthRecord','FinanceTable','PreachTable']:
             self.contents[content_type] = self._extract_content_from_file(file_path, content_type)
 
-    def make_doc_in_one_go(self, content_file_path, doc_file_path = None, section_spacing = 10):
+    def make_doc_in_one_go(self, content_file_path, doc_file_path = None, section_spacing = 6):
         self.prepare_contents(content_file_path)
         self.add_monthly_scripture(contents=self.contents['MonthlyScripture'])
         self.add_spacing(line_spacing=section_spacing)
@@ -483,8 +487,8 @@ class makeBulletin(object):
             file_path = root / 'src' / f'bulletin-{self.year}-{self.month}.docx'
         self.doc.save(file_path)
 
-def main(year, month, content_file, doc_file=None):
-    worker = makeBulletin(year, month)
+def main(year, month, content_file, doc_file=None, font_scale=1.0):
+    worker = makeBulletin(year, month, font_scale=font_scale)
     worker.make_doc_in_one_go(content_file, doc_file)
 
 

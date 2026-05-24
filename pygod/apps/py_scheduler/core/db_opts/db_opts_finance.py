@@ -4,60 +4,63 @@ from ..graph_operations import create_piechart
 from openpyxl import Workbook, load_workbook
 
 def load_content_from_excel_file(self):
-    # map_col_name = {'B':'A','C':'B','D':'C'}
-    map_col_name = {'B':'B','C':'C','D':'D'}
     file = self.lineEdit_excel_file_path.text()
     income_dict = {}
     expense_dict = {}
-    wb = load_workbook(file)
-    ws = wb.active
-    def _fix_text_ref(txt):
-        if type(txt)!=str:
-            return txt
-        if txt.startswith('='):
-            items = txt[1:].rsplit(' & ')
-            for i, item in enumerate(items):
-                if item.startswith('"'):
-                    items[i] = item[1:-1]
-                else:
-                    items[i] = str(ws[item].value)
-            return ''.join(items)
-        else:
-            return txt
-        
+    # data_only=True reads cached computed values so formula cells return numbers/strings
+    # rather than the formula text itself.  A second workbook (raw formulas) serves as
+    # fallback for the rare case where a cell's cached value is absent (file never
+    # re-saved after formula entry) — we then manually resolve simple & -concat formulas.
+    ws_data = load_workbook(file, data_only=True).active
+    ws_raw  = load_workbook(file).active
+
+    def _resolve(coord):
+        val = ws_data[coord].value
+        if val is not None:
+            return val
+        raw = ws_raw[coord].value
+        if not isinstance(raw, str) or not raw.startswith('='):
+            return raw
+        parts = raw[1:].split(' & ')
+        result = []
+        for part in parts:
+            part = part.strip()
+            if part.startswith('"') and part.endswith('"'):
+                result.append(part[1:-1])
+            else:
+                try:
+                    result.append(str(ws_raw[part].value))
+                except Exception:
+                    result.append(part)
+        return ''.join(result)
+
     pointer = 2
     while True:
-        value = ws[f'{map_col_name["B"]}{pointer}'].value
-        if value==None:
+        label = _resolve(f'B{pointer}')
+        if label is None:
             break
-        value = _fix_text_ref(ws[f'{map_col_name["B"]}{pointer}'].value)
-        income_dict[value] = ws[f'{map_col_name["C"]}{pointer}'].value
+        income_dict[label] = _resolve(f'C{pointer}')
         pointer += 1
     pointer += 2
     while True:
-        value = ws[f'{map_col_name["B"]}{pointer}'].value
-        if value==None:
+        label = _resolve(f'B{pointer}')
+        if label is None:
             break
-        value = _fix_text_ref(ws[f'{map_col_name["B"]}{pointer}'].value)
-        expense_dict[value] = ws[f'{map_col_name["D"]}{pointer}'].value
+        expense_dict[label] = _resolve(f'D{pointer}')
         pointer += 1
-    #fill the content
-    for i, key in enumerate(income_dict.keys()):
-        if i>6:
+
+    for i, key in enumerate(income_dict):
+        if i > 6:
             error_pop_up('There are more than 7 items in the income. Cut off items>7. You should manually add them')
             break
-        line_edit_note = f'lineEdit_income_{i+1}_note'
-        line_edit_income = f'lineEdit_income_{i+1}'
-        getattr(self, line_edit_note).setText(key)
-        getattr(self, line_edit_income).setText(str(income_dict[key]))
-    for i, key in enumerate(expense_dict.keys()):
-        if i>16:
+        getattr(self, f'lineEdit_income_{i+1}_note').setText(str(key))
+        getattr(self, f'lineEdit_income_{i+1}').setText(str(income_dict[key]))
+    for i, key in enumerate(expense_dict):
+        if i > 16:
             error_pop_up('There are more than 17 items in the expense. Cut off items>17. You should manually add them')
             break
-        line_edit_note = f'lineEdit_expense_{i+1}_note'
-        line_edit_expense = f'lineEdit_expense_{i+1}'
-        getattr(self, line_edit_note).setText(key)
-        getattr(self, line_edit_expense).setText(str(expense_dict[key]))
+        getattr(self, f'lineEdit_expense_{i+1}_note').setText(str(key))
+        getattr(self, f'lineEdit_expense_{i+1}').setText(str(expense_dict[key]))
 
 def init_pandas_model_from_db(self):
     args = {'self': self, 

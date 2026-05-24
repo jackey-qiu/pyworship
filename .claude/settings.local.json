@@ -1,0 +1,27 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\qiucanro\\\\apps\\\\pyworship\" -Recurse -Directory)",
+      "Bash(Select-Object -ExpandProperty FullName)",
+      "Bash(python3 *)",
+      "Bash(py *)",
+      "Bash(where python *)",
+      "Bash(where python3 *)",
+      "Bash(where py *)",
+      "Bash(C:\\\\Programfiles\\\\Anaconda3-2020-07\\\\python.exe *)",
+      "Bash(conda run *)",
+      "Read(//c/Programfiles/Anaconda3-2020-07/envs/**)",
+      "Read(//c/Users/qiucanro/.conda/**)",
+      "Bash(PYTHONUTF8=1 C:/Programfiles/Anaconda3-2020-07/envs/pygod/python.exe *)",
+      "WebFetch(domain:www.ccg-ham.de)",
+      "Read(//c/Users/qiucanro/apps/**)",
+      "Bash(mkdir -p \"C:/Users/qiucanro/apps/ccg_web/frontend/src/components\" \"C:/Users/qiucanro/apps/ccg_web/frontend/src/pages\" \"C:/Users/qiucanro/apps/ccg_web/frontend/public\" \"C:/Users/qiucanro/apps/ccg_web/backend/src/routes\" \"C:/Users/qiucanro/apps/ccg_web/backend/src/data\")",
+      "Bash(npm install *)",
+      "Bash(where node *)",
+      "Bash(where npm *)",
+      "Bash(where winget *)",
+      "Bash(where choco *)",
+      "Bash(where scoop *)"
+    ]
+  }
+}
