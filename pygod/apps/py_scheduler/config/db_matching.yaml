@@ -39,7 +39,7 @@ db_types:
                 status: 状态
                 note: 备注                   
     人事:
-        collections: 
+        collections:
             personal_info:
                 name: lineEdit_name_ccg_note
                 gender: lineEdit_gender_ccg_note
@@ -52,16 +52,20 @@ db_types:
                 title: lineEdit_ccg_title_note
                 task: lineEdit_task_ccg_note
                 note: textEdit_note_ccg_note
-                #img_format: lineEdit_img_format 
-                #img: widget_img_view 
-        table_viewer: 
+                #img_format: lineEdit_img_format
+                #img: widget_img_view
+            member_checkin:
+                name: lineEdit_name_ccg_note
+                date: dateEdit_checkin_date
+                attended: checkBox_attended
+        table_viewer:
             personal_info:
                 name: 姓名
                 gender: 性别
                 birthday: 生日
                 membersince: 入会时间
                 title: 教会职务
-                task: 教会服事          
+                task: 教会服事
                 note: 备注
     服事:
         collections: 

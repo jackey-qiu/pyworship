@@ -1024,52 +1024,185 @@ p, li { white-space: pre-wrap; }
                      </item>
                     </layout>
                    </widget>
-                   <widget class="QFrame" name="frame_7">
-                    <property name="frameShape">
-                     <enum>QFrame::StyledPanel</enum>
-                    </property>
-                    <property name="frameShadow">
-                     <enum>QFrame::Raised</enum>
-                    </property>
-                    <layout class="QVBoxLayout" name="verticalLayout_12">
-                     <item>
-                      <widget class="View" name="widget_img_view" native="true"/>
-                     </item>
-                     <item>
-                      <layout class="QHBoxLayout" name="horizontalLayout_4">
-                       <item>
-                        <spacer name="horizontalSpacer_8">
-                         <property name="orientation">
-                          <enum>Qt::Horizontal</enum>
-                         </property>
-                         <property name="sizeHint" stdset="0">
-                          <size>
-                           <width>40</width>
-                           <height>20</height>
-                          </size>
-                         </property>
-                        </spacer>
-                       </item>
-                       <item>
-                        <widget class="QLabel" name="label_24">
-                         <property name="text">
-                          <string>图片格式</string>
-                         </property>
-                        </widget>
-                       </item>
-                       <item>
-                        <widget class="QLineEdit" name="lineEdit_img_format"/>
-                       </item>
-                       <item>
-                        <widget class="QPushButton" name="pushButton_load_img">
-                         <property name="text">
-                          <string>文件导入</string>
-                         </property>
-                        </widget>
-                       </item>
-                      </layout>
-                     </item>
-                    </layout>
+                   <widget class="QTabWidget" name="tabWidget_personal_right">
+                    <widget class="QWidget" name="tab_personal_photo">
+                     <attribute name="title">
+                      <string>照片</string>
+                     </attribute>
+                     <layout class="QVBoxLayout" name="verticalLayout_photo_tab">
+                      <item>
+                       <widget class="View" name="widget_img_view" native="true"/>
+                      </item>
+                      <item>
+                       <layout class="QHBoxLayout" name="horizontalLayout_4">
+                        <item>
+                         <spacer name="horizontalSpacer_8">
+                          <property name="orientation">
+                           <enum>Qt::Horizontal</enum>
+                          </property>
+                          <property name="sizeHint" stdset="0">
+                           <size>
+                            <width>40</width>
+                            <height>20</height>
+                           </size>
+                          </property>
+                         </spacer>
+                        </item>
+                        <item>
+                         <widget class="QLabel" name="label_24">
+                          <property name="text">
+                           <string>图片格式</string>
+                          </property>
+                         </widget>
+                        </item>
+                        <item>
+                         <widget class="QLineEdit" name="lineEdit_img_format"/>
+                        </item>
+                        <item>
+                         <widget class="QPushButton" name="pushButton_load_img">
+                          <property name="text">
+                           <string>文件导入</string>
+                          </property>
+                         </widget>
+                        </item>
+                       </layout>
+                      </item>
+                     </layout>
+                    </widget>
+                    <widget class="QWidget" name="tab_personal_checkin">
+                     <attribute name="title">
+                      <string>出勤签到</string>
+                     </attribute>
+                     <layout class="QVBoxLayout" name="verticalLayout_checkin_tab">
+                      <item>
+                       <widget class="QGroupBox" name="groupBox_scan_checkin">
+                        <property name="title">
+                         <string>扫码签到</string>
+                        </property>
+                        <layout class="QVBoxLayout" name="verticalLayout_scan">
+                         <item>
+                          <layout class="QHBoxLayout" name="horizontalLayout_scan">
+                           <item>
+                            <widget class="QLineEdit" name="lineEdit_scan_input">
+                             <property name="placeholderText">
+                              <string>扫描二维码...</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item>
+                            <widget class="QPushButton" name="pushButton_gen_qr">
+                             <property name="text">
+                              <string>生成二维码</string>
+                             </property>
+                            </widget>
+                           </item>
+                          </layout>
+                         </item>
+                        </layout>
+                       </widget>
+                      </item>
+                      <item>
+                       <widget class="QGroupBox" name="groupBox_checkin_input">
+                        <property name="title">
+                         <string>签到输入</string>
+                        </property>
+                        <layout class="QFormLayout" name="formLayout_checkin">
+                         <item row="0" column="0">
+                          <widget class="QLabel" name="label_checkin_date">
+                           <property name="text">
+                            <string>日期</string>
+                           </property>
+                          </widget>
+                         </item>
+                         <item row="0" column="1">
+                          <widget class="QDateEdit" name="dateEdit_checkin_date">
+                           <property name="calendarPopup">
+                            <bool>true</bool>
+                           </property>
+                           <property name="displayFormat">
+                            <string>yyyy-MM-dd</string>
+                           </property>
+                          </widget>
+                         </item>
+                         <item row="1" column="0">
+                          <widget class="QLabel" name="label_attended">
+                           <property name="text">
+                            <string>出席</string>
+                           </property>
+                          </widget>
+                         </item>
+                         <item row="1" column="1">
+                          <widget class="QCheckBox" name="checkBox_attended">
+                           <property name="text">
+                            <string/>
+                           </property>
+                          </widget>
+                         </item>
+                         <item row="2" column="1">
+                          <widget class="QPushButton" name="pushButton_add_checkin">
+                           <property name="text">
+                            <string>记录签到</string>
+                           </property>
+                          </widget>
+                         </item>
+                        </layout>
+                       </widget>
+                      </item>
+                      <item>
+                       <widget class="QGroupBox" name="groupBox_attendance_view">
+                        <property name="title">
+                         <string>出勤查询</string>
+                        </property>
+                        <layout class="QFormLayout" name="formLayout_attendance">
+                         <item row="0" column="0">
+                          <widget class="QLabel" name="label_from_date">
+                           <property name="text">
+                            <string>起始日期</string>
+                           </property>
+                          </widget>
+                         </item>
+                         <item row="0" column="1">
+                          <widget class="QDateEdit" name="dateEdit_checkin_from">
+                           <property name="calendarPopup">
+                            <bool>true</bool>
+                           </property>
+                           <property name="displayFormat">
+                            <string>yyyy-MM-dd</string>
+                           </property>
+                          </widget>
+                         </item>
+                         <item row="1" column="0">
+                          <widget class="QLabel" name="label_to_date">
+                           <property name="text">
+                            <string>截止日期</string>
+                           </property>
+                          </widget>
+                         </item>
+                         <item row="1" column="1">
+                          <widget class="QDateEdit" name="dateEdit_checkin_to">
+                           <property name="calendarPopup">
+                            <bool>true</bool>
+                           </property>
+                           <property name="displayFormat">
+                            <string>yyyy-MM-dd</string>
+                           </property>
+                          </widget>
+                         </item>
+                         <item row="2" column="1">
+                          <widget class="QPushButton" name="pushButton_view_attendance">
+                           <property name="text">
+                            <string>查看出勤</string>
+                           </property>
+                          </widget>
+                         </item>
+                        </layout>
+                       </widget>
+                      </item>
+                      <item>
+                       <widget class="GraphicsLayoutWidget" name="widget_attendance_chart" native="true"/>
+                      </item>
+                     </layout>
+                    </widget>
                    </widget>
                   </widget>
                  </item>

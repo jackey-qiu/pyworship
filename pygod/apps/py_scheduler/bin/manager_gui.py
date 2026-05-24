@@ -101,6 +101,13 @@ class MyMainWindow(QMainWindow):
         self.pushButton_push_db_personal.clicked.connect(lambda: db_pe.add_personal_info(self))
         self.pushButton_delete_one_record_personal.clicked.connect(lambda: db_pe.delete_one_person(self))
         self.pushButton_clear.clicked.connect(lambda:db_pe.clear_all_input(self, 'formLayout'))
+        #attendance check-in
+        db_pe.init_checkin_defaults(self)
+        self.pushButton_add_checkin.clicked.connect(lambda: db_pe.add_checkin_record(self))
+        self.pushButton_view_attendance.clicked.connect(lambda: db_pe.view_attendance_chart(self))
+        self.lineEdit_scan_input.returnPressed.connect(lambda: db_pe.process_scan_input(self))
+        self.pushButton_gen_qr.clicked.connect(lambda: db_pe.generate_qr_codes(self))
+        self.dateEdit_checkin_date.dateChanged.connect(lambda: db_pe.seed_checkin_for_date(self))
         #finance
         self.pushButton_add_finance_info.clicked.connect(lambda:db_fin.add_finance_info(self))
         self.pushButton_cal_sum.clicked.connect(lambda:db_fin.calculate_sum(self))
