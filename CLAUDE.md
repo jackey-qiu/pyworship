@@ -2,99 +2,65 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-## What this is
+## Project Overview
 
-`pyworship` generates PowerPoint files for Sunday worship services at a Chinese Christian church (汉堡华人基督教会). Given a date, it reads content text files and background images, then produces a fully laid-out `.pptx`.
+PyGOD (pyworship) is a PyQt5 + MongoDB desktop application suite for a Chinese Christian church (CCG) to manage worship services. It ships four apps under a single `ccg` CLI entry point.
 
-## Running
+## Installation & Launch
 
 ```bash
-pip install python-pptx lxml
-
-# Interactive (prompts for date)
-python ppt_worker.py
-
-# Pass date directly
-python ppt_worker.py 2023-09-03
+pip install .          # installs the package and registers the `ccg` entry point
+ccg --help             # lists available subcommands
+ccg reader             # launch Bible reader GUI
+ccg scheduler          # launch database/scheduler GUI
+ccg ppt 2023-09-03     # generate worship PPT for a date (--v 1|2 for communion song variant)
 ```
 
-The script validates that all six content files exist for the given date before proceeding; it prints the missing files and exits if any are absent.
+## Building the Executable
 
-Output is saved as `<date>.pptx` in the project root.
-
-## Content files
-
-All content lives in `content/` as UTF-8 text files named `<type>_<yyyy-mm-dd>.txt`. The six required types are:
-
-| File prefix | Content |
-|-------------|---------|
-| `pray_list_` | Prayer items (代祷事项) |
-| `preach_list_` | Sermon outline (证道) |
-| `song_list_` | Worship + response songs (诗歌) |
-| `scripture_list_` | Three scripture sections (宣召, 启应经文, 读经) |
-| `report_list_` | Announcements (报告) |
-| `worker_list_` | Service roster for this week and next (服事人员) |
-
-### Content file format
-
-Sections inside each file are delimited by a line starting with `#`. Everything between one `#` line and the next belongs to that section. The `#` line itself is not content — it is only used as a separator/marker. Example:
-
+```bash
+cd pygod/bin
+pyinstaller ccg.spec   # output in pygod/bin/dist/ccg/
+# After build: manually copy the `pptx` package from site-packages into dist/ccg/
 ```
-#1
-First section line 1
-First section line 2
-#2
-Second section line 1
-```
-
-`_prepare_content_list()` builds a list-of-lists from this structure.
-
-### Scripture shorthand (scripture_list)
-
-Sections 1 (宣召) and 3 (读经) accept a compact reference format when `use_json_for_extracting_scripture = True` (the default). The JSON Bible at `src/bible/chinese_bible.json` is used to expand them. Format:
-
-```
-书名:章[起-止,单个,*]
-```
-
-Multiple references are joined by `+`. Examples:
-- `诗篇:136[1-9,23-26]` — Psalm 136 verses 1–9, 23–26
-- `约翰一书:3[*]` — all verses of 1 John 3
-- `创世记:1[1-3]+约翰福音:3[16]` — two separate passages
-
-Section 2 (启应经文) is always raw text (no shorthand).
-
-### Song list format
-
-Each song occupies one `#N` section. Line 1 = song title, line 2 = album/source subtitle, remaining lines = lyrics. Verse sections within a song are separated by a blank line; this drives the per-page layout in `prepare_slides_for_one_song`. The last `#` section is the response song (回应诗歌).
 
 ## Architecture
 
-All logic is in a single class `MakeWorkshipPpt` in `ppt_worker.py`.
+### Entry Point
+`pygod/bin/app_dispatcher.py` — Click group that registers the three subcommands (`ppt`, `reader`, `scheduler`).
 
-**Initialisation** (`__init__`): sets paths, detects whether the date falls in the first week of the month (`holy_dinner`, day ≤ 7), then calls `prepare_slide_contents()` to load all text data into instance attributes (`self.pray_list`, `self.song_list`, etc.).
+### Apps (`pygod/apps/`)
 
-**Slide generation** (`prepare_workship_slides`): calls section methods in worship-service order:
+| App | `ccg` subcommand | Entry script | Purpose |
+|---|---|---|---|
+| `ppt_worker` | `ppt <date> [--v 1\|2]` | `scripts/ppt_worker.py` | Generates `.pptx` worship slides from text content files; `--v` selects holy communion song variant (1=靠近十架, 2=宝架清影) |
+| `bible_reader` | `reader` | `scripts/bible_reader_gui.py` | Chinese/English Bible reader with search (Whoosh + Jieba), media playback |
+| `py_scheduler` | `scheduler` | `bin/manager_gui.py` | PyQt5 GUI for MongoDB — schedules worship roles, tracks finances, library, personnel, attendance |
+| `bulletin_worker` | *(not wired to `ccg`)* | `scripts/bulletin_worker.py` | Generates monthly church bulletin as a `.docx` Word document |
 
-```
-pray → worker → begin slides → 宣召 → songs → 启应经文 → main pray
-  → scripture reading → preaching → response song → offering
-  → report → new friends → worker (next week) → end slides
-```
+### PPT Worker Data Flow
 
-**`make_one_slide(blocks, ...)`**: the core rendering primitive. Each `block` dict specifies:
-- `cont` — list of text lines
-- `textbox` — `[left, top, width, height]` as `Cm(...)` expression strings (evaluated with `eval`)
-- `font_global` / `font_run` — `'FontName+SizePt+Bold'` strings parsed with `rsplit('+')`
-- `alignment` — `'ALIGN+line_spacing+space_before+space_after+level'` parsed with `rsplit('+')`
+Content lives in `pygod/apps/ppt_worker/src/contents/` as dated text files:
+- Files are named `{list_type}_{yyyy}-{mm}-{dd}.txt` (e.g., `song_list_2023-09-03.txt`)
+- Required list types: `pray_list`, `preach_list`, `song_list`, `scripture_list`, `report_list`, `worker_list`
+- Sections within each file are delimited by lines starting with `#`
+- `scripture_list` supports a compact reference syntax: `book:chapter[verse_ranges]+...` where ranges can be `1-5`, individual `9`, or `*` for whole chapter
 
-A `+` character in a text line splits it into two runs with different font sizes (used for superscript verse numbers in scripture slides via `superscript_first_char=True`).
+Bible data: `pygod/apps/ppt_worker/src/bible/chinese_bible.json`  
+Background slide images: `pygod/apps/ppt_worker/src/bkg_slides/` (subdirs: `others/`, `holy_dinner_option1/`, `holy_dinner_option2/`)
 
-**Holy dinner**: if `holy_dinner` is `True`, `prepare_end_slides` uses `src/holy_dinner/end_1.jpg` … `end_22.jpg` instead of the regular seven ending slides.
+### Scheduler / DB Layer
 
-## Known manual post-processing
+`pygod/apps/py_scheduler/config/db_matching.yaml` is the schema config that maps MongoDB collections and fields to Qt widget names. All DB modules in `core/db_opts/` read this YAML — adding a new DB field means updating both the YAML and the corresponding `.ui` file.
 
-After generation, the following must be done manually in PowerPoint:
-- Numbered lists in pray (代祷事项) and sermon (证道) slides need list formatting reapplied.
-- All slide animations must be added manually.
-- Some title text may need minor adjustments.
+`core/db_opts/` contains one module per MongoDB database type (`db_opts_entry.py`, `db_opts_bulletin.py`, `db_opts_book.py`, `db_opts_finance.py`, `db_opts_hymn.py`, `db_opts_personal.py`, `db_opts_ppt.py`, `db_opts_task.py`). `common_db_opts.py` holds shared Pandas/table-view helpers used by all of them.
+
+MongoDB Atlas credentials are handled at login time; the app requires a live Atlas connection to function.
+
+### UI Files
+
+PyQt5 `.ui` files live in `pygod/apps/py_scheduler/ui/`. Load via `uic.loadUi(ui_path, self)` in `manager_gui.py`. Widget names in `.ui` files must match the string keys in `db_matching.yaml`.
+
+## Key Dependencies
+
+`PyQt5`, `pyqtgraph`, `pyqtchart`, `pymongo`, `python-pptx`, `python-docx`, `jieba`, `whoosh`, `yt-dlp`, `pypinyin`, `qdarkstyle`, `bcrypt`, `python-dotenv`, `pandas`, `numpy`, `dnspython`, `click`, `pyyaml`, `qrcode`
