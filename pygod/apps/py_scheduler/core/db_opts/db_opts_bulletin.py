@@ -78,6 +78,13 @@ def get_task_content(self, key):
     dates = ','.join(['日期']+get_dates_for_one_month(int(key.rsplit('_')[1]), int(key.rsplit('_')[0])))
     return '\n'.join([dates]+contents_formated)
 
+#not per-item lines: these feed the year-to-date summary row and the footnote under the
+#finance table, and are emitted as '@'-tagged rows instead of income/expense entries
+FOOTNOTE_FIELDS = ['ytd_total_income', 'ytd_total_expense', 'ytd_net_income',
+                   'accumulated_deficit', 'fund_building_income', 'fund_building_expense',
+                   'fund_building_balance', 'fund_seminary_expense', 'fund_seminary_balance',
+                   'fund_mission_balance']
+
 def get_finance_content(self, key):
     def _format_num(value):
         tmp = locale.currency(float(value),grouping=True)
@@ -85,8 +92,10 @@ def get_finance_content(self, key):
         tmp = list(tmp.replace('.',','))
         tmp[comma_ix] = '.'
         return ''.join(tmp)
-    month = self.comboBox_bulletin_month.currentText()
-    year = self.lineEdit_year_bulletin.text()
+    #the summary row is labelled with the month the numbers actually come from,
+    #which is the month encoded in `key` (e.g. '2026_6月'), not the bulletin month
+    year, month = key.split('_')
+    month = month.rstrip('月')
     collection = 'finance_info'
     docs =  list(get_document_info_from_yaml(self, '财务', collection).keys())
     db_temp = self.mongo_client[self.lineEdit_db_finance.text()]
@@ -106,7 +115,7 @@ def get_finance_content(self, key):
         summary.append(sign+_format_num(value))
     for doc in docs:
         if not doc.endswith('note'):
-            if doc not in ['total_income','total_expense','net_income']:
+            if doc not in ['total_income','total_expense','net_income'] + FOOTNOTE_FIELDS:
                 value = text_query_by_field(self, 'group_id', key, doc, collection, db_temp)
                 note = text_query_by_field(self, 'group_id', key, doc+'_note', collection, db_temp)
                 if note == ['']:
@@ -120,7 +129,45 @@ def get_finance_content(self, key):
     income = '\n'.join(['&'.join(each) for each in income])
     expense = '\n'.join(['&'.join(each) for each in expense])
     summary = '&'.join(list(map(str,summary)))
-    return income+'\n'+expense+'\n'+summary
+    footnote = _get_footnote_rows(self, key, collection, db_temp, _format_num)
+    return '\n'.join([income, expense, summary] + footnote)
+
+def _get_footnote_rows(self, key, collection, db_temp, format_num):
+    """The '@'-tagged tail of the FinanceTable block: the year-to-date summary row plus
+    the fund and deficit figures quoted underneath the table.  Older finance records
+    predate these fields - a missing one drops its whole row, and the bulletin worker
+    then falls back to the '???' placeholder for that line."""
+    year, month = key.split('_')
+    month = month.rstrip('月')
+
+    def _amount(doc, sign_mode):
+        #the footnote quotes magnitudes ('总支为X欧', '赤字为X欧'), so those get 'abs';
+        #the year-to-date row keeps the +/- columns of the monthly summary row above it
+        value = float(text_query_by_field(self, 'group_id', key, doc, collection, db_temp)[0])
+        if sign_mode == 'abs':
+            return format_num(abs(value))
+        if sign_mode == 'plus':
+            return '+' + format_num(abs(value))
+        if sign_mode == 'minus':
+            return '-' + format_num(abs(value))
+        return ('+' if value > 0 else '') + format_num(value)
+
+    rows = []
+    tagged = [('summary_ytd', [f'{year}年度（1-{month}月)'],
+               [('ytd_total_income', 'plus'), ('ytd_total_expense', 'minus'),
+                ('ytd_net_income', 'auto')]),
+              ('deficit', [], [('accumulated_deficit', 'abs')]),
+              ('fund_building', [], [('fund_building_income', 'abs'), ('fund_building_expense', 'abs'),
+                                     ('fund_building_balance', 'abs')]),
+              ('fund_seminary', [], [('fund_seminary_expense', 'abs'), ('fund_seminary_balance', 'abs')]),
+              ('fund_mission', [], [('fund_mission_balance', 'abs')])]
+    for tag, prefix, fields in tagged:
+        try:
+            values = [_amount(doc, sign_mode) for doc, sign_mode in fields]
+        except (KeyError, IndexError, TypeError, ValueError):
+            continue
+        rows.append('&'.join([f'@{tag}'] + prefix + values))
+    return rows
 
 def get_last_month_record(self):
     widgets = ['lineEdit_dates_1_note','lineEdit_attendence_note','lineEdit_offerings_note',\
@@ -281,11 +328,6 @@ def save_bulletin_content_in_txt_format_and_make_bulletin(self, create_file = Tr
                      progress=partial(update_progress_dialog, bar))
         finally:
             bar.close()
-        #the pdf only appears if word could be reached, so report what is actually there
-        made = [doc_file_name]
-        pdf_file_name = doc_file_name.replace('.docx', '.pdf')
-        if (content_folder / pdf_file_name).exists():
-            made.append(pdf_file_name)
-        error_pop_up(f"{' and '.join(made)} created and saved in {str(content_folder)}", 'Information')
+        error_pop_up(f"{doc_file_name} created and saved in {str(content_folder)}", 'Information')
     except Exception as e:
         error_pop_up(f'ERROR: {e}', 'Error')

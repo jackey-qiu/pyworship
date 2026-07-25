@@ -1,4 +1,5 @@
 import datetime
+import re
 from ..db_opts.common_db_opts import *
 from ..graph_operations import create_piechart
 from openpyxl import Workbook, load_workbook
@@ -61,6 +62,79 @@ def load_content_from_excel_file(self):
             break
         getattr(self, f'lineEdit_expense_{i+1}_note').setText(str(key))
         getattr(self, f'lineEdit_expense_{i+1}').setText(str(expense_dict[key]))
+
+    load_bulletin_footnote_figures(self, ws_data)
+
+def load_bulletin_footnote_figures(self, ws):
+    """Pull the year-to-date row and the fund/deficit figures that the bulletin footnote
+    quotes.  They sit under the monthly item block in loosely fixed positions — the
+    treasurer moves them around between months — so anchor on the label text in column
+    A/B and read the numbers from the columns to its right."""
+    def _num(row, col):
+        try:
+            return float(ws.cell(row=row, column=col).value)
+        except (TypeError, ValueError):
+            return None
+
+    def _set(widget, value):
+        if value is not None:
+            getattr(self, widget).setText(str(round(value, 2)))
+
+    labels = {}
+    for row in ws.iter_rows(min_col=1, max_col=2):
+        for cell in row:
+            if isinstance(cell.value, str) and cell.value.strip():
+                labels.setdefault(cell.row, cell.value.strip())
+    rows = sorted(labels)
+
+    def find(pred, after=0):
+        for r in rows:
+            if r > after and pred(labels[r]):
+                return r
+        return None
+
+    #'2026年 (1-6月份)' — the row right under the monthly one
+    row_ytd = find(lambda t: re.match(r'^\d{4}\s*年\s*\(?\s*1-\d+\s*月', t))
+    if row_ytd:
+        _set('lineEdit_ytd_total_income', _num(row_ytd, 3))
+        _set('lineEdit_ytd_total_expense', _num(row_ytd, 4))
+        _set('lineEdit_ytd_net_income', _num(row_ytd, 5))
+
+    #'堂址维护基金截至到6月31日总进为' / '总支为' … '结余为' on the same row, else the
+    #standalone '建堂基金结余：' row further down
+    row_building = find(lambda t: '堂址维护基金' in t and '总进' in t)
+    if row_building:
+        _set('lineEdit_fund_building_income', _num(row_building, 3))
+        row_expense = find(lambda t: '总支' in t, row_building)
+        balance = None
+        if row_expense:
+            _set('lineEdit_fund_building_expense', _num(row_expense, 3))
+            balance = _num(row_expense, 5)
+        if balance is None:
+            row_balance = find(lambda t: '结余' in t, row_expense or row_building)
+            balance = _num(row_balance, 3) if row_balance else None
+        _set('lineEdit_fund_building_balance', balance)
+
+    row_seminary = find(lambda t: '神学教育基金' in t)
+    if row_seminary:
+        row_support = find(lambda t: 'Bremen' in t or '神学生' in t, row_seminary)
+        if row_support:
+            _set('lineEdit_fund_seminary_expense', _num(row_support, 3))
+        row_balance = find(lambda t: '结余' in t, row_support or row_seminary)
+        if row_balance:
+            _set('lineEdit_fund_seminary_balance', _num(row_balance, 3))
+
+    row_mission = find(lambda t: '广传事工基金' in t or '宣教广传' in t)
+    if row_mission:
+        row_balance = find(lambda t: '结余' in t, row_mission)
+        if row_balance:
+            _set('lineEdit_fund_mission_balance', _num(row_balance, 3))
+
+    #the cumulative deficit is the last '<year>年结余' row — '2025年年结余' above it is
+    #only the carried-over part, so take the bottom-most match
+    candidates = [r for r in rows if re.match(r'^\d{4}\s*年结余', labels[r])]
+    if candidates:
+        _set('lineEdit_accumulated_deficit', _num(candidates[-1], 3))
 
 def init_pandas_model_from_db(self):
     args = {'self': self, 

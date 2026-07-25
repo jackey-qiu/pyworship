@@ -2055,6 +2055,146 @@ p, li { white-space: pre-wrap; }
                              </property>
                             </widget>
                            </item>
+                           <item row="12" column="0">
+                            <widget class="QLabel" name="label_ytd_total_income">
+                             <property name="text">
+                              <string>年度总进</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="12" column="1" colspan="2">
+                            <widget class="QLineEdit" name="lineEdit_ytd_total_income">
+                             <property name="text">
+                              <string>0</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="13" column="0">
+                            <widget class="QLabel" name="label_ytd_total_expense">
+                             <property name="text">
+                              <string>年度总支</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="13" column="1" colspan="2">
+                            <widget class="QLineEdit" name="lineEdit_ytd_total_expense">
+                             <property name="text">
+                              <string>0</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="14" column="0">
+                            <widget class="QLabel" name="label_ytd_net_income">
+                             <property name="text">
+                              <string>年度结余</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="14" column="1" colspan="2">
+                            <widget class="QLineEdit" name="lineEdit_ytd_net_income">
+                             <property name="text">
+                              <string>0</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="15" column="0">
+                            <widget class="QLabel" name="label_accumulated_deficit">
+                             <property name="text">
+                              <string>累计赤字</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="15" column="1" colspan="2">
+                            <widget class="QLineEdit" name="lineEdit_accumulated_deficit">
+                             <property name="text">
+                              <string>0</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="16" column="0">
+                            <widget class="QLabel" name="label_fund_building_income">
+                             <property name="text">
+                              <string>堂址基金总进</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="16" column="1" colspan="2">
+                            <widget class="QLineEdit" name="lineEdit_fund_building_income">
+                             <property name="text">
+                              <string>0</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="17" column="0">
+                            <widget class="QLabel" name="label_fund_building_expense">
+                             <property name="text">
+                              <string>堂址基金总支</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="17" column="1" colspan="2">
+                            <widget class="QLineEdit" name="lineEdit_fund_building_expense">
+                             <property name="text">
+                              <string>0</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="18" column="0">
+                            <widget class="QLabel" name="label_fund_building_balance">
+                             <property name="text">
+                              <string>堂址基金结余</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="18" column="1" colspan="2">
+                            <widget class="QLineEdit" name="lineEdit_fund_building_balance">
+                             <property name="text">
+                              <string>0</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="19" column="0">
+                            <widget class="QLabel" name="label_fund_seminary_expense">
+                             <property name="text">
+                              <string>神学基金支出</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="19" column="1" colspan="2">
+                            <widget class="QLineEdit" name="lineEdit_fund_seminary_expense">
+                             <property name="text">
+                              <string>0</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="20" column="0">
+                            <widget class="QLabel" name="label_fund_seminary_balance">
+                             <property name="text">
+                              <string>神学基金结余</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="20" column="1" colspan="2">
+                            <widget class="QLineEdit" name="lineEdit_fund_seminary_balance">
+                             <property name="text">
+                              <string>0</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="21" column="0">
+                            <widget class="QLabel" name="label_fund_mission_balance">
+                             <property name="text">
+                              <string>宣教基金结余</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="21" column="1" colspan="2">
+                            <widget class="QLineEdit" name="lineEdit_fund_mission_balance">
+                             <property name="text">
+                              <string>0</string>
+                             </property>
+                            </widget>
+                           </item>
                           </layout>
                          </item>
                          <item>

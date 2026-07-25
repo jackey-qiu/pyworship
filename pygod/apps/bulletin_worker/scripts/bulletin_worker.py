@@ -1,4 +1,4 @@
-import os, sys, subprocess
+import os, sys, subprocess, calendar
 from xml.sax.saxutils import escape
 from docx.oxml.ns import nsdecls, qn
 from docx.oxml import parse_xml
@@ -11,6 +11,7 @@ from docx.enum.style import WD_STYLE_TYPE
 from docx.enum.section import WD_ORIENT, WD_SECTION
 from docx.oxml.ns import qn
 from docx.shared import Inches, Cm, Mm
+from docx.text.run import Run
 from pathlib import Path
 import copy
 
@@ -128,6 +129,9 @@ class makeBulletin(object):
     #the two hard breaks cut the bulletin into three independently flowing regions:
     #page 1 (two columns), then the left and the right column of page 2
     regions = ['page1', 'col1', 'col2']
+    #the right column of page 2 - the title block down to the meetup list - is set in the
+    #round font throughout. everything before it keeps the book face each block asks for
+    region_fonts = {'col2': header_font}
 
     def __init__(self, year, month, font_scale=1.0, line_scale=1.0, line_scales=None):
         self.font_scale = font_scale
@@ -148,6 +152,9 @@ class makeBulletin(object):
     @property
     def line_scale(self):
         return self.line_scales[self.region]
+
+    def font_for_region(self, font_name):
+        return self.region_fonts.get(self.region, font_name)
 
     def add_customized_style(self):
         obj_styles = self.doc.styles
@@ -218,7 +225,7 @@ class makeBulletin(object):
             for idx, each_item in enumerate(_each):
                 run = pg.add_run(each_item, style = format['font_style'])
                 run.font.name = 'Times New Roman'
-                run._element.rPr.rFonts.set(qn('w:eastAsia'), format['font_name'])
+                run._element.rPr.rFonts.set(qn('w:eastAsia'), self.font_for_region(format['font_name']))
                 run.font.size = Pt(format['font_size'])
                 # first segment is bold when '+' is used as bold/normal separator
                 if idx == 0 and len(_each) > 1:
@@ -309,7 +316,7 @@ class makeBulletin(object):
                     pg.alignment = alignments[j]
                     for run in pg.runs:
                         run.font.name = 'Times New Roman'
-                        run._element.rPr.rFonts.set(qn('w:eastAsia'), "FZShuSong-Z01S")
+                        run._element.rPr.rFonts.set(qn('w:eastAsia'), self.font_for_region("FZShuSong-Z01S"))
                         run.font.size = Pt(font_size)
                         run.font.bold = is_bold
         return tb
@@ -333,6 +340,33 @@ class makeBulletin(object):
     #flow, so they can hang off the right edge of their column
     logo_file = root / 'src' / 'resources' / 'ccg_logo.png'
     qr_file = root / 'src' / 'resources' / 'qr_whatsapp.png'
+    facebook_file = root / 'src' / 'resources' / 'facebook.png'
+    #stands in for an icon while the cell is still plain text
+    icon_token = '{icon}'
+
+    def replace_token_with_image(self, cell, img_path, height, token = None):
+        """swap the marker in a table cell for a picture set in the line of the text
+
+        the table is built from strings, so an icon that has to sit mid-sentence cannot go
+        in with the content. the run carrying the marker is split in three - the text
+        before it, the picture, and the text after - each a copy of the original, so they
+        all keep the font and size the table gave them.
+        """
+        token = token if token!=None else self.icon_token
+        for pg in cell.paragraphs:
+            for run in pg.runs:
+                if token not in run.text:
+                    continue
+                before, after = run.text.split(token, 1)
+                run.text = before
+                picture, tail = copy.deepcopy(run._r), copy.deepcopy(run._r)
+                run._r.addnext(tail)
+                run._r.addnext(picture)
+                picture_run, tail_run = Run(picture, pg), Run(tail, pg)
+                picture_run.text = ''
+                picture_run.add_picture(str(img_path), height=Pt(height))
+                tail_run.text = after
+                return
 
     anchor_xml = (
         '<wp:anchor {nsdecls} distT="0" distB="0" distL="0" distR="0" simplePos="0"'
@@ -387,7 +421,10 @@ class makeBulletin(object):
         #one table on a 4 column grid: the income/expense lines take two cells of two
         #columns each, the summary rows underneath take all four
         main = [['进项','']]+table_data['income']+[['支出','']]+table_data['expanse']
-        summary = [['','总进','总支','结余']]+table_data['summary']+[["202？（?-?月)年度",'?? €','?? €','?? €']]
+        summary = [['','总进','总支','结余']]+table_data['summary']
+        if len(table_data['summary'])<2:
+            #no year-to-date row in the content file - leave the placeholder to fill by hand
+            summary = summary+[["202？（?-?月)年度",'?? €','?? €','?? €']]
         #the label side takes the wider share: the longest entry ('奉献 OMF 葛美恩传道德语青少年
         #福音事工') has to stay on one line, while the amounts are short
         row_spans = [[2,2]]*len(main) + [[1,1,1,1]]*len(summary)
@@ -398,10 +435,21 @@ class makeBulletin(object):
         year_pre_month = self.year if month!=1 else self.year - 1
         self.add_spacing(3)
         self.add_spacing(3)
-        self.add_paragraphs([f'截止到{year_pre_month}年{pre_month}月，教会主要账户（不含各类基金）累计收支赤字为 ???? 欧，请弟兄姊妹为此在祷告中纪念，我们相信  神会有预备。'], format=self.format_body, font_size = 9, bold = True, alignment=WD_ALIGN_PARAGRAPH.LEFT)
+        footnote = table_data.get('footnote', {})
+        #the figures are quoted as of the last day of the month the report covers
+        last_day = calendar.monthrange(year_pre_month, pre_month)[1]
+        def _amounts(tag, count):
+            #'???' keeps an unfilled figure visible for the hand-editing pass
+            values = [each.replace('€','').strip() for each in footnote.get(tag, [])]
+            return (values+['???']*count)[:count]
+        deficit, = _amounts('deficit', 1)
+        build_in, build_out, build_rest = _amounts('fund_building', 3)
+        seminary_out, seminary_rest = _amounts('fund_seminary', 2)
+        mission_rest, = _amounts('fund_mission', 1)
+        self.add_paragraphs([f'截止到{year_pre_month}年{pre_month}月，教会主要账户（不含各类基金）累计收支赤字为 {deficit} 欧，请弟兄姊妹为此在祷告中纪念，我们相信  神会有预备。'], format=self.format_body, font_size = 9, bold = True, alignment=WD_ALIGN_PARAGRAPH.LEFT)
         self.add_spacing(3)
-        self.add_paragraphs([f'* 堂址维护基金：{month+1}月提拨金为???欧。至{pre_month}月??日止，总进为????欧，总支为????欧，结余为????欧。\
-                             \n* 神学教育基金：支持 CCG Bremen 神学生支出 400 欧，至{pre_month}月?日止，结余为????欧。 \n* 教会宣教广传事工基金：至 {pre_month} 月 ？？ 日止，结余 ？？ 欧。'], format=self.format_body, font_size = 9, alignment=WD_ALIGN_PARAGRAPH.LEFT)
+        self.add_paragraphs([f'* 堂址维护基金：至{pre_month}月{last_day}日止，总进为{build_in}欧，总支为{build_out}欧，结余为{build_rest}欧。\
+                             \n* 神学教育基金：支持 CCG Bremen 神学生支出 {seminary_out} 欧，至{pre_month}月{last_day}日止，结余为{seminary_rest}欧。 \n* 教会宣教广传事工基金：至 {pre_month} 月 {last_day} 日止，结余 {mission_rest} 欧。'], format=self.format_body, font_size = 9, alignment=WD_ALIGN_PARAGRAPH.LEFT)
         self.add_spacing(3)
 
     def add_corresponding_table(self):
@@ -433,14 +481,17 @@ class makeBulletin(object):
         self.add_table(font_size=10, content = contents, alignments=WD_TABLE_ALIGNMENT.LEFT,borders = {'left':False,'right':False,'up':False,'down':False})
 
     def add_lesson_table(self):
+        #the facebook page is marked with its own logo - there is no emoji for it, so a
+        #placeholder rides through the table build and is swapped for the image after
         contents = [
             ['🏠Dulsberg-Süd 26, 22049 Hamburg','成人主日学','每周日上午09:00'],
             ['🚉乘 U1 至 Straßburger Str. 站下车，','主日崇拜','每周日上午10:30'],
             [' 步行十分钟即至。','幼儿主日学','每周日上午10:30'],
-            ['🌍ccg-ham.de ccg.hamburg','儿童主日学','每周日上午10:30'],
+            [f'🌍ccg-ham.de {self.icon_token}ccg.hamburg','儿童主日学','每周日上午10:30'],
             ['🏛chinese-library.de','少年主日学','每周日上午10:30']
         ]
         tb = self.add_table(font_size= 10, content = contents, alignments=WD_TABLE_ALIGNMENT.LEFT,borders = {'left':False,'right':False,'up':False,'down':False}, bold_cols=[1])
+        self.replace_token_with_image(tb.rows[3].cells[0], self.facebook_file, height=9)
 
     def add_meetup_info(self):
         #dotted rule separating the lesson table from the meetup list
@@ -527,7 +578,7 @@ class makeBulletin(object):
                                         height=round(font_size*2.2, 1),
                                         arcsize=8000,
                                         line=int(font_size*1.4*20*self.line_scale),
-                                        font=self.format_body['font_name'],
+                                        font=self.font_for_region(self.format_body['font_name']),
                                         half_pt=int(font_size*2),
                                         verse=escape(verse))
         #add_paragraph puts the element in the right place (before the sectPr); swap the
@@ -619,7 +670,7 @@ class makeBulletin(object):
             pg.paragraph_format.space_after = Pt(spacing if i==last else 0)
             run = pg.add_run(text)
             run.font.name = 'Times New Roman'
-            run._element.rPr.rFonts.set(qn('w:eastAsia'), self.format_body['font_name'])
+            run._element.rPr.rFonts.set(qn('w:eastAsia'), self.font_for_region(self.format_body['font_name']))
             run.font.size = Pt(size * self.font_scale)
         self.shade_row(tb,0,self.shade_color_code,None)
 
@@ -696,14 +747,26 @@ class makeBulletin(object):
                         formated_content.append(each.rsplit(','))
                 if content_type == 'FinanceTable':
                     #further formating is needed for finance table content
-                    formated_content_dict = {}
+                    #rows tagged with a leading '@' are not table lines: they carry the
+                    #year-to-date row and the fund/deficit figures of the footnote.  Content
+                    #files written before those existed simply have none of them.
+                    extras = {}
+                    rows = []
+                    for row in formated_content:
+                        if row[0].startswith('@'):
+                            extras[row[0][1:]] = row[1:]
+                        else:
+                            rows.append(row)
                     end_income_index = 0
-                    for i in range(len(formated_content)-1):
-                        if formated_content[i][-1].startswith('+'):
+                    for i in range(len(rows)-1):
+                        if rows[i][-1].startswith('+'):
                             end_income_index = i+1
-                    formated_content_dict = {'income':formated_content[0:end_income_index],
-                                            'expanse': formated_content[end_income_index:-1],
-                                            'summary': [formated_content[-1]]}
+                    formated_content_dict = {'income':rows[0:end_income_index],
+                                            'expanse': rows[end_income_index:-1],
+                                            'summary': [rows[-1]]}
+                    if 'summary_ytd' in extras:
+                        formated_content_dict['summary'].append(extras.pop('summary_ytd'))
+                    formated_content_dict['footnote'] = extras
                     return formated_content_dict
                 else:
                     return formated_content
@@ -787,27 +850,9 @@ def measure_layout(doc_path):
     except Exception:
         return None
 
-def export_pdf(doc_path, pdf_path):
-    """have word write a pdf of the finished document
-
-    word is already being driven for the pagination, so exporting from it keeps the pdf
-    identical to what word shows. returns the pdf path, or None if word cannot be reached.
-    """
-    export = ("$ErrorActionPreference='Stop';"
-              "$w=New-Object -ComObject Word.Application;$w.Visible=$false;$w.DisplayAlerts=0;"
-              f"$d=$w.Documents.Open('{doc_path}',$false,$true);"
-              f"$d.ExportAsFixedFormat('{pdf_path}',17);"   #17 = wdExportFormatPDF
-              "$d.Close($false);$w.Quit()")
-    try:
-        subprocess.run(['powershell','-NoProfile','-NonInteractive','-Command',export],
-                       capture_output=True, text=True, timeout=180)
-        return pdf_path if os.path.exists(pdf_path) else None
-    except Exception:
-        return None
-
 def main(year, month, content_file, doc_file=None, font_scale=1.0, fit_pages=2,
          line_scale=1.0, rounds=8, tolerance=10, min_line_scale=0.6, max_line_scale=2.5,
-         progress=None, make_pdf=True):
+         progress=None):
     """build the bulletin and set each region's leading so it fills its column
 
     the two hard breaks in make_doc_in_one_go pin the finance report to the top of the
@@ -840,10 +885,8 @@ def main(year, month, content_file, doc_file=None, font_scale=1.0, fit_pages=2,
         return worker.saved_path
 
     def _finish(path):
-        #the pdf goes next to the .docx, once the layout has settled
-        if make_pdf:
-            _report('正在导出 PDF…')
-            export_pdf(path, os.path.splitext(path)[0]+'.pdf')
+        #the .docx is the deliverable - it still gets a pass by hand before it goes out,
+        #and the pdf is exported from word at that point
         _report('完成', final=True)
         return path
 
@@ -859,8 +902,7 @@ def main(year, month, content_file, doc_file=None, font_scale=1.0, fit_pages=2,
         measured = measure_layout(path)
         done_steps = done_steps + 1
         if measured==None:
-            #word is not available, so the document stays as it was built (and there is
-            #nothing to export the pdf with either)
+            #word is not available, so the document stays as it was built
             _report('完成', final=True)
             return path
         pages, ends = measured

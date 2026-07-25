@@ -215,6 +215,19 @@ db_types:
                 total_income: lineEdit_total_income
                 total_expense: lineEdit_total_expense
                 net_income: lineEdit_net_income
+                #year-to-date totals and the fund/deficit figures quoted in the bulletin
+                #footnote - they are not per-item lines, get_finance_content emits them
+                #as tagged rows instead of income/expense entries
+                ytd_total_income: lineEdit_ytd_total_income
+                ytd_total_expense: lineEdit_ytd_total_expense
+                ytd_net_income: lineEdit_ytd_net_income
+                accumulated_deficit: lineEdit_accumulated_deficit
+                fund_building_income: lineEdit_fund_building_income
+                fund_building_expense: lineEdit_fund_building_expense
+                fund_building_balance: lineEdit_fund_building_balance
+                fund_seminary_expense: lineEdit_fund_seminary_expense
+                fund_seminary_balance: lineEdit_fund_seminary_balance
+                fund_mission_balance: lineEdit_fund_mission_balance
                 income_offering_onside_note: lineEdit_income_1_note
                 income_offering_online_note: lineEdit_income_2_note
                 income_offering_lubeck_note: lineEdit_income_3_note
