@@ -2,7 +2,9 @@ from ..util import error_pop_up, clear_all_text_field, get_dates_for_one_month
 import datetime
 from pathlib import Path
 from functools import partial
-from .common_db_opts import * 
+from .common_db_opts import *
+from PyQt5.QtWidgets import QMessageBox, QProgressDialog, QApplication
+from PyQt5.QtCore import Qt
 from pygod.apps.bulletin_worker.scripts.bulletin_worker import main as bulletin
 import locale
 locale.setlocale(locale.LC_ALL, 'de_DE.UTF-8')
@@ -172,6 +174,67 @@ def get_preach_content(self, key):
     contents_formated = [','.join(dates)]+[contents_formated[0],contents_formated[2],contents_formated[1]]
     return '\n'.join(contents_formated)
 
+def find_unassigned_services(service_content, preach_content):
+    """collect the '日期 服事' slots that are still empty in the next month's schedule
+
+    both arguments are the csv-like blocks produced by get_task_content and
+    get_preach_content, whose first line always holds the sunday dates
+    """
+    missing = []
+    def _scan(content, has_row_title, row_titles = None):
+        lines = [each for each in content.rsplit('\n') if each.strip()!='']
+        if len(lines)<2:
+            return
+        dates = lines[0].rsplit(',')
+        if has_row_title:
+            dates = dates[1:]
+        for i, line in enumerate(lines[1:]):
+            cells = line.rsplit(',')
+            if has_row_title:
+                title, values = cells[0], cells[1:]
+            else:
+                title = row_titles[i] if i<len(row_titles) else f'第{i+1}行'
+                values = cells
+            #a service with no db record at all comes back as a short row
+            values = values + ['']*(len(dates)-len(values))
+            for date, value in zip(dates, values):
+                if value.strip()=='':
+                    missing.append(f'{date}　{title}')
+    _scan(service_content, True)
+    _scan(preach_content, False, ['讲题','讲员','经文'])
+    return missing
+
+def confirm_unassigned_services(self, missing, max_shown = 20):
+    shown = missing[0:max_shown]
+    msg = '以下服事尚未安排：\n\n' + '\n'.join(shown)
+    if len(missing)>max_shown:
+        msg = msg + f'\n... 还有 {len(missing)-max_shown} 项'
+    msg = msg + '\n\n仍然生成月报？（空缺处将留白）'
+    reply = QMessageBox.question(self, 'Message', msg, QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+    return reply == QMessageBox.Yes
+
+def make_progress_dialog(self, title = '月报'):
+    """a modal bar for the doc generation, which runs on the gui thread"""
+    bar = QProgressDialog('正在生成月报…', None, 0, 100, self)
+    bar.setWindowTitle(title)
+    bar.setWindowModality(Qt.WindowModal)
+    bar.setCancelButton(None)
+    bar.setAutoClose(False)
+    bar.setAutoReset(False)
+    bar.setMinimumDuration(0)
+    #wide enough that the step labels are not elided down to '正在调整行距...'
+    bar.setMinimumWidth(360)
+    bar.setValue(0)
+    QApplication.processEvents()
+    return bar
+
+def update_progress_dialog(bar, step, total, message):
+    bar.setMaximum(total)
+    bar.setValue(step)
+    bar.setLabelText(message)
+    #the generation blocks the gui thread, so repaint by hand between the steps
+    QApplication.processEvents()
+
 def save_bulletin_content_in_txt_format_and_make_bulletin(self, create_file = True):
     year = int(self.lineEdit_year_bulletin.text())
     month = int(self.comboBox_bulletin_month.currentText())
@@ -191,12 +254,18 @@ def save_bulletin_content_in_txt_format_and_make_bulletin(self, create_file = Tr
                   'Report':'self.textEdit_reports_note.toPlainText()',
                   'Pray': 'self.textEdit_prays_note.toPlainText()',
                   'LastMonthRecord':'get_last_month_record(self)',
-                  'PreachTable':f"get_preach_content(self,'{year_next_month}_{next_month}')",
-                  'MonthlyServiceTable':f"get_task_content(self,'{year_next_month}_{next_month}')",
+                  'PreachTable':'preach_content',
+                  'MonthlyServiceTable':'service_content',
                   'FinanceTable':f"get_finance_content(self, '{year_pre_month}_{pre_month}月')"
                   }
     try:
-        if create_file:    
+        #pull next month's schedule up front so the empty slots can be reported before anything is written
+        service_content = get_task_content(self, f'{year_next_month}_{next_month}')
+        preach_content = get_preach_content(self, f'{year_next_month}_{next_month}')
+        missing = find_unassigned_services(service_content, preach_content)
+        if len(missing)>0 and not confirm_unassigned_services(self, missing):
+            return
+        if create_file:
             with open(str(content_folder / txt_file_name), 'w', encoding='utf-8') as f:
                 for content_type in content_types:
                     f.write(f"<{content_type}>\n{eval(api_map[content_type])}\n</{content_type}>\n")
@@ -204,7 +273,19 @@ def save_bulletin_content_in_txt_format_and_make_bulletin(self, create_file = Tr
                         # print(eval(api_map[content_type]))
                         # print('\n\n')
                         # print(get_task_content(self,f'{year_next_month}_{next_month}'))
-        bulletin(year, month, str(content_folder / txt_file_name), str(content_folder / doc_file_name))
-        error_pop_up(f"The bulletin doc file is created and saved in {str(content_folder)}", 'Information')
+        #making the doc takes half a minute or so - word is asked to lay it out several
+        #times over - so show how far along it is instead of freezing on a dead window
+        bar = make_progress_dialog(self)
+        try:
+            bulletin(year, month, str(content_folder / txt_file_name), str(content_folder / doc_file_name),
+                     progress=partial(update_progress_dialog, bar))
+        finally:
+            bar.close()
+        #the pdf only appears if word could be reached, so report what is actually there
+        made = [doc_file_name]
+        pdf_file_name = doc_file_name.replace('.docx', '.pdf')
+        if (content_folder / pdf_file_name).exists():
+            made.append(pdf_file_name)
+        error_pop_up(f"{' and '.join(made)} created and saved in {str(content_folder)}", 'Information')
     except Exception as e:
         error_pop_up(f'ERROR: {e}', 'Error')

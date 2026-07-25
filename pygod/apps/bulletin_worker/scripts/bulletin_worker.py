@@ -1,11 +1,12 @@
-import os, sys
-from docx.oxml.ns import nsdecls
+import os, sys, subprocess
+from xml.sax.saxutils import escape
+from docx.oxml.ns import nsdecls, qn
 from docx.oxml import parse_xml
 from docx import Document 
 from docx.shared import Pt, RGBColor        # Shared classes with defined ”Unit” and ”Colors”
 from docx.enum.dml import MSO_THEME_COLOR   # Enumerations class with various definitions
-from docx.enum.text import WD_UNDERLINE,WD_ALIGN_PARAGRAPH
-from docx.enum.table import WD_TABLE_ALIGNMENT
+from docx.enum.text import WD_UNDERLINE,WD_ALIGN_PARAGRAPH,WD_BREAK
+from docx.enum.table import WD_TABLE_ALIGNMENT, WD_ALIGN_VERTICAL
 from docx.enum.style import WD_STYLE_TYPE
 from docx.enum.section import WD_ORIENT, WD_SECTION
 from docx.oxml.ns import qn
@@ -14,6 +15,23 @@ from pathlib import Path
 import copy
 
 root = Path(__file__).parent.parent
+
+try:
+    from zhconv import convert as _zh_convert
+except ImportError:
+    _zh_convert = None
+
+def to_simplified(text):
+    """normalise the odd traditional character that comes out of the database
+
+    entries are typed by different people, so 奉獻 / 交託 / 牧師 / 莊 turn up mixed in with
+    the simplified text. 'zh-hans' converts the script only - unlike 'zh-cn' it does not
+    also swap regional wording, which could rewrite names.
+    if zhconv is not installed the text is left exactly as it was.
+    """
+    if _zh_convert==None or text=='':
+        return text
+    return _zh_convert(text, 'zh-hans')
 
 
 from docx.oxml import OxmlElement
@@ -63,6 +81,14 @@ class makeBulletin(object):
     left_margin = Mm(5)
     right_margin = Mm(5)
     shade_color_code = '9CC2E5'#'6495ED'
+    #the header block (月报 line + 年度主题 line) is set in the round font, one size for both.
+    #the size is what gets nudged by hand when the header has to fit a tighter column
+    header_font = 'FZZhunYuan-M02S'
+    header_font_size = 12
+    #width of one of the two text columns: page width less the margins, less the gap
+    #between the columns, halved. a table has to be built to this or word squeezes it
+    #and the cell text wraps
+    column_width = 396.8
     format_report = {
             'style':'List Number',
             'font_name':'FZShuSong-Z01S',
@@ -99,8 +125,18 @@ class makeBulletin(object):
     format_list = [format_title_big, format_body, format_report]
     format_style_list = ['FontTitleBigStyle','FontBodyStyle','FontReportStyle']
 
-    def __init__(self, year, month, font_scale=1.0):
+    #the two hard breaks cut the bulletin into three independently flowing regions:
+    #page 1 (two columns), then the left and the right column of page 2
+    regions = ['page1', 'col1', 'col2']
+
+    def __init__(self, year, month, font_scale=1.0, line_scale=1.0, line_scales=None):
         self.font_scale = font_scale
+        #the leading is scaled per region, leaving the type sizes alone, so each region
+        #can be filled to the foot of its column on its own
+        self.line_scales = {each: line_scale for each in self.regions}
+        if line_scales!=None:
+            self.line_scales.update(line_scales)
+        self.region = self.regions[0]
         self.doc = Document()
         self.year = year
         self.month = month
@@ -108,6 +144,10 @@ class makeBulletin(object):
         self.make_two_columns()
         self.set_margin()
         self.add_customized_style()
+
+    @property
+    def line_scale(self):
+        return self.line_scales[self.region]
 
     def add_customized_style(self):
         obj_styles = self.doc.styles
@@ -146,11 +186,28 @@ class makeBulletin(object):
     def add_spacing(self, line_spacing = 10):
         self.add_paragraphs([''], self.format_body, line_spacing = line_spacing)
 
+    def _add_break(self, break_type):
+        #the break has to hang off a paragraph, so keep that paragraph as short as
+        #possible - otherwise it pushes what follows a whole line down the new column
+        pg = self.doc.add_paragraph()
+        pg.paragraph_format.line_spacing = Pt(1)
+        pg.paragraph_format.space_before = Pt(0)
+        pg.paragraph_format.space_after = Pt(0)
+        run = pg.add_run()
+        run.font.size = Pt(1)
+        run.add_break(break_type)
+
+    def add_page_break(self):
+        self._add_break(WD_BREAK.PAGE)
+
+    def add_column_break(self):
+        self._add_break(WD_BREAK.COLUMN)
+
     def add_paragraphs(self, par_text_list, format, **kwargs):
         format = copy.copy(format)
         format.update(kwargs)
         format['font_size'] = format['font_size'] * self.font_scale
-        format['line_spacing'] = format['line_spacing'] * self.font_scale
+        format['line_spacing'] = format['line_spacing'] * self.font_scale * self.line_scale
         for each in par_text_list:
             pg = self.doc.add_paragraph(style = format['style'])
             pg.paragraph_format.line_spacing = Pt(format['line_spacing'])
@@ -169,7 +226,7 @@ class makeBulletin(object):
                 else:
                     run.font.bold = format['bold']
 
-    def add_table(self, font_size, content = [[]], row_base = True, width = None, alignments = WD_ALIGN_PARAGRAPH.CENTER,style = 'Table Grid', borders = {'left':False,'right':False,'up':False,'down':False}, row_height_factor=1.5, bold_cols=None, bold_rows=None):
+    def add_table(self, font_size, content = [[]], row_base = True, alignments = WD_ALIGN_PARAGRAPH.CENTER,style = 'Table Grid', borders = {'left':False,'right':False,'up':False,'down':False}, row_height_factor=1.5, bold_cols=None, bold_rows=None, row_spans=None, bold_cols_by_row=None, col_widths=None, valign=None, outer_sides_only=False):
         assert type(content)==list, "The content of table must be in a list form"
         assert len(content)>0, "There is nothing to fill the table"
         assert len(content[0])>0, "Column or row content is empty"
@@ -180,7 +237,22 @@ class makeBulletin(object):
         else:
             cols = len(content)
             rows = len(content[0])
+        if row_spans!=None:
+            #the grid is as wide as the spans say, not as wide as the first row's cells
+            cols = sum(row_spans[0])
         tb = self.doc.add_table(rows = rows, cols=cols, style = style)
+        #python-docx builds the table as wide as the whole text area, which is twice the
+        #column it has to live in -> every table is pinned to the real column width, so it
+        #spans the column exactly instead of being squeezed or left short of the edge
+        if col_widths==None:
+            col_widths = [self.column_width/cols]*cols
+        assert len(col_widths)==cols, 'one width is needed per grid column'
+        #col_widths only says how the columns relate to each other - rescale them so the
+        #table spans the column exactly whatever numbers were handed in
+        col_widths = [each*self.column_width/sum(col_widths) for each in col_widths]
+        tb.autofit = False
+        for gridCol, each in zip(tb._tbl.find(qn('w:tblGrid')).findall(qn('w:gridCol')), col_widths):
+            gridCol.set(qn('w:w'), str(Pt(each).twips))
         if type(alignments)!=list:
             alignments = [alignments]*cols
         else:
@@ -190,26 +262,50 @@ class makeBulletin(object):
             if row_base:
                 row_content = content[i]
             else:
-                row_content = [each[i] for each in content]
-            tb.rows[i].height = Pt(font_size * row_height_factor)
-            merge_times = 0
-            #merge_times = len([each for each in row_content if each==''])
-            #if merge_times!=0:
-            #    for ii in range(merge_times):
-            #        tb.rows[i].cells[0].merge(tb.rows[i].cells[1])
-            # tb.columns[0].width = Pt(font_size)
-            # row_content = [each for each in row_content if each!='']
+                row_content = [each[i] if i<len(each) else '' for each in content]
+            #row_spans lets rows of a single table hold different numbers of cells - the
+            #contact list and the finance report both need that, and splitting them into
+            #one table per row shape would leave gaps between the pieces.
+            #cell_slots holds, per logical cell, the grid column it starts at
+            if row_spans==None:
+                cell_slots, spans = list(range(cols)), [1]*cols
+            else:
+                spans = row_spans[i]
+                assert sum(spans)==cols, f'row {i} spans {sum(spans)} of {cols} grid columns'
+                cell_slots, at = [], 0
+                for span in spans:
+                    cell_slots.append(at)
+                    at = at + span
+                #merging by grid index stays valid: python-docx keeps one entry per grid
+                #column and repeats the merged cell
+                for slot, span in zip(cell_slots, spans):
+                    if span>1:
+                        tb.rows[i].cells[slot].merge(tb.rows[i].cells[slot+span-1])
+            #an incomplete schedule (missing db record, or only some weeks filled in) gives
+            #rows shorter than the header row -> pad with blanks so the table still builds
+            if len(row_content)<len(cell_slots):
+                row_content = list(row_content) + ['']*(len(cell_slots)-len(row_content))
+            tb.rows[i].height = Pt(font_size * row_height_factor * self.line_scale)
             cells = tb.rows[i].cells
-            for j in range(cols-merge_times):
-                set_cell_border(cells[j], **borders)
-                # cells[j].alignment = alignments[j]               
-                cells[j].text = row_content[j]
-                if width!=None:
-                    cells[j].width = Pt(width)
+            for j, slot in enumerate(cell_slots):
+                if outer_sides_only:
+                    #rule only down the two outer edges of the table, not between columns
+                    cell_borders = dict(borders)
+                    cell_borders['left'] = borders['left'] and slot==0
+                    cell_borders['right'] = borders['right'] and (slot+spans[j])==cols
+                else:
+                    cell_borders = borders
+                set_cell_border(cells[slot], **cell_borders)
+                cells[slot].text = row_content[j]
+                if valign!=None:
+                    cells[slot].vertical_alignment = valign
+                #a merged cell is as wide as all the grid columns it covers
+                cells[slot].width = Pt(sum(col_widths[slot:slot+spans[j]]))
                 is_bold = ((bold_cols is not None and j in bold_cols) or
-                           (bold_rows is not None and i in bold_rows))
-                for pg in cells[j].paragraphs:
-                    pg.paragraph_format.line_spacing = Pt(font_size * 1.2)
+                           (bold_rows is not None and i in bold_rows) or
+                           (bold_cols_by_row is not None and j in bold_cols_by_row.get(i, [])))
+                for pg in cells[slot].paragraphs:
+                    pg.paragraph_format.line_spacing = Pt(font_size * 1.2 * self.line_scale)
                     pg.alignment = alignments[j]
                     for run in pg.runs:
                         run.font.name = 'Times New Roman'
@@ -233,6 +329,50 @@ class makeBulletin(object):
         for cell in tb.rows[which_row].cells:
             self._shade_cell(cell, fill, color)
 
+    #the logo and the whatsapp qr code float over the text rather than sitting in the
+    #flow, so they can hang off the right edge of their column
+    logo_file = root / 'src' / 'resources' / 'ccg_logo.png'
+    qr_file = root / 'src' / 'resources' / 'qr_whatsapp.png'
+
+    anchor_xml = (
+        '<wp:anchor {nsdecls} distT="0" distB="0" distL="0" distR="0" simplePos="0"'
+        ' relativeHeight="{depth}" behindDoc="0" locked="0" layoutInCell="1" allowOverlap="1">'
+        '<wp:simplePos x="0" y="0"/>'
+        '<wp:positionH relativeFrom="{rel_h}"><wp:posOffset>{off_x}</wp:posOffset></wp:positionH>'
+        '<wp:positionV relativeFrom="{rel_v}"><wp:posOffset>{off_y}</wp:posOffset></wp:positionV>'
+        '<wp:extent cx="{cx}" cy="{cy}"/>'
+        '<wp:effectExtent l="0" t="0" r="0" b="0"/>'
+        '<wp:wrapNone/>'
+        '<wp:docPr id="{pic_id}" name="{name}"/>'
+        '<wp:cNvGraphicFramePr/>'
+        '</wp:anchor>')
+
+    def add_floating_picture(self, img_path, width, height, off_x, off_y, name,
+                             rel_h = 'column', rel_v = 'paragraph', paragraph = None):
+        """hang a floating picture off a paragraph at a fixed offset, in points
+
+        python-docx can only place a picture inline, so the picture goes in inline first
+        and its wp:inline wrapper is then swapped for a wp:anchor - that is what lets the
+        image overlap the text instead of taking up a line of its own.
+        """
+        img_path = str(img_path)
+        assert os.path.exists(img_path), f"The image {img_path} is not existing!"
+        if paragraph==None:
+            paragraph = self.doc.paragraphs[-1]
+        run = paragraph.add_run()
+        run.add_picture(img_path, width=Pt(width), height=Pt(height))
+        drawing = run._r.find(qn('w:drawing'))
+        inline = drawing.find(qn('wp:inline'))
+        self._pic_id = getattr(self, '_pic_id', 1000) + 1
+        anchor = parse_xml(self.anchor_xml.format(nsdecls=nsdecls('wp'),
+                                                  depth=self._pic_id,
+                                                  rel_h=rel_h, rel_v=rel_v,
+                                                  off_x=Pt(off_x).emu, off_y=Pt(off_y).emu,
+                                                  cx=Pt(width).emu, cy=Pt(height).emu,
+                                                  pic_id=self._pic_id, name=name))
+        anchor.append(inline.find(qn('a:graphic')))
+        drawing.replace(inline, anchor)
+
     def _insert_img_in_table(self, tb_obj, img_path, row, col, width, height):
         pg = tb_obj.rows[row].cells[col].paragraphs[0]
         run = pg.add_run()
@@ -244,13 +384,25 @@ class makeBulletin(object):
         assert 'income' in table_data and 'expanse' in table_data and 'summary' in table_data, "The table data must have three keys: income and expanse and summary. One or both are missing"
         self.add_paragraphs(['财务报告（单位：EUR）'],self.format_title_big, font_size=12)
         income_end = len(table_data['income'])
+        #one table on a 4 column grid: the income/expense lines take two cells of two
+        #columns each, the summary rows underneath take all four
         main = [['进项','']]+table_data['income']+[['支出','']]+table_data['expanse']
-        tb = self.add_table(font_size=10, content=main, alignments=[WD_TABLE_ALIGNMENT.LEFT,WD_TABLE_ALIGNMENT.RIGHT],borders = {'left':False,'right':False,'up':False,'down':False}, bold_rows=[0, income_end+1])
+        summary = [['','总进','总支','结余']]+table_data['summary']+[["202？（?-?月)年度",'?? €','?? €','?? €']]
+        #the label side takes the wider share: the longest entry ('奉献 OMF 葛美恩传道德语青少年
+        #福音事工') has to stay on one line, while the amounts are short
+        row_spans = [[2,2]]*len(main) + [[1,1,1,1]]*len(summary)
+        alignments = [WD_TABLE_ALIGNMENT.LEFT,WD_TABLE_ALIGNMENT.RIGHT,WD_TABLE_ALIGNMENT.RIGHT,WD_TABLE_ALIGNMENT.RIGHT]
+        tb = self.add_table(font_size=10, content=main+summary, alignments=alignments,borders = {'left':False,'right':False,'up':False,'down':False}, row_spans=row_spans, bold_rows=[0, income_end+1, len(main)], col_widths=[105, 100, 96, 95.8])
         month = self.month
         pre_month = month - 1 if month!=1 else 12
-        ntb = self.add_table(font_size=10, content = [['','总进','总支','结余']]+table_data['summary']+[["202？（?-?月)年度",'?? €','?? €','?? €']],alignments=[WD_TABLE_ALIGNMENT.LEFT,WD_TABLE_ALIGNMENT.RIGHT,WD_TABLE_ALIGNMENT.RIGHT,WD_TABLE_ALIGNMENT.RIGHT],borders = {'left':False,'right':False,'up':False,'down':False}, bold_rows=[0])
+        year_pre_month = self.year if month!=1 else self.year - 1
+        self.add_spacing(3)
+        self.add_spacing(3)
+        self.add_paragraphs([f'截止到{year_pre_month}年{pre_month}月，教会主要账户（不含各类基金）累计收支赤字为 ???? 欧，请弟兄姊妹为此在祷告中纪念，我们相信  神会有预备。'], format=self.format_body, font_size = 9, bold = True, alignment=WD_ALIGN_PARAGRAPH.LEFT)
+        self.add_spacing(3)
         self.add_paragraphs([f'* 堂址维护基金：{month+1}月提拨金为???欧。至{pre_month}月??日止，总进为????欧，总支为????欧，结余为????欧。\
                              \n* 神学教育基金：支持 CCG Bremen 神学生支出 400 欧，至{pre_month}月?日止，结余为????欧。 \n* 教会宣教广传事工基金：至 {pre_month} 月 ？？ 日止，结余 ？？ 欧。'], format=self.format_body, font_size = 9, alignment=WD_ALIGN_PARAGRAPH.LEFT)
+        self.add_spacing(3)
 
     def add_corresponding_table(self):
         self.add_paragraphs(['教会牧者执事联络电话'],self.format_title_big, font_size = 12)
@@ -263,12 +415,20 @@ class makeBulletin(object):
                         ['图书组','黄罗佳弟兄','017660470014','福音事工组','刘朗朗弟兄','017664073888'],
                         ['管堂组','周　斌弟兄','01796737203','x','x','x'],
         ]
-        self.add_table(font_size = 9, content = [table_content[0]], alignments=WD_TABLE_ALIGNMENT.LEFT,borders = {'left':False,'right':False,'up':False,'down':False}, bold_cols=[0, 2])
-        self.add_table(font_size = 9, content = [table_content[1]], alignments=WD_TABLE_ALIGNMENT.LEFT,borders = {'left':False,'right':False,'up':False,'down':False}, bold_cols=[0, 2])
-        self.add_table(font_size = 9, content = table_content[2:-1], alignments=WD_TABLE_ALIGNMENT.LEFT,borders = {'left':False,'right':False,'up':False,'down':False}, bold_cols=[0, 3])
-        self.add_table(font_size = 9, content = [table_content[-1]], alignments=WD_TABLE_ALIGNMENT.LEFT,borders = {'left':False,'right':False,'up':False,'down':False}, bold_cols=[0])
+        #one table on a 7 column grid - the pastor rows and the deacon rows hold a
+        #different number of cells, so each row gets its own grid spans
+        row_spans = [[2,1,2,2],[2,1,4]] + [[1,1,1,1,2,1]]*(len(table_content)-2)
+        bold_cols_by_row = {0:[0,2], 1:[0,2]}
+        for i in range(2, len(table_content)):
+            bold_cols_by_row[i] = [0,3]
+        bold_cols_by_row[len(table_content)-1] = [0]
+        #name columns wide enough that '邵　颢弟兄' does not break over two lines
+        col_widths = [58.8, 58.8, 89.3, 58.7, 31.0, 27.7, 89.4]
+        self.add_table(font_size = 9, content = table_content, alignments=WD_TABLE_ALIGNMENT.LEFT,borders = {'left':False,'right':False,'up':False,'down':False}, row_spans=row_spans, bold_cols_by_row=bold_cols_by_row, col_widths=col_widths)
 
     def add_whatsapp_info_table(self):
+        #the qr code hangs off the right of the table, level with the two text lines
+        self.add_floating_picture(self.qr_file, 46.7, 48.0, off_x=338, off_y=2, name='qr_whatsapp')
         contents = [['欢迎大家加入教会的WhatsApp 通知群组'],['bit.ly/ccgh-whatsapp 获得更多信息 ']]
         self.add_table(font_size=10, content = contents, alignments=WD_TABLE_ALIGNMENT.LEFT,borders = {'left':False,'right':False,'up':False,'down':False})
 
@@ -283,6 +443,8 @@ class makeBulletin(object):
         tb = self.add_table(font_size= 10, content = contents, alignments=WD_TABLE_ALIGNMENT.LEFT,borders = {'left':False,'right':False,'up':False,'down':False}, bold_cols=[1])
 
     def add_meetup_info(self):
+        #dotted rule separating the lesson table from the meetup list
+        self.add_paragraphs(['…'*47], format = self.format_body, font_name = 'SimSun')
         contents = ['福音性查经+    每周五19:30 （实体）',
         '联络：吴振忠牧师（688 604 16）   ⚓Dulsberg-Süd 26    🚉U1 Straßburger Str.',
         '',
@@ -298,11 +460,11 @@ class makeBulletin(object):
         '伉俪团契+\t     每月第二个周六14:00-16:30 （实体）',
         '联络：黄罗佳弟兄、杨琪姊妹（017660470014） 陈玮弟兄、蔡文彦姊妹（015142674175） 张勇弟兄、黄多姊妹（017623606936）',
         '',
-        '妈妈小组+\t     每月第一、三个周四9:30-12:00 （线上ZOOM）',
+        '妈妈小组+\t     每月第一、三个周五晚20:30-22:00 （线上ZOOM）',
         '联络：徐圣佳姊妹（017670728041）   ⚓Dulsberg-Süd26    🚉U1 Straßburger Str.',
         '',
         '🎦Zoom ID: 5861908437，会议室密码: 903600']
-        self.add_paragraphs(contents, format = self.format_body)
+        self.add_paragraphs(contents, format = self.format_body, line_spacing = 12)
 
     def add_preach_table(self, contents):
         #append icon at the beginning place
@@ -311,7 +473,8 @@ class makeBulletin(object):
                         ['✒️']+contents[1],\
                         ["🤵"]+contents[2],\
                         ['🏷️']+contents[3]]
-        tb = self.add_table(font_size= 10, content = contents, alignments=WD_TABLE_ALIGNMENT.CENTER,borders = {'left':False,'right':False,'up':True,'down':True})
+        #ruled top and bottom, plus a line down each outer edge - nothing between columns
+        tb = self.add_table(font_size= 10, content = contents, alignments=WD_TABLE_ALIGNMENT.CENTER,borders = {'left':True,'right':True,'up':True,'down':True}, outer_sides_only=True, valign=WD_ALIGN_VERTICAL.CENTER)
         self.shade_row(tb, 0, self.shade_color_code, None)
         self.shade_row(tb, 2, self.shade_color_code, None)
 
@@ -327,38 +490,137 @@ class makeBulletin(object):
         year_next_month = year if month!=12 else year + 1
         next_month = month + 1 if month!=12 else 1
         self.add_paragraphs( ['德国汉堡华人基督教会'], format=self.format_title_big, font_size = 24, space_before=20, space_after = 2)
-        self.add_paragraphs( [f'{year_next_month}年{next_month}月份月报'], format=self.format_body, font_size = 12, space_before =8, space_after =2)
-        self.add_paragraphs( [f'年度主题：{contents[0]}'], format=self.format_body, font_size = 13,space_after = 2, space_before = 5)
-        self.add_paragraphs( [contents[1]], format=self.format_body, font_size = 10, line_spacing = 15)
+        #logo sits top right of the column, level with the church name. the offset is
+        #measured from the title paragraph, and has to leave the top of the image on the
+        #page - any further up and the printer clips it
+        self.add_floating_picture(self.logo_file, 55.4, 53.5, off_x=331, off_y=-12, name='ccg_logo')
+        self.add_paragraphs( [f'{year_next_month}年{next_month}月份月报'], format=self.format_body, font_name = self.header_font, font_size = self.header_font_size, space_before =8, space_after =2)
+        #the YearScripture section holds the theme on the first line and the verse on the second
+        theme = contents[0] if len(contents)>0 else ''
+        verse = contents[1] if len(contents)>1 else ''
+        if theme:
+            #the db record often carries the '年度主题：' prefix already -> don't print it twice
+            theme = theme[len('年度主题：'):] if theme.startswith('年度主题：') else theme
+            self.add_paragraphs( [f'年度主题：{theme}'], format=self.format_body, font_name = self.header_font, font_size = self.header_font_size,space_after = 2, space_before = 5)
+        if verse:
+            self.add_year_scripture_box(verse)
+
+    #a table cell can only have square corners, so the year verse goes in a rounded
+    #rectangle shape instead. arcsize is in 1/65536 of the shorter side
+    verse_box_xml = (
+        '<w:p {nsdecls} xmlns:v="urn:schemas-microsoft-com:vml">'
+        '<w:pPr><w:spacing w:before="0" w:after="0"/></w:pPr><w:r><w:pict>'
+        '<v:roundrect style="width:{width}pt;height:{height}pt;mso-fit-shape-to-text:t"'
+        ' arcsize="{arcsize}f" fillcolor="white" strokecolor="black" strokeweight=".5pt">'
+        '<v:textbox inset="6pt,4pt,6pt,4pt"><w:txbxContent>'
+        '<w:p><w:pPr><w:spacing w:before="0" w:after="0" w:line="{line}" w:lineRule="exact"/></w:pPr>'
+        '<w:r><w:rPr><w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman"'
+        ' w:eastAsia="{font}"/><w:sz w:val="{half_pt}"/></w:rPr>'
+        '<w:t xml:space="preserve">{verse}</w:t></w:r></w:p>'
+        '</w:txbxContent></v:textbox></v:roundrect></w:pict></w:r></w:p>')
+
+    def add_year_scripture_box(self, verse, font_size = 10, spacing = 4):
+        """the year verse, in a rounded box with a little air above and below"""
+        self.add_spacing(spacing)
+        box = self.verse_box_xml.format(nsdecls=nsdecls('w'),
+                                        width=round(self.column_width-6, 1),
+                                        height=round(font_size*2.2, 1),
+                                        arcsize=8000,
+                                        line=int(font_size*1.4*20*self.line_scale),
+                                        font=self.format_body['font_name'],
+                                        half_pt=int(font_size*2),
+                                        verse=escape(verse))
+        #add_paragraph puts the element in the right place (before the sectPr); swap the
+        #empty paragraph for the shape once it is parked there
+        anchor = self.doc.add_paragraph()._p
+        anchor.addprevious(parse_xml(box))
+        anchor.getparent().remove(anchor)
+        self.add_spacing(spacing)
 
     def add_report(self, contents):
         self.add_paragraphs(['教会通讯'],format = self.format_body, font_size = 10, space_before = 5, space_after = 5, bold = True)
-        self.add_paragraphs(contents, format = self.format_report)
+        self.add_paragraphs(contents, format = self.format_report, line_spacing = 15)
+
+    def restart_list_numbering(self):
+        """give the next 'List Number' paragraphs a numbering of their own, starting at 1
+
+        the report list and the prayer list share the 'List Number' style, so word runs one
+        sequence straight through both. this clones the style's numbering with a start
+        override and hands back the new numId to put on the prayer paragraphs.
+        """
+        w = qn('w:numId').rsplit('}')[0] + '}'
+        numbering = self.doc.part.numbering_part.element
+        style_num = self.doc.styles['List Number'].element.find(f'.//{w}numPr/{w}numId')
+        if style_num==None:
+            return None
+        abstract = None
+        for num in numbering.findall(f'{w}num'):
+            if num.get(f'{w}numId')==style_num.get(f'{w}val'):
+                abstract = num.find(f'{w}abstractNumId').get(f'{w}val')
+        if abstract==None:
+            return None
+        new_id = str(max(int(each.get(f'{w}numId')) for each in numbering.findall(f'{w}num')) + 1)
+        numbering.append(parse_xml(
+            f'<w:num {nsdecls("w")} w:numId="{new_id}">'
+            f'<w:abstractNumId w:val="{abstract}"/>'
+            '<w:lvlOverride w:ilvl="0"><w:startOverride w:val="1"/></w:lvlOverride>'
+            '</w:num>'))
+        return new_id
 
     def add_pray_list(self, contents):
         self.add_paragraphs(['感恩、代祷事项'],format = self.format_body, font_size = 10, space_before = 5, space_after = 5, bold = True)
+        first = len(self.doc.paragraphs)
         self.add_paragraphs(contents, format = self.format_report)
+        num_id = self.restart_list_numbering()
+        if num_id!=None:
+            for pg in self.doc.paragraphs[first:]:
+                pg._p.get_or_add_pPr().append(parse_xml(
+                    f'<w:numPr {nsdecls("w")}><w:ilvl w:val="0"/>'
+                    f'<w:numId w:val="{num_id}"/></w:numPr>'))
 
     def add_monthly_scripture(self, contents):
-        self.add_paragraphs(['†今月金句'],format = self.format_body, font_size = 12, bold = True)
+        self.add_paragraphs(['†每月金句'],format = self.format_body, font_size = 12, bold = True)
+        self.add_spacing(3)
         self.add_paragraphs(contents, format = self.format_body, font_size = 10)
         
     def add_monthly_service_table(self, contents):
         self.add_paragraphs(['主日崇拜服事表'],format = self.format_body, font_size = 10, bold = True)
-        tb = self.add_table(font_size=10, content=contents, width = 70,borders = {'left':True,'right':True,'up':True,'down':True}, bold_cols=[0], bold_rows=[0])
+        tb = self.add_table(font_size=10, content=contents,borders = {'left':True,'right':True,'up':True,'down':True}, bold_cols=[0], bold_rows=[0], valign=WD_ALIGN_VERTICAL.CENTER)
         for i in range(1, len(contents),2):
             self.shade_row(tb, i, self.shade_color_code, '000000')
 
     def add_last_month_record_table(self, offering_attendence_content, bible_study_attendence_content):
         self.add_paragraphs(['奉献纪录，主日及各查经小组出席人数'],format = self.format_body, font_size = 10, line_after = 5, line_before = 5, bold = True)
-        tb = self.add_table(font_size=10, content=offering_attendence_content, width = 70,borders = {'left':True,'right':True,'up':True,'down':True}, bold_cols=[0], bold_rows=[0])
+        tb = self.add_table(font_size=10, content=offering_attendence_content,borders = {'left':True,'right':True,'up':True,'down':True}, bold_cols=[0], bold_rows=[0])
         self.shade_row(tb, 0, self.shade_color_code, '000000')
         self.add_spacing(5)
-        tb = self.add_table(font_size=10, content=bible_study_attendence_content, width = 70,borders = {'left':True,'right':True,'up':True,'down':True}, bold_cols=[0], bold_rows=[0])
+        tb = self.add_table(font_size=10, content=bible_study_attendence_content,borders = {'left':True,'right':True,'up':True,'down':True}, bold_cols=[0], bold_rows=[0])
         self.shade_row(tb, 0, self.shade_color_code, '000000')
 
-    def add_bank_info(self):
-        tb = self.add_table(font_size= 11, content = [['教会奉献账号 户名 CCG Hamburg e.V.银行 Ev. Kreditgenossenschaft e.G.\nIBAN DE73 5206 0410 0006 6031 30     BIC/SWIFT GENODEF1EK1' ]], alignments=WD_TABLE_ALIGNMENT.CENTER,borders = {'left':False,'right':False,'up':False,'down':False})
+    #the account itself is set a size larger than the note about the payment codes
+    bank_lines = [('教会奉献账号 户名 CCG Hamburg e.V.银行 Ev. Kreditgenossenschaft e.G.', 11),
+                  ('IBAN DE73 5206 0410 0006 6031 30     BIC/SWIFT GENODEF1EK1', 11),
+                  ('汇款特别奉献请在汇款目的栏填写相应的两位数字代码（不填表示为一般奉献）', 10),
+                  ('00 建堂基金 / 02 神学教育基金 / 12 吕贝克查经班', 10)]
+
+    def add_bank_info(self, spacing = 4):
+        #one shaded cell holding the four lines, each written on its own so the two note
+        #lines can be a point smaller than the account lines above them
+        tb = self.add_table(font_size= 11, content = [['']], alignments=WD_TABLE_ALIGNMENT.CENTER,borders = {'left':False,'right':False,'up':False,'down':False})
+        cell = tb.rows[0].cells[0]
+        last = len(self.bank_lines) - 1
+        for i, (text, size) in enumerate(self.bank_lines):
+            pg = cell.paragraphs[0] if i==0 else cell.add_paragraph()
+            pg.alignment = WD_ALIGN_PARAGRAPH.CENTER
+            pg.paragraph_format.line_spacing = Pt(size * 1.25 * self.line_scale)
+            #the air above and below sits on the outer two lines, so it falls inside the
+            #shaded cell rather than pushing the shading apart from the rest of the column
+            pg.paragraph_format.space_before = Pt(spacing if i==0 else 0)
+            pg.paragraph_format.space_after = Pt(spacing if i==last else 0)
+            run = pg.add_run(text)
+            run.font.name = 'Times New Roman'
+            run._element.rPr.rFonts.set(qn('w:eastAsia'), self.format_body['font_name'])
+            run.font.size = Pt(size * self.font_scale)
         self.shade_row(tb,0,self.shade_color_code,None)
 
     def test_add_finance_table(self):
@@ -420,7 +682,7 @@ class makeBulletin(object):
             if begin_line==None:
                 begin_line = -1
                 end_line = 0
-            raw = [each.rstrip() for each in lines[begin_line+1:end_line]]
+            raw = [to_simplified(each.rstrip()) for each in lines[begin_line+1:end_line]]
             if content_type=='MonthlyServiceTable':
                 raw = [each.replace('+','\n') for each in raw]
             if content_type in ['YearScripture','MonthlyScripture','Report', 'Pray']:
@@ -463,13 +725,17 @@ class makeBulletin(object):
         self.add_pray_list(self.contents['Pray'])
         self.add_spacing(line_spacing = section_spacing)
         self.add_last_month_record_table(self.contents['LastMonthRecord'][0:3],self.contents['LastMonthRecord'][3:])
-        self.add_spacing(line_spacing = section_spacing)
+        #the finance report has to open page 2 in the left column
+        self.add_page_break()
+        self.region = 'col1'
         self.add_finance_table(self.contents['FinanceTable'])
         self.add_spacing(line_spacing = section_spacing)
         self.add_corresponding_table()
         self.add_spacing(line_spacing = section_spacing)
         self.add_whatsapp_info_table()
-        self.add_spacing(line_spacing = section_spacing)
+        #the title block has to open the right column of page 2
+        self.add_column_break()
+        self.region = 'col2'
         self.add_header_info(self.contents['YearScripture'])
         self.add_spacing(line_spacing = section_spacing)
         self.add_preach_table(self.contents['PreachTable'])
@@ -486,10 +752,147 @@ class makeBulletin(object):
         if file_path==None:
             file_path = root / 'src' / f'bulletin-{self.year}-{self.month}.docx'
         self.doc.save(file_path)
+        self.saved_path = str(file_path)
 
-def main(year, month, content_file, doc_file=None, font_scale=1.0):
-    worker = makeBulletin(year, month, font_scale=font_scale)
-    worker.make_doc_in_one_go(content_file, doc_file)
+#a column runs from just under the top margin to just above the bottom one
+COLUMN_TOP = 17
+COLUMN_BOTTOM = 570
+COLUMN_HEIGHT = COLUMN_BOTTOM - COLUMN_TOP
+#page 1 flows through two columns before its region ends, the page 2 regions only one
+REGION_COLUMNS = {'page1': 2, 'col1': 1, 'col2': 1}
+
+def measure_layout(doc_path):
+    """how many pages, and the y at which each region runs out, as word lays it out
+
+    none of this is in the .docx - it only exists once word has laid the document out -
+    so this drives word over com. the regions are found by the break characters
+    (chr 12 = page break, chr 14 = column break) so the probe stays ascii.
+    returns None when word cannot be reached, and the caller then skips fitting.
+    """
+    probe = ("$ErrorActionPreference='Stop';"
+             "$w=New-Object -ComObject Word.Application;$w.Visible=$false;$w.DisplayAlerts=0;"
+             f"$d=$w.Documents.Open('{doc_path}',$false,$true);$d.Repaginate();"
+             "$a=-1;$b=-1;"
+             "foreach($p in $d.Paragraphs){$t=$p.Range.Text;"
+             "if($a -lt 0 -and $t.Contains([char]12)){$a=[math]::Round($p.Range.Information(6),0)};"
+             "if($b -lt 0 -and $t.Contains([char]14)){$b=[math]::Round($p.Range.Information(6),0)}};"
+             "$c=[math]::Round($d.Paragraphs.Item($d.Paragraphs.Count).Range.Information(6),0);"
+             "Write-Output (($d.ComputeStatistics(2)),$a,$b,$c -join ',');"
+             "$d.Close($false);$w.Quit()")
+    try:
+        done = subprocess.run(['powershell','-NoProfile','-NonInteractive','-Command',probe],
+                              capture_output=True, text=True, timeout=180)
+        pages, a, b, c = [int(float(each)) for each in done.stdout.strip().rsplit('\n')[-1].split(',')]
+        return pages, {'page1': a, 'col1': b, 'col2': c}
+    except Exception:
+        return None
+
+def export_pdf(doc_path, pdf_path):
+    """have word write a pdf of the finished document
+
+    word is already being driven for the pagination, so exporting from it keeps the pdf
+    identical to what word shows. returns the pdf path, or None if word cannot be reached.
+    """
+    export = ("$ErrorActionPreference='Stop';"
+              "$w=New-Object -ComObject Word.Application;$w.Visible=$false;$w.DisplayAlerts=0;"
+              f"$d=$w.Documents.Open('{doc_path}',$false,$true);"
+              f"$d.ExportAsFixedFormat('{pdf_path}',17);"   #17 = wdExportFormatPDF
+              "$d.Close($false);$w.Quit()")
+    try:
+        subprocess.run(['powershell','-NoProfile','-NonInteractive','-Command',export],
+                       capture_output=True, text=True, timeout=180)
+        return pdf_path if os.path.exists(pdf_path) else None
+    except Exception:
+        return None
+
+def main(year, month, content_file, doc_file=None, font_scale=1.0, fit_pages=2,
+         line_scale=1.0, rounds=8, tolerance=10, min_line_scale=0.6, max_line_scale=2.5,
+         progress=None, make_pdf=True):
+    """build the bulletin and set each region's leading so it fills its column
+
+    the two hard breaks in make_doc_in_one_go pin the finance report to the top of the
+    left column of page 2 and the title block to the top of the right column, and they
+    also split the document into three regions that flow independently. each region gets
+    its own leading, stretched or squeezed until it ends at the foot of its column, so
+    there is no gap left underneath. the type sizes are never touched.
+    an overlong region pushes a third page rather than quietly shifting the fixed blocks,
+    so `pages == fit_pages` is what says the whole layout is still sound.
+    pass fit_pages=None to build once at the given scale and skip word altogether.
+    `progress` is called as progress(step, total, message) after every build and every
+    measurement, so a caller with a gui can show how far along the fitting is.
+    """
+    scales = {each: line_scale for each in makeBulletin.regions}
+    #one build, then a measure/build pair per round. `rounds` is only an upper bound and
+    #it usually settles in about four, so the bar is scaled to that and simply waits on
+    #the last step if a month takes longer - better than crawling to a third of the way
+    #and then jumping to the end
+    expected_steps = 2 + 4*2
+    done_steps = 0
+
+    def _report(message, final=False):
+        if progress!=None:
+            progress(expected_steps if final else min(done_steps, expected_steps-1),
+                     expected_steps, message)
+
+    def _build():
+        worker = makeBulletin(year, month, font_scale=font_scale, line_scales=dict(scales))
+        worker.make_doc_in_one_go(content_file, doc_file)
+        return worker.saved_path
+
+    def _finish(path):
+        #the pdf goes next to the .docx, once the layout has settled
+        if make_pdf:
+            _report('正在导出 PDF…')
+            export_pdf(path, os.path.splitext(path)[0]+'.pdf')
+        _report('完成', final=True)
+        return path
+
+    _report('正在生成月报…')
+    path = _build()
+    done_steps = done_steps + 1
+    if not fit_pages:
+        return _finish(path)
+
+    good = None
+    for round_no in range(rounds):
+        _report(f'检查排版（第 {round_no+1} 轮）…')
+        measured = measure_layout(path)
+        done_steps = done_steps + 1
+        if measured==None:
+            #word is not available, so the document stays as it was built (and there is
+            #nothing to export the pdf with either)
+            _report('完成', final=True)
+            return path
+        pages, ends = measured
+        if pages<=fit_pages:
+            good = dict(scales)
+            if all(abs(ends[each]-COLUMN_BOTTOM)<=tolerance for each in scales):
+                return _finish(path)
+            #room left over (or slightly too much): move each region's leading by the
+            #ratio of the space it should span to the space it currently spans
+            for region in scales:
+                filled = (REGION_COLUMNS[region]-1)*COLUMN_HEIGHT + (ends[region]-COLUMN_TOP)
+                wanted = REGION_COLUMNS[region]*COLUMN_HEIGHT
+                if filled>0:
+                    scales[region] = round(min(max_line_scale, max(min_line_scale,
+                                                scales[region]*wanted/filled)), 3)
+        elif good!=None:
+            #the last change overshot into a third page - go back and take half of it
+            for region in scales:
+                scales[region] = round((scales[region]+good[region])/2, 3)
+        else:
+            #too long even at the starting leading, so tighten everything
+            for region in scales:
+                scales[region] = round(max(min_line_scale, scales[region]-0.05), 3)
+        _report('正在调整行距…')
+        path = _build()
+        done_steps = done_steps + 1
+
+    if good!=None and good!=scales:
+        _report('正在还原最合适的行距…')
+        scales.update(good)
+        path = _build()
+    return _finish(path)
 
 
 emojs = ['🏠','🚉','🎁','📅''✝️','🕮','🌍','🏴󠁢󠁲󠁧󠁯󠁿','📍','👉','✬','♛','👨🏻‍🏫','✍🏽','🏛','💎','📝','📧','📙','📖','📃','✒️','🎦','🌐',\
