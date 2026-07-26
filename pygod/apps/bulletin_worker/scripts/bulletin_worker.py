@@ -10,7 +10,7 @@ from docx.enum.table import WD_TABLE_ALIGNMENT, WD_ALIGN_VERTICAL
 from docx.enum.style import WD_STYLE_TYPE
 from docx.enum.section import WD_ORIENT, WD_SECTION
 from docx.oxml.ns import qn
-from docx.shared import Inches, Cm, Mm, Twips
+from docx.shared import Inches, Cm, Mm
 from docx.text.run import Run
 from pathlib import Path
 import copy
@@ -99,10 +99,7 @@ class makeBulletin(object):
             'space_after':0,
             'space_before':0,
             'alignment':WD_ALIGN_PARAGRAPH.LEFT,
-            'font_style': 'FontReportStyle',
-            #twips, and the same figure is used for the indent and the outdent so the
-            #number hangs in the gutter and the text runs against a single left edge
-            'hanging_indent': 442
+            'font_style': 'FontReportStyle'
     }
     format_body = {
             'style':'Normal',
@@ -165,6 +162,7 @@ class makeBulletin(object):
         self.make_two_columns()
         self.set_margin()
         self.add_customized_style()
+        self.set_list_indent()
 
     @property
     def line_scale(self):
@@ -237,18 +235,12 @@ class makeBulletin(object):
         #and every point of that is a point it can no longer use to fill the column
         space_after = format['space_after'] * self.line_scale
         space_before = format['space_before'] * self.line_scale
-        #a hanging indent puts the list number out in the margin and lines the wrapped
-        #lines up under the text rather than back under the number
-        hanging = format.get('hanging_indent', 0)
         for each in par_text_list:
             pg = self.doc.add_paragraph(style = format['style'])
             pg.paragraph_format.line_spacing = Pt(format['line_spacing'])
             pg.paragraph_format.space_after = Pt(space_after)
             pg.paragraph_format.space_before = Pt(space_before)
             pg.paragraph_format.alignment = format['alignment']
-            if hanging:
-                pg.paragraph_format.left_indent = Twips(hanging)
-                pg.paragraph_format.first_line_indent = Twips(-hanging)
             _each = each.rsplit('+')
             for idx, each_item in enumerate(_each):
                 run = pg.add_run(each_item, style = format['font_style'])
@@ -619,6 +611,35 @@ class makeBulletin(object):
     def add_report(self, contents):
         self.add_paragraphs(['教会通讯'],format = self.format_heading)
         self.add_paragraphs(contents, format = self.format_report, line_spacing = 15)
+
+    #how far the numbered lists are indented, in twips, matching the polished bulletins.
+    #word's own default for 'List Number' is 360
+    list_indent = 442
+
+    def set_list_indent(self, indent = None):
+        """indent the numbered lists at the numbering definition rather than the paragraph
+
+        word takes two separate measurements off the level: the number is dropped on the
+        level's tab stop, and the wrapped lines start at the level's indent. setting only
+        the paragraph indent moves the second and leaves the first where it was, which
+        pulls the two apart instead of lining them up - so both are set here, together.
+        """
+        indent = self.list_indent if indent==None else indent
+        w = qn('w:ind').rsplit('}')[0] + '}'
+        numbering = self.doc.part.numbering_part.element
+        for lvl in numbering.iter(f'{w}lvl'):
+            style = lvl.find(f'{w}pStyle')
+            if style==None or style.get(f'{w}val')!='ListNumber':
+                continue
+            ppr = lvl.find(f'{w}pPr')
+            if ppr==None:
+                continue
+            for tab in ppr.iter(f'{w}tab'):
+                tab.set(f'{w}pos', str(indent))
+            ind = ppr.find(f'{w}ind')
+            if ind!=None:
+                ind.set(f'{w}left', str(indent))
+                ind.set(f'{w}hanging', str(indent))
 
     def restart_list_numbering(self):
         """give the next 'List Number' paragraphs a numbering of their own, starting at 1
