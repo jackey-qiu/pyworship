@@ -10,7 +10,7 @@ from docx.enum.table import WD_TABLE_ALIGNMENT, WD_ALIGN_VERTICAL
 from docx.enum.style import WD_STYLE_TYPE
 from docx.enum.section import WD_ORIENT, WD_SECTION
 from docx.oxml.ns import qn
-from docx.shared import Inches, Cm, Mm
+from docx.shared import Inches, Cm, Mm, Twips
 from docx.text.run import Run
 from pathlib import Path
 import copy
@@ -99,7 +99,10 @@ class makeBulletin(object):
             'space_after':0,
             'space_before':0,
             'alignment':WD_ALIGN_PARAGRAPH.LEFT,
-            'font_style': 'FontReportStyle'
+            'font_style': 'FontReportStyle',
+            #twips, and the same figure is used for the indent and the outdent so the
+            #number hangs in the gutter and the text runs against a single left edge
+            'hanging_indent': 442
     }
     format_body = {
             'style':'Normal',
@@ -123,8 +126,22 @@ class makeBulletin(object):
             'alignment':WD_ALIGN_PARAGRAPH.LEFT,
             'font_style': 'FontTitleBigStyle'
     }
-    format_list = [format_title_big, format_body, format_report]
-    format_style_list = ['FontTitleBigStyle','FontBodyStyle','FontReportStyle']
+    #the section headings on page 1 are set in the gothic face a point larger than the
+    #body, so they read as headings - in the book face at body size they disappear into
+    #the text under them
+    format_heading = {
+            'style':'Normal',
+            'font_name':'FZHei-B01S',
+            'font_size': 11,
+            'bold': True,
+            'line_spacing': 10,
+            'space_after':5,
+            'space_before':5,
+            'alignment':WD_ALIGN_PARAGRAPH.LEFT,
+            'font_style': 'FontHeadingStyle'
+    }
+    format_list = [format_title_big, format_body, format_report, format_heading]
+    format_style_list = ['FontTitleBigStyle','FontBodyStyle','FontReportStyle','FontHeadingStyle']
 
     #the two hard breaks cut the bulletin into three independently flowing regions:
     #page 1 (two columns), then the left and the right column of page 2
@@ -215,12 +232,23 @@ class makeBulletin(object):
         format.update(kwargs)
         format['font_size'] = format['font_size'] * self.font_scale
         format['line_spacing'] = format['line_spacing'] * self.font_scale * self.line_scale
+        #the space above and below a paragraph is leading like any other, so it rides the
+        #region's scale too - left fixed it would be height the fitter cannot give back,
+        #and every point of that is a point it can no longer use to fill the column
+        space_after = format['space_after'] * self.line_scale
+        space_before = format['space_before'] * self.line_scale
+        #a hanging indent puts the list number out in the margin and lines the wrapped
+        #lines up under the text rather than back under the number
+        hanging = format.get('hanging_indent', 0)
         for each in par_text_list:
             pg = self.doc.add_paragraph(style = format['style'])
             pg.paragraph_format.line_spacing = Pt(format['line_spacing'])
-            pg.paragraph_format.space_after = Pt(format['space_after'])
-            pg.paragraph_format.space_before = Pt(format['space_before'])
+            pg.paragraph_format.space_after = Pt(space_after)
+            pg.paragraph_format.space_before = Pt(space_before)
             pg.paragraph_format.alignment = format['alignment']
+            if hanging:
+                pg.paragraph_format.left_indent = Twips(hanging)
+                pg.paragraph_format.first_line_indent = Twips(-hanging)
             _each = each.rsplit('+')
             for idx, each_item in enumerate(_each):
                 run = pg.add_run(each_item, style = format['font_style'])
@@ -589,7 +617,7 @@ class makeBulletin(object):
         self.add_spacing(spacing)
 
     def add_report(self, contents):
-        self.add_paragraphs(['教会通讯'],format = self.format_body, font_size = 10, space_before = 5, space_after = 5, bold = True)
+        self.add_paragraphs(['教会通讯'],format = self.format_heading)
         self.add_paragraphs(contents, format = self.format_report, line_spacing = 15)
 
     def restart_list_numbering(self):
@@ -619,7 +647,7 @@ class makeBulletin(object):
         return new_id
 
     def add_pray_list(self, contents):
-        self.add_paragraphs(['感恩、代祷事项'],format = self.format_body, font_size = 10, space_before = 5, space_after = 5, bold = True)
+        self.add_paragraphs(['感恩、代祷事项'],format = self.format_heading)
         first = len(self.doc.paragraphs)
         self.add_paragraphs(contents, format = self.format_report)
         num_id = self.restart_list_numbering()
@@ -635,13 +663,13 @@ class makeBulletin(object):
         self.add_paragraphs(contents, format = self.format_body, font_size = 10)
         
     def add_monthly_service_table(self, contents):
-        self.add_paragraphs(['主日崇拜服事表'],format = self.format_body, font_size = 10, bold = True)
+        self.add_paragraphs(['主日崇拜服事表'],format = self.format_heading)
         tb = self.add_table(font_size=10, content=contents,borders = {'left':True,'right':True,'up':True,'down':True}, bold_cols=[0], bold_rows=[0], valign=WD_ALIGN_VERTICAL.CENTER)
         for i in range(1, len(contents),2):
             self.shade_row(tb, i, self.shade_color_code, '000000')
 
     def add_last_month_record_table(self, offering_attendence_content, bible_study_attendence_content):
-        self.add_paragraphs(['奉献纪录，主日及各查经小组出席人数'],format = self.format_body, font_size = 10, line_after = 5, line_before = 5, bold = True)
+        self.add_paragraphs(['奉献纪录，主日及各查经小组出席人数'],format = self.format_heading)
         tb = self.add_table(font_size=10, content=offering_attendence_content,borders = {'left':True,'right':True,'up':True,'down':True}, bold_cols=[0], bold_rows=[0])
         self.shade_row(tb, 0, self.shade_color_code, '000000')
         self.add_spacing(5)
