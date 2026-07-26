@@ -879,7 +879,7 @@ def measure_layout(doc_path):
         return None
 
 def main(year, month, content_file, doc_file=None, font_scale=1.0, fit_pages=2,
-         line_scale=1.0, rounds=8, tolerance=10, min_line_scale=0.6, max_line_scale=2.5,
+         line_scale=1.0, rounds=8, tolerance=16, min_line_scale=0.6, max_line_scale=2.5,
          progress=None):
     """build the bulletin and set each region's leading so it fills its column
 
@@ -890,6 +890,9 @@ def main(year, month, content_file, doc_file=None, font_scale=1.0, fit_pages=2,
     there is no gap left underneath. the type sizes are never touched.
     an overlong region pushes a third page rather than quietly shifting the fixed blocks,
     so `pages == fit_pages` is what says the whole layout is still sound.
+    `tolerance` is how close to the foot of the column counts as filled. leading only
+    moves the text a whole line at a time, so asking for closer than one line box just
+    makes the loop chase a gap it cannot close and run out of rounds instead.
     pass fit_pages=None to build once at the given scale and skip word altogether.
     `progress` is called as progress(step, total, message) after every build and every
     measurement, so a caller with a gui can show how far along the fitting is.
@@ -924,7 +927,7 @@ def main(year, month, content_file, doc_file=None, font_scale=1.0, fit_pages=2,
     if not fit_pages:
         return _finish(path)
 
-    good = None
+    good, good_gap = None, None
     for round_no in range(rounds):
         _report(f'检查排版（第 {round_no+1} 轮）…')
         measured = measure_layout(path)
@@ -935,8 +938,13 @@ def main(year, month, content_file, doc_file=None, font_scale=1.0, fit_pages=2,
             return path
         pages, ends = measured
         if pages<=fit_pages:
-            good = dict(scales)
-            if all(abs(ends[each]-COLUMN_BOTTOM)<=tolerance for each in scales):
+            #the round worth keeping is the one whose worst-placed region sits closest to
+            #the foot of its column, not simply the last one that came in under the page
+            #count - a later round can still fit and yet leave a wider gap than one before it
+            gap = max(abs(ends[each]-COLUMN_BOTTOM) for each in scales)
+            if good_gap==None or gap<good_gap:
+                good, good_gap = dict(scales), gap
+            if gap<=tolerance:
                 return _finish(path)
             #room left over (or slightly too much): move each region's leading by the
             #ratio of the space it should span to the space it currently spans
