@@ -16,6 +16,12 @@ class MakeWorkshipPpt(object):
     use_json_for_extracting_scripture = True
     font_type_kaiti = 'FZKai-Z03'
     font_type_zhunyuan = 'FZZhunYuan-M02'
+    # bell video settings (times in seconds from the start of the file)
+    video_file_name = 'ccgh_2026.mp4'
+    video_width_px, video_height_px = 1280, 720
+    video_duration_sec = 366.883
+    video_start_sec = 0.7     # 2nd bell (original 04:00.7); video was cut at 04:00
+    video_end_sec = None      # e.g. 29.8 to stop after the 2nd bell; None = play to the end
 
     def __init__(self, date):
         self.date = date
@@ -197,9 +203,34 @@ class MakeWorkshipPpt(object):
         title = '{} 年 {} 月 {} 日'.format(*[yyyy, mm, dd])
         title_format['cont'] = [title]        
         self.make_one_slide(blocks = [],bkg_img=os.path.join(self.src_folder, 'begin_slide_1.jpg'))
+        self.make_video_slide()
         self.make_one_slide(blocks = [title_format],bkg_img=os.path.join(self.src_folder, 'begin_slide_2.jpg'), middle_vertical=False)
         self.make_one_slide(blocks = [],bkg_img=os.path.join(self.src_folder, 'begin_slide_3.jpg'))
         self.make_one_slide(blocks = [],bkg_img=os.path.join(self.src_folder, 'begin_slide_4.jpg'))
+
+    def make_video_slide(self):
+        """Black slide with the bell video, full width, vertically centered.
+        The video file is not cut: playback starts at video_start_sec via the
+        PowerPoint trim attribute (Trim Video), so it can be reset in PowerPoint."""
+        video_file = self.src_folder / self.video_file_name
+        if not video_file.exists():
+            print(f'{video_file} is not existing, skip video slide!')
+            return
+        prs = self.prs
+        slide = prs.slides.add_slide(prs.slide_layouts[6])
+        fill = slide.background.fill
+        fill.solid()
+        fill.fore_color.rgb = RGBColor(0, 0, 0)
+        width = prs.slide_width
+        height = int(width * self.video_height_px / self.video_width_px)
+        top = int((prs.slide_height - height) / 2)
+        movie = slide.shapes.add_movie(str(video_file), 0, top, width, height, mime_type='video/mp4')
+        p14 = 'http://schemas.microsoft.com/office/powerpoint/2010/main'
+        media = movie._element.find(f'.//{{{p14}}}media')
+        trim = etree.SubElement(media, f'{{{p14}}}trim')
+        trim.set('st', str(int(self.video_start_sec * 1000)))
+        if self.video_end_sec is not None:
+            trim.set('end', str(int((self.video_duration_sec - self.video_end_sec) * 1000)))
 
     def prepare_xuanzao_slides(self):
         title = [self.scripture_list[0][0], '', '宣  召']
