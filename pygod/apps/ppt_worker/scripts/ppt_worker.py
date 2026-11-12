@@ -215,8 +215,9 @@ class MakeWorkshipPpt(object):
         content_format = {'cont':self.worker_list[which][1:],
                           'font_global':f'{self.font_type_kaiti}'+'+32+True',
                           'font_run':f'{self.font_type_kaiti}+24+True',
-                          'alignment':'CENTER+37+7.68+0+0',
-                          'textbox':['Cm(0.14)', 'Cm(1.16)', 'Cm(25.07)', 'Cm(17.27)']}
+                          'alignment':'CENTER+35+7.68+0+0',
+                          'textbox':['Cm(0.14)', 'Cm(2)', 'Cm(25.07)', 'Cm(17.05)'],
+                          'anchor_top': True}
         title_format = {'cont':self.worker_list[which][0:1],
                           'font_global':f'{self.font_type_kaiti}'+'+24+True',
                           'font_run':f'{self.font_type_kaiti}'+'+24+True',
@@ -624,7 +625,9 @@ class MakeWorkshipPpt(object):
             tf = txBox.text_frame
             text_pg = block['cont']
             tf.word_wrap = True
-            if middle_vertical:
+            if block.get('anchor_top'):
+                tf.vertical_anchor = MSO_ANCHOR.TOP
+            elif middle_vertical:
                 tf.vertical_anchor = MSO_ANCHOR.MIDDLE
             
             for i,txt in enumerate(text_pg):
