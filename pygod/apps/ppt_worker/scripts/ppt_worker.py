@@ -25,8 +25,9 @@ class MakeWorkshipPpt(object):
     video_start_sec = 0.7     # 2nd bell (original 04:00.7); video was cut at 04:00
     video_end_sec = None      # e.g. 29.8 to stop after the 2nd bell; None = play to the end
 
-    def __init__(self, date, holy_dinner_song_v = '2', content_folder = None):
+    def __init__(self, date, holy_dinner_song_v = '2', content_folder = None, include_video = True, force_holy_dinner = False):
         self.date = date
+        self.include_video = include_video
         self.holy_dinner_song_v = holy_dinner_song_v
         if len(date.rsplit('-')[-1])==2 and date.rsplit('-')[-1].startswith('0'):
             self.holy_dinner = int(date.rsplit('-')[-1][1:])<=7
@@ -34,6 +35,9 @@ class MakeWorkshipPpt(object):
             self.holy_dinner = int(date.rsplit('-')[-1])<=7
         else:
             self.holy_dinner = False
+        if force_holy_dinner:
+            #add the holy dinner flow also outside of the first week of the month
+            self.holy_dinner = True
         self.src_folder = root / 'src' /'bkg_slides' / 'others'
         if content_folder==None:
             self.content_folder = root / 'src' / 'contents'
@@ -232,7 +236,8 @@ class MakeWorkshipPpt(object):
         title = '{} 年 {} 月 {} 日'.format(*[yyyy, mm, dd])
         title_format['cont'] = [title]        
         self.make_one_slide(blocks = [],bkg_img=os.path.join(self.src_folder, 'begin_slide_1.jpg'))
-        self.make_video_slide()
+        if self.include_video:
+            self.make_video_slide()
         self.make_one_slide(blocks = [title_format],bkg_img=os.path.join(self.src_folder, 'begin_slide_2.jpg'), middle_vertical=False)
         self.make_one_slide(blocks = [],bkg_img=os.path.join(self.src_folder, 'begin_slide_3.jpg'))
         self.make_one_slide(blocks = [],bkg_img=os.path.join(self.src_folder, 'begin_slide_4.jpg'))
@@ -334,18 +339,22 @@ class MakeWorkshipPpt(object):
         self.make_one_slide(blocks = [], bkg_img = os.path.join(self.src_folder,'report_2.jpg'))
         self.make_one_slide(blocks = [], bkg_img = os.path.join(self.src_folder,'report_3.jpg'))
 
+    @staticmethod
+    def _numbered_images(folder, prefix):
+        """Images <prefix><n>.jpg of a folder, sorted by n (numeric, names have no leading zeros)."""
+        files = [f for f in Path(folder).glob(f'{prefix}*.jpg') if re.fullmatch(rf'{prefix}\d+\.jpg', f.name)]
+        if not files:
+            print(f'no {prefix}*.jpg found in {folder}!')
+        return sorted(files, key=lambda f: int(re.search(r'\d+', f.name[len(prefix):]).group()))
+
     def prepare_end_slides(self):
         if self.holy_dinner:
-            if self.holy_dinner_song_v == '1':
-                for i in range(1,23):
-                    self.make_one_slide(blocks = [], bkg_img = os.path.join(self.src_folder.parent, 'holy_dinner_option1', f'end_{i}.jpg'))
-            elif self.holy_dinner_song_v == '2':
-                for i in range(1,22):
-                    self.make_one_slide(blocks = [], bkg_img = os.path.join(self.src_folder.parent, 'holy_dinner_option2', f'Slide{i}.jpg'))
-        else:
-            #ordinary ending = last 7 slides of the holy dinner decks (option2 Slide15-21 == option1 end_16-22)
-            for i in range(15,22):
-                self.make_one_slide(blocks = [], bkg_img = os.path.join(self.src_folder.parent, 'holy_dinner_option2', f'Slide{i}.jpg'))
+            #slides of the chosen holy dinner flow (option1 or option2), followed by the standard ending
+            folder = self.src_folder.parent / f'holy_dinner_option{self.holy_dinner_song_v}'
+            for img in self._numbered_images(folder, 'holy_dinner_'):
+                self.make_one_slide(blocks = [], bkg_img = str(img))
+        for img in self._numbered_images(self.src_folder, 'end_'):
+            self.make_one_slide(blocks = [], bkg_img = str(img))
 
     def pepare_preach_slides(self):
         title, preacher, subtitle = self.preach_list[0]
@@ -675,15 +684,17 @@ class MakeWorkshipPpt(object):
                 ea.set('typeface', nm)
         return slide
 
-def main(date, v='2', content_folder=None):
-    ppt_worker = MakeWorkshipPpt(date, v, content_folder=content_folder)
+def main(date, v='2', content_folder=None, include_video=True, force_holy_dinner=False):
+    ppt_worker = MakeWorkshipPpt(date, v, content_folder=content_folder, include_video=include_video, force_holy_dinner=force_holy_dinner)
     ppt_worker.prepare_workship_slides()
 
 @click.command()
 @click.argument('date', required=1)
 @click.option('--v', default='2', type=click.Choice(['1', '2']), help='holy dinner song type: either 1 or 2')
 @click.option('--content-folder', default=None, type=click.Path(file_okay=False), help='folder with the *_list_<date>.txt files; the pptx is written there too')
-def ppt(date, v, content_folder):
+@click.option('--video/--no-video', default=True, help='include the bell video slide (default) or not')
+@click.option('--force-holy-dinner', is_flag=True, default=False, help='add the holy dinner flow even if the date is not in the first week of the month')
+def ppt(date, v, content_folder, video, force_holy_dinner):
     folder = Path(content_folder) if content_folder else root / 'src' / 'contents'
     missing_files = [folder / f'{each}{date}.txt' for each in ['pray_list_', 'preach_list_', 'song_list_', 'scripture_list_','report_list_','worker_list_'] if not (folder / f'{each}{date}.txt').exists()]
     if missing_files:
@@ -691,7 +702,7 @@ def ppt(date, v, content_folder):
         for each in missing_files:
             print(each)
         sys.exit(1)
-    main(date, v, Path(content_folder) if content_folder else None)
+    main(date, v, Path(content_folder) if content_folder else None, video, force_holy_dinner)
 
 if __name__ == '__main__':
     if len(sys.argv) == 1:
