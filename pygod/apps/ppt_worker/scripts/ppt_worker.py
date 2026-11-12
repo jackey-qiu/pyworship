@@ -39,7 +39,7 @@ class MakeWorkshipPpt(object):
             self.content_folder = root / 'src' / 'contents'
             self.ppt_file = root / 'src' / 'ppt_files' / f'{date}.pptx'
             self.content_folder.mkdir(parents=True, exist_ok=True)
-            self.ppt_file.mkdir(parents=True, exist_ok=True)
+            self.ppt_file.parent.mkdir(parents=True, exist_ok=True)
         else:
             self.content_folder = content_folder
             Path(self.content_folder).mkdir(parents = True, exist_ok = True)
@@ -86,8 +86,7 @@ class MakeWorkshipPpt(object):
         #extract all vers for chapter 9 in book3
         if json_file==None:
             json_file = self.bible_json
-        if json_file_rep_scripture == None:
-            json_file_scripture = self.scripture_json
+        json_file_scripture = json_file_rep_scripture if json_file_rep_scripture else self.scripture_json
 
         def _get_responsive_scripture_from_json(title):
             with open(json_file_scripture, 'r') as f:
@@ -118,7 +117,7 @@ class MakeWorkshipPpt(object):
                             scripture_list.append(each+json_obj[book][chapter][each].rstrip())
                         else:
                             #get full chapter scripture
-                            scripture_list = [key+value.rstrip() for key, value in json_obj[book][chapter].items()]
+                            scripture_list.extend([key+value.rstrip() for key, value in json_obj[book][chapter].items()])
                     else:
                         lf, rt = each.rsplit('-')
                         for i in range(int(lf),int(rt)+1):
@@ -144,11 +143,11 @@ class MakeWorkshipPpt(object):
         with open(json_file, 'r', encoding='utf8') as f:
             bible = json.load(f)
             #modify first list (xuan zao scripture)
-            sig = self.scripture_list[0][0]
+            sig = '+'.join(l.strip() for l in self.scripture_list[0] if l.strip())
             title_info, scripture_list = _get_scripture_from_json(sig, bible)
             self.scripture_list[0] = [title_info] + scripture_list
             #modify third list
-            sig = self.scripture_list[2][0]
+            sig = '+'.join(l.strip() for l in self.scripture_list[2] if l.strip())
             title_info, scripture_list = _get_scripture_from_json(sig, bible)
             self.scripture_list[2] = [title_info] + scripture_list
             #modify second list
@@ -156,9 +155,11 @@ class MakeWorkshipPpt(object):
             if second_list != None:
                 self.scripture_list[1] = second_list
                 print('second_list',second_list)
-            else:#启应经文从圣经中提取
-                title_info, scripture_list = _get_scripture_from_json(self.scripture_list[1][0], bible)
+            elif ':' in self.scripture_list[1][0] and '[' in self.scripture_list[1][0]:#启应经文从圣经中提取
+                sig = '+'.join(l.strip() for l in self.scripture_list[1] if l.strip())
+                title_info, scripture_list = _get_scripture_from_json(sig, bible)
                 self.scripture_list[1] = [title_info] + scripture_list
+            #otherwise: free text (title + one verse per line), keep as typed
 
     def add_empty_slide(self, bkg_img = None):
         self.make_one_slide(blocks = [], bkg_img= bkg_img)
@@ -339,11 +340,12 @@ class MakeWorkshipPpt(object):
                 for i in range(1,23):
                     self.make_one_slide(blocks = [], bkg_img = os.path.join(self.src_folder.parent, 'holy_dinner_option1', f'end_{i}.jpg'))
             elif self.holy_dinner_song_v == '2':
-                for i in range(1,21):
+                for i in range(1,22):
                     self.make_one_slide(blocks = [], bkg_img = os.path.join(self.src_folder.parent, 'holy_dinner_option2', f'Slide{i}.jpg'))
         else:
-            for i in range(16,23):
-                self.make_one_slide(blocks = [], bkg_img = os.path.join(self.src_folder,f'end_{i}.jpg'))
+            #ordinary ending = last 7 slides of the holy dinner decks (option2 Slide15-21 == option1 end_16-22)
+            for i in range(15,22):
+                self.make_one_slide(blocks = [], bkg_img = os.path.join(self.src_folder.parent, 'holy_dinner_option2', f'Slide{i}.jpg'))
 
     def pepare_preach_slides(self):
         title, preacher, subtitle = self.preach_list[0]
@@ -673,35 +675,28 @@ class MakeWorkshipPpt(object):
                 ea.set('typeface', nm)
         return slide
 
-def main(date, v, content_folder):
+def main(date, v='2', content_folder=None):
     ppt_worker = MakeWorkshipPpt(date, v, content_folder=content_folder)
-    ppt_worker.prepare_workship_slides()     
+    ppt_worker.prepare_workship_slides()
 
 @click.command()
 @click.argument('date', required=1)
-@click.option('--v', default='2', help='song type: either 1 or 2')
-def ppt(date, v):
-    main(date, v)
-
-if __name__ == '__main__':
-    import sys
-    song_v = '2'
-    if len(sys.argv) == 2:
-        date = sys.argv[1]
-    elif len(sys.argv) == 3:
-        date, song_v= sys.argv[1:]
-    else:
-        print("请输入主日崇拜日期，格式为yyyy-mm-dd，比如2023-08-16:")
-        date = input()
-        print("如果是圣餐主日，请输入圣餐赞美诗歌\n1(靠近十架) or 2 (宝架清影), 输入1或者2:")
-        song_v = input()
-    missing_files = []
-    for each in ['pray_list_', 'preach_list_', 'song_list_', 'scripture_list_','report_list_','worker_list_']:
-        if not os.path.exists(root / 'src' / 'contents' / f'{each}{date}.txt'):
-            missing_files.append(root / 'src' / 'contents' / f'{each}{date}.txt')
-    if len(missing_files)!=0:
+@click.option('--v', default='2', type=click.Choice(['1', '2']), help='holy dinner song type: either 1 or 2')
+@click.option('--content-folder', default=None, type=click.Path(file_okay=False), help='folder with the *_list_<date>.txt files; the pptx is written there too')
+def ppt(date, v, content_folder):
+    folder = Path(content_folder) if content_folder else root / 'src' / 'contents'
+    missing_files = [folder / f'{each}{date}.txt' for each in ['pray_list_', 'preach_list_', 'song_list_', 'scripture_list_','report_list_','worker_list_'] if not (folder / f'{each}{date}.txt').exists()]
+    if missing_files:
         print('以下文件缺失，请加入后再运行程序。')
         for each in missing_files:
             print(each)
-    else:
-        ppt(date, song_v)
+        sys.exit(1)
+    main(date, v, Path(content_folder) if content_folder else None)
+
+if __name__ == '__main__':
+    if len(sys.argv) == 1:
+        print("请输入主日崇拜日期，格式为yyyy-mm-dd，比如2023-08-16:")
+        date = input()
+        print("如果是圣餐主日，请输入圣餐赞美诗歌\n1(靠近十架) or 2 (宝架清影), 输入1或者2:")
+        sys.argv += [date, '--v', input()]
+    ppt()
