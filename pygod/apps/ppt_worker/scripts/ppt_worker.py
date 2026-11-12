@@ -1,4 +1,4 @@
-import os, json, re
+import os, json, re, sys
 import click
 from pptx import Presentation
 from pptx import Presentation
@@ -16,8 +16,14 @@ class MakeWorkshipPpt(object):
     max_char_per_slide = 60
     use_json_for_extracting_scripture = True
     use_json_for_extracting_response_scripture = True
-    font_type_kaiti = '方正楷体简体'#'FZKai-Z03S'
-    font_type_zhunyuan = '方正准圆简体'#'FZZhunYuan-M02S'
+    font_type_kaiti = 'FZKai-Z03'
+    font_type_zhunyuan = 'FZZhunYuan-M02'
+    # bell video settings (times in seconds from the start of the file)
+    video_file_name = 'ccgh_2026.mp4'
+    video_width_px, video_height_px = 1280, 720
+    video_duration_sec = 366.883
+    video_start_sec = 0.7     # 2nd bell (original 04:00.7); video was cut at 04:00
+    video_end_sec = None      # e.g. 29.8 to stop after the 2nd bell; None = play to the end
 
     def __init__(self, date, holy_dinner_song_v = '2', content_folder = None):
         self.date = date
@@ -225,9 +231,34 @@ class MakeWorkshipPpt(object):
         title = '{} 年 {} 月 {} 日'.format(*[yyyy, mm, dd])
         title_format['cont'] = [title]        
         self.make_one_slide(blocks = [],bkg_img=os.path.join(self.src_folder, 'begin_slide_1.jpg'))
+        self.make_video_slide()
         self.make_one_slide(blocks = [title_format],bkg_img=os.path.join(self.src_folder, 'begin_slide_2.jpg'), middle_vertical=False)
         self.make_one_slide(blocks = [],bkg_img=os.path.join(self.src_folder, 'begin_slide_3.jpg'))
         self.make_one_slide(blocks = [],bkg_img=os.path.join(self.src_folder, 'begin_slide_4.jpg'))
+
+    def make_video_slide(self):
+        """Black slide with the bell video, full width, vertically centered.
+        The video file is not cut: playback starts at video_start_sec via the
+        PowerPoint trim attribute (Trim Video), so it can be reset in PowerPoint."""
+        video_file = self.src_folder / self.video_file_name
+        if not video_file.exists():
+            print(f'{video_file} is not existing, skip video slide!')
+            return
+        prs = self.prs
+        slide = prs.slides.add_slide(prs.slide_layouts[6])
+        fill = slide.background.fill
+        fill.solid()
+        fill.fore_color.rgb = RGBColor(0, 0, 0)
+        width = prs.slide_width
+        height = int(width * self.video_height_px / self.video_width_px)
+        top = int((prs.slide_height - height) / 2)
+        movie = slide.shapes.add_movie(str(video_file), 0, top, width, height, mime_type='video/mp4')
+        p14 = 'http://schemas.microsoft.com/office/powerpoint/2010/main'
+        media = movie._element.find(f'.//{{{p14}}}media')
+        trim = etree.SubElement(media, f'{{{p14}}}trim')
+        trim.set('st', str(int(self.video_start_sec * 1000)))
+        if self.video_end_sec is not None:
+            trim.set('end', str(int((self.video_duration_sec - self.video_end_sec) * 1000)))
 
     def prepare_xuanzao_slides(self):
         title = [self.scripture_list[0][0], '', '宣  召']
@@ -413,7 +444,7 @@ class MakeWorkshipPpt(object):
                 if len(' '.join(content_format['cont']))<120:
                     content_format['textbox'] = ['Cm(1.44)','Cm(1.44)','Cm(22.91)','Cm(15.72)']
                 else:
-                    content_format['textbox'] = ['Cm(0.5)','Cm(0.5)','Cm(24.9)','Cm(15.72)']
+                    content_format['textbox'] = ['Cm(0.5)','Cm(0.5)','Cm(25.4)','Cm(15.72)']
                 slide = self.make_one_slide(blocks = [content_format, footnote_format], middle_vertical=False)
                 previous_ix = i
         #make one more slide at the end boundary
@@ -424,11 +455,10 @@ class MakeWorkshipPpt(object):
     def prepare_slides_for_one_song(self, title, scripts, lines_per_page = 5, include_title_page = True):
         
         title_format = {'cont':'',
-                            'font_global':f'{self.font_type_zhunyuan}'+'+80+True',
-                            'font_run':f'{self.font_type_zhunyuan}'+'+80+True',
+                            'font_global':f'{self.font_type_zhunyuan}'+'+80+False',
+                            'font_run':f'{self.font_type_zhunyuan}'+'+80+False',
                             'alignment':'CENTER+94+0+0+0',
                             'textbox': ['Cm(0)','Cm(5.24)','Cm(25.4)','Cm(3.68)']}
-                            # 'textbox': ['Cm(1.75)','Cm(5.24)','Cm(21.91)','Cm(3.68)']}
 
         subtitle_format = {'cont':'',
                             'font_global':f'{self.font_type_zhunyuan}'+'+40+False',
@@ -441,7 +471,6 @@ class MakeWorkshipPpt(object):
                             'font_run':f'{self.font_type_zhunyuan}'+'+48+False',
                             'alignment':'CENTER+70+0+0+0',
                             'textbox': ['Cm(0)','Cm(1.13)','Cm(25.4)','Cm(15.6)']}
-                            # 'textbox': ['Cm(1.03)','Cm(1.13)','Cm(23.87)','Cm(15.6)']}
 
         script_footnote_format = {'cont':'',
                             'font_global':f'{self.font_type_kaiti}'+'+24+False',
@@ -472,13 +501,13 @@ class MakeWorkshipPpt(object):
             pages = len(section_ix_pair)
             for i, pair in enumerate(section_ix_pair):
                 script_format['cont'] = script_items[pair[0]:pair[1]]
-                script_footnote_format['cont'] = [f'{tt}{i+1}/{pages}']
+                script_footnote_format['cont'] = [f'{tt} {i+1}/{pages}']
                 self.make_one_slide(blocks = [script_format, script_footnote_format])
         else:
             pages = int((len(script_items) - len(script_items)%lines_per_page)/lines_per_page) + int((len(script_items)%lines_per_page)!=0)
             for i in range(0, len(script_items), lines_per_page):
                 script_format['cont'] = script_items[i:(i+5)]
-                script_footnote_format['cont'] = [f'{tt}{int(i/5+1)}/{pages}']
+                script_footnote_format['cont'] = [f'{tt} {int(i/5+1)}/{pages}']
                 self.make_one_slide(blocks = [script_format, script_footnote_format])
 
     def prepare_slides_for_response_scripture(self):
@@ -612,9 +641,9 @@ class MakeWorkshipPpt(object):
                         else:
                             last_num_ix = last_num_ix + 1
                     if last_num_ix == 0:
-                        txt = txt[0]+'+'+txt[1:]
+                        txt = txt[0]+' +'+txt[1:]
                     else:
-                        txt = txt[0:last_num_ix]+'+'+txt[last_num_ix:]
+                        txt = txt[0:last_num_ix]+' +'+txt[last_num_ix:]
                 txt_runs = txt.rsplit('+')
                 for j,txt_run in enumerate(txt_runs):
                     run = p.add_run()
@@ -641,7 +670,7 @@ class MakeWorkshipPpt(object):
                 # set font typeface for asian characters
                 defrpr = p._element.pPr.defRPr
                 ea = etree.SubElement(defrpr, qn('a:ea'))
-                ea.set('typeface', nm)                        
+                ea.set('typeface', nm)
         return slide
 
 def main(date, v, content_folder):
