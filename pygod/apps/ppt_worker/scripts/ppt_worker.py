@@ -266,6 +266,26 @@ class MakeWorkshipPpt(object):
         trim.set('st', str(int(self.video_start_sec * 1000)))
         if self.video_end_sec is not None:
             trim.set('end', str(int((self.video_duration_sec - self.video_end_sec) * 1000)))
+        self._add_autoplay(slide, movie.shape_id)
+
+    @staticmethod
+    def _add_autoplay(slide, shape_id):
+        """Start the movie automatically as soon as the slide appears (PowerPoint "Start: Automatically")."""
+        ns = 'http://schemas.openxmlformats.org/presentationml/2006/main'
+        timing = etree.fromstring(f'''<p:timing xmlns:p="{ns}"><p:tnLst><p:par>
+<p:cTn id="1" dur="indefinite" restart="never" nodeType="tmRoot"><p:childTnLst>
+<p:seq concurrent="1" nextAc="seek"><p:cTn id="2" dur="indefinite" nodeType="mainSeq"><p:childTnLst>
+<p:par><p:cTn id="3" fill="hold"><p:stCondLst><p:cond delay="indefinite"/><p:cond evt="onBegin" delay="0"><p:tn val="2"/></p:cond></p:stCondLst><p:childTnLst>
+<p:par><p:cTn id="4" fill="hold"><p:stCondLst><p:cond delay="0"/></p:stCondLst><p:childTnLst>
+<p:par><p:cTn id="5" presetID="1" presetClass="mediacall" presetSubtype="0" fill="hold" nodeType="afterEffect"><p:stCondLst><p:cond delay="0"/></p:stCondLst><p:childTnLst>
+<p:cmd type="call" cmd="playFrom(0.0)"><p:cBhvr><p:cTn id="6" dur="1" fill="hold"/><p:tgtEl><p:spTgt spid="{shape_id}"/></p:tgtEl></p:cBhvr></p:cmd>
+</p:childTnLst></p:cTn></p:par></p:childTnLst></p:cTn></p:par></p:childTnLst></p:cTn></p:par>
+</p:childTnLst></p:cTn>
+<p:prevCondLst><p:cond evt="onPrev" delay="0"><p:tgtEl><p:sldTgt/></p:tgtEl></p:cond></p:prevCondLst>
+<p:nextCondLst><p:cond evt="onNext" delay="0"><p:tgtEl><p:sldTgt/></p:tgtEl></p:cond></p:nextCondLst></p:seq>
+<p:video><p:cMediaNode vol="80000" showWhenStopped="0"><p:cTn id="7" fill="hold" display="0"><p:stCondLst><p:cond delay="indefinite"/></p:stCondLst><p:endCondLst><p:cond evt="onStopAudio" delay="0"><p:tgtEl><p:sldTgt/></p:tgtEl></p:cond></p:endCondLst></p:cTn><p:tgtEl><p:spTgt spid="{shape_id}"/></p:tgtEl></p:cMediaNode></p:video>
+</p:childTnLst></p:cTn></p:par></p:tnLst></p:timing>''')
+        slide._element.append(timing)
 
     def prepare_xuanzao_slides(self):
         title = [self.scripture_list[0][0], '', '宣  召']
