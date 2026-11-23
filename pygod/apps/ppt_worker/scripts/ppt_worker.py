@@ -3,7 +3,7 @@ import click
 from pptx import Presentation
 from pptx import Presentation
 from pptx.util import Pt, Cm
-from pptx.enum.text import PP_PARAGRAPH_ALIGNMENT, MSO_ANCHOR
+from pptx.enum.text import PP_PARAGRAPH_ALIGNMENT, MSO_ANCHOR, MSO_AUTO_SIZE
 from pptx.dml.color import RGBColor
 from pptx.enum.lang import MSO_LANGUAGE_ID
 from pptx.oxml.ns import qn
@@ -446,8 +446,7 @@ class MakeWorkshipPpt(object):
                           'font_global':f'{self.font_type_kaiti}'+'+44+True',
                           'font_run':f'{self.font_type_kaiti}'+'+48+True',
                           'alignment':'LEFT+52+12+0+0',
-                          'textbox': ['Cm(0.5)','Cm(0.5)','Cm(25.4)','Cm(15.72)']}
-                        #   'textbox': ['Cm(1.44)','Cm(1.44)','Cm(22.91)','Cm(15.72)']}
+                          'textbox': ['Cm(1.44)','Cm(1.44)','Cm(22.91)','Cm(15.72)']}
         
         footnote_format = {'cont':'',
                            'font_global':f'{self.font_type_kaiti}'+'+24+True',
@@ -473,10 +472,7 @@ class MakeWorkshipPpt(object):
         for i in range(1, len(pray_items)):
             if sum([len(pray_items[j]) for j in range(previous_ix, i)])>max_chars_per_slide:
                 content_format['cont'] = pray_items[previous_ix: i]
-                if len(' '.join(content_format['cont']))<120:
-                    content_format['textbox'] = ['Cm(1.44)','Cm(1.44)','Cm(22.91)','Cm(15.72)']
-                else:
-                    content_format['textbox'] = ['Cm(0.5)','Cm(0.5)','Cm(25.4)','Cm(15.72)']
+                content_format['textbox'] = ['Cm(1.44)','Cm(1.44)','Cm(22.91)','Cm(15.72)']
                 slide = self.make_one_slide(blocks = [content_format, footnote_format], middle_vertical=False)
                 previous_ix = i
         #make one more slide at the end boundary
@@ -645,6 +641,8 @@ class MakeWorkshipPpt(object):
             tf = txBox.text_frame
             text_pg = block['cont']
             tf.word_wrap = True
+            # python-pptx textboxes default to spAutoFit (box grows with the text); keep the box at the designed size
+            tf.auto_size = MSO_AUTO_SIZE.NONE
             if block.get('anchor_top'):
                 tf.vertical_anchor = MSO_ANCHOR.TOP
             elif middle_vertical:
