@@ -266,24 +266,39 @@ class MakeWorkshipPpt(object):
         trim.set('st', str(int(self.video_start_sec * 1000)))
         if self.video_end_sec is not None:
             trim.set('end', str(int((self.video_duration_sec - self.video_end_sec) * 1000)))
-        self._add_autoplay(slide, movie.shape_id)
+        play_ms = int(((self.video_end_sec or self.video_duration_sec) - self.video_start_sec) * 1000)
+        self._add_autoplay(slide, movie.shape_id, play_ms)
 
     @staticmethod
-    def _add_autoplay(slide, shape_id):
-        """Start the movie automatically as soon as the slide appears (PowerPoint "Start: Automatically")."""
+    def _add_autoplay(slide, shape_id, play_ms):
+        """Start the movie automatically when the slide appears (PowerPoint "Start: Automatically"),
+        clicking it toggles pause. Mirrors the timing PowerPoint itself writes.
+        python-pptx already adds a bare <p:timing> for the movie, which is replaced here:
+        a slide must contain only one."""
         ns = 'http://schemas.openxmlformats.org/presentationml/2006/main'
+        for old in slide._element.findall(f'{{{ns}}}timing'):
+            slide._element.remove(old)
+        sp = f'<p:tgtEl><p:spTgt spid="{shape_id}"/></p:tgtEl>'
         timing = etree.fromstring(f'''<p:timing xmlns:p="{ns}"><p:tnLst><p:par>
 <p:cTn id="1" dur="indefinite" restart="never" nodeType="tmRoot"><p:childTnLst>
 <p:seq concurrent="1" nextAc="seek"><p:cTn id="2" dur="indefinite" nodeType="mainSeq"><p:childTnLst>
 <p:par><p:cTn id="3" fill="hold"><p:stCondLst><p:cond delay="indefinite"/><p:cond evt="onBegin" delay="0"><p:tn val="2"/></p:cond></p:stCondLst><p:childTnLst>
 <p:par><p:cTn id="4" fill="hold"><p:stCondLst><p:cond delay="0"/></p:stCondLst><p:childTnLst>
 <p:par><p:cTn id="5" presetID="1" presetClass="mediacall" presetSubtype="0" fill="hold" nodeType="afterEffect"><p:stCondLst><p:cond delay="0"/></p:stCondLst><p:childTnLst>
-<p:cmd type="call" cmd="playFrom(0.0)"><p:cBhvr><p:cTn id="6" dur="1" fill="hold"/><p:tgtEl><p:spTgt spid="{shape_id}"/></p:tgtEl></p:cBhvr></p:cmd>
+<p:cmd type="call" cmd="playFrom(0.0)"><p:cBhvr><p:cTn id="6" dur="{play_ms}" fill="hold"/>{sp}</p:cBhvr></p:cmd>
 </p:childTnLst></p:cTn></p:par></p:childTnLst></p:cTn></p:par></p:childTnLst></p:cTn></p:par>
 </p:childTnLst></p:cTn>
 <p:prevCondLst><p:cond evt="onPrev" delay="0"><p:tgtEl><p:sldTgt/></p:tgtEl></p:cond></p:prevCondLst>
 <p:nextCondLst><p:cond evt="onNext" delay="0"><p:tgtEl><p:sldTgt/></p:tgtEl></p:cond></p:nextCondLst></p:seq>
-<p:video><p:cMediaNode vol="80000" showWhenStopped="0"><p:cTn id="7" fill="hold" display="0"><p:stCondLst><p:cond delay="indefinite"/></p:stCondLst><p:endCondLst><p:cond evt="onStopAudio" delay="0"><p:tgtEl><p:sldTgt/></p:tgtEl></p:cond></p:endCondLst></p:cTn><p:tgtEl><p:spTgt spid="{shape_id}"/></p:tgtEl></p:cMediaNode></p:video>
+<p:video><p:cMediaNode vol="80000"><p:cTn id="7" fill="hold" display="0"><p:stCondLst><p:cond delay="indefinite"/></p:stCondLst></p:cTn>{sp}</p:cMediaNode></p:video>
+<p:seq concurrent="1" nextAc="seek"><p:cTn id="8" restart="whenNotActive" fill="hold" evtFilter="cancelBubble" nodeType="interactiveSeq">
+<p:stCondLst><p:cond evt="onClick" delay="0">{sp}</p:cond></p:stCondLst><p:endSync evt="end" delay="0"><p:rtn val="all"/></p:endSync><p:childTnLst>
+<p:par><p:cTn id="9" fill="hold"><p:stCondLst><p:cond delay="0"/></p:stCondLst><p:childTnLst>
+<p:par><p:cTn id="10" fill="hold"><p:stCondLst><p:cond delay="0"/></p:stCondLst><p:childTnLst>
+<p:par><p:cTn id="11" presetID="2" presetClass="mediacall" presetSubtype="0" fill="hold" nodeType="clickEffect"><p:stCondLst><p:cond delay="0"/></p:stCondLst><p:childTnLst>
+<p:cmd type="call" cmd="togglePause"><p:cBhvr><p:cTn id="12" dur="1" fill="hold"/>{sp}</p:cBhvr></p:cmd>
+</p:childTnLst></p:cTn></p:par></p:childTnLst></p:cTn></p:par></p:childTnLst></p:cTn></p:par>
+</p:childTnLst></p:cTn><p:nextCondLst><p:cond evt="onClick" delay="0">{sp}</p:cond></p:nextCondLst></p:seq>
 </p:childTnLst></p:cTn></p:par></p:tnLst></p:timing>''')
         slide._element.append(timing)
 
