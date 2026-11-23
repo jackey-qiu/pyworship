@@ -1,9 +1,9 @@
-import os, json, re
+import os, json, re, sys
 import click
 from pptx import Presentation
 from pptx import Presentation
 from pptx.util import Pt, Cm
-from pptx.enum.text import PP_PARAGRAPH_ALIGNMENT, MSO_ANCHOR
+from pptx.enum.text import PP_PARAGRAPH_ALIGNMENT, MSO_ANCHOR, MSO_AUTO_SIZE
 from pptx.dml.color import RGBColor
 from pptx.enum.lang import MSO_LANGUAGE_ID
 from pptx.oxml.ns import qn
@@ -16,11 +16,18 @@ class MakeWorkshipPpt(object):
     max_char_per_slide = 60
     use_json_for_extracting_scripture = True
     use_json_for_extracting_response_scripture = True
-    font_type_kaiti = '方正楷体简体'#'FZKai-Z03S'
-    font_type_zhunyuan = '方正准圆简体'#'FZZhunYuan-M02S'
+    font_type_kaiti = 'FZKai-Z03'
+    font_type_zhunyuan = 'FZZhunYuan-M02'
+    # bell video settings (times in seconds from the start of the file)
+    video_file_name = 'ccgh_2026.mp4'
+    video_width_px, video_height_px = 1280, 720
+    video_duration_sec = 366.883
+    video_start_sec = 0.7     # 2nd bell (original 04:00.7); video was cut at 04:00
+    video_end_sec = None      # e.g. 29.8 to stop after the 2nd bell; None = play to the end
 
-    def __init__(self, date, holy_dinner_song_v = '2', content_folder = None):
+    def __init__(self, date, holy_dinner_song_v = '2', content_folder = None, include_video = True, force_holy_dinner = False):
         self.date = date
+        self.include_video = include_video
         self.holy_dinner_song_v = holy_dinner_song_v
         if len(date.rsplit('-')[-1])==2 and date.rsplit('-')[-1].startswith('0'):
             self.holy_dinner = int(date.rsplit('-')[-1][1:])<=7
@@ -28,12 +35,15 @@ class MakeWorkshipPpt(object):
             self.holy_dinner = int(date.rsplit('-')[-1])<=7
         else:
             self.holy_dinner = False
+        if force_holy_dinner:
+            #add the holy dinner flow also outside of the first week of the month
+            self.holy_dinner = True
         self.src_folder = root / 'src' /'bkg_slides' / 'others'
         if content_folder==None:
             self.content_folder = root / 'src' / 'contents'
             self.ppt_file = root / 'src' / 'ppt_files' / f'{date}.pptx'
             self.content_folder.mkdir(parents=True, exist_ok=True)
-            self.ppt_file.mkdir(parents=True, exist_ok=True)
+            self.ppt_file.parent.mkdir(parents=True, exist_ok=True)
         else:
             self.content_folder = content_folder
             Path(self.content_folder).mkdir(parents = True, exist_ok = True)
@@ -80,14 +90,13 @@ class MakeWorkshipPpt(object):
         #extract all vers for chapter 9 in book3
         if json_file==None:
             json_file = self.bible_json
-        if json_file_rep_scripture == None:
-            json_file_scripture = self.scripture_json
+        json_file_scripture = json_file_rep_scripture if json_file_rep_scripture else self.scripture_json
 
         def _get_responsive_scripture_from_json(title):
             with open(json_file_scripture, 'r') as f:
                 data = json.load(f)
                 if title in data:
-                    return [re.search(r'([0-9]?[0-9]?)(.*)',title).group(2)] + data[title].replace('\u3000','').replace('♂','').rsplit('\n')
+                    return [re.search(r'([0-9]?[0-9]?)(.*)',title).group(2)] + data[title].rsplit('\n')
 
         def _get_scripture_from_json(content_sig, json_obj):
             title_info = []
@@ -112,7 +121,7 @@ class MakeWorkshipPpt(object):
                             scripture_list.append(each+json_obj[book][chapter][each].rstrip())
                         else:
                             #get full chapter scripture
-                            scripture_list = [key+value.rstrip() for key, value in json_obj[book][chapter].items()]
+                            scripture_list.extend([key+value.rstrip() for key, value in json_obj[book][chapter].items()])
                     else:
                         lf, rt = each.rsplit('-')
                         for i in range(int(lf),int(rt)+1):
@@ -138,11 +147,11 @@ class MakeWorkshipPpt(object):
         with open(json_file, 'r', encoding='utf8') as f:
             bible = json.load(f)
             #modify first list (xuan zao scripture)
-            sig = self.scripture_list[0][0]
+            sig = '+'.join(l.strip() for l in self.scripture_list[0] if l.strip())
             title_info, scripture_list = _get_scripture_from_json(sig, bible)
             self.scripture_list[0] = [title_info] + scripture_list
             #modify third list
-            sig = self.scripture_list[2][0]
+            sig = '+'.join(l.strip() for l in self.scripture_list[2] if l.strip())
             title_info, scripture_list = _get_scripture_from_json(sig, bible)
             self.scripture_list[2] = [title_info] + scripture_list
             #modify second list
@@ -150,9 +159,11 @@ class MakeWorkshipPpt(object):
             if second_list != None:
                 self.scripture_list[1] = second_list
                 print('second_list',second_list)
-            else:#启应经文从圣经中提取
-                title_info, scripture_list = _get_scripture_from_json(self.scripture_list[1][0], bible)
+            elif ':' in self.scripture_list[1][0] and '[' in self.scripture_list[1][0]:#启应经文从圣经中提取
+                sig = '+'.join(l.strip() for l in self.scripture_list[1] if l.strip())
+                title_info, scripture_list = _get_scripture_from_json(sig, bible)
                 self.scripture_list[1] = [title_info] + scripture_list
+            #otherwise: free text (title + one verse per line), keep as typed
 
     def add_empty_slide(self, bkg_img = None):
         self.make_one_slide(blocks = [], bkg_img= bkg_img)
@@ -204,8 +215,9 @@ class MakeWorkshipPpt(object):
         content_format = {'cont':self.worker_list[which][1:],
                           'font_global':f'{self.font_type_kaiti}'+'+32+True',
                           'font_run':f'{self.font_type_kaiti}+24+True',
-                          'alignment':'CENTER+37+7.68+0+0',
-                          'textbox':['Cm(0.14)', 'Cm(1.16)', 'Cm(25.07)', 'Cm(17.27)']}
+                          'alignment':'CENTER+35+7.68+0+0',
+                          'textbox':['Cm(0.14)', 'Cm(2)', 'Cm(25.07)', 'Cm(17.05)'],
+                          'anchor_top': True}
         title_format = {'cont':self.worker_list[which][0:1],
                           'font_global':f'{self.font_type_kaiti}'+'+24+True',
                           'font_run':f'{self.font_type_kaiti}'+'+24+True',
@@ -225,9 +237,55 @@ class MakeWorkshipPpt(object):
         title = '{} 年 {} 月 {} 日'.format(*[yyyy, mm, dd])
         title_format['cont'] = [title]        
         self.make_one_slide(blocks = [],bkg_img=os.path.join(self.src_folder, 'begin_slide_1.jpg'))
+        if self.include_video:
+            self.make_video_slide()
         self.make_one_slide(blocks = [title_format],bkg_img=os.path.join(self.src_folder, 'begin_slide_2.jpg'), middle_vertical=False)
         self.make_one_slide(blocks = [],bkg_img=os.path.join(self.src_folder, 'begin_slide_3.jpg'))
         self.make_one_slide(blocks = [],bkg_img=os.path.join(self.src_folder, 'begin_slide_4.jpg'))
+
+    def make_video_slide(self):
+        """Black slide with the bell video, full width, vertically centered.
+        The video file is not cut: playback starts at video_start_sec via the
+        PowerPoint trim attribute (Trim Video), so it can be reset in PowerPoint."""
+        video_file = self.src_folder / self.video_file_name
+        if not video_file.exists():
+            print(f'{video_file} is not existing, skip video slide!')
+            return
+        prs = self.prs
+        slide = prs.slides.add_slide(prs.slide_layouts[6])
+        fill = slide.background.fill
+        fill.solid()
+        fill.fore_color.rgb = RGBColor(0, 0, 0)
+        width = prs.slide_width
+        height = int(width * self.video_height_px / self.video_width_px)
+        top = int((prs.slide_height - height) / 2)
+        movie = slide.shapes.add_movie(str(video_file), 0, top, width, height, mime_type='video/mp4')
+        p14 = 'http://schemas.microsoft.com/office/powerpoint/2010/main'
+        media = movie._element.find(f'.//{{{p14}}}media')
+        trim = etree.SubElement(media, f'{{{p14}}}trim')
+        trim.set('st', str(int(self.video_start_sec * 1000)))
+        if self.video_end_sec is not None:
+            trim.set('end', str(int((self.video_duration_sec - self.video_end_sec) * 1000)))
+        self._add_autoplay(slide, movie.shape_id)
+
+    @staticmethod
+    def _add_autoplay(slide, shape_id):
+        """Start the movie automatically as soon as the slide appears (PowerPoint "Start: Automatically")."""
+        ns = 'http://schemas.openxmlformats.org/presentationml/2006/main'
+        timing = etree.fromstring(f'''<p:timing xmlns:p="{ns}"><p:tnLst><p:par>
+<p:cTn id="1" dur="indefinite" restart="never" nodeType="tmRoot"><p:childTnLst>
+<p:seq concurrent="1" nextAc="seek"><p:cTn id="2" dur="indefinite" nodeType="mainSeq"><p:childTnLst>
+<p:par><p:cTn id="3" fill="hold"><p:stCondLst><p:cond delay="indefinite"/><p:cond evt="onBegin" delay="0"><p:tn val="2"/></p:cond></p:stCondLst><p:childTnLst>
+<p:par><p:cTn id="4" fill="hold"><p:stCondLst><p:cond delay="0"/></p:stCondLst><p:childTnLst>
+<p:par><p:cTn id="5" presetID="1" presetClass="mediacall" presetSubtype="0" fill="hold" nodeType="afterEffect"><p:stCondLst><p:cond delay="0"/></p:stCondLst><p:childTnLst>
+<p:cmd type="call" cmd="playFrom(0.0)"><p:cBhvr><p:cTn id="6" dur="1" fill="hold"/><p:tgtEl><p:spTgt spid="{shape_id}"/></p:tgtEl></p:cBhvr></p:cmd>
+</p:childTnLst></p:cTn></p:par></p:childTnLst></p:cTn></p:par></p:childTnLst></p:cTn></p:par>
+</p:childTnLst></p:cTn>
+<p:prevCondLst><p:cond evt="onPrev" delay="0"><p:tgtEl><p:sldTgt/></p:tgtEl></p:cond></p:prevCondLst>
+<p:nextCondLst><p:cond evt="onNext" delay="0"><p:tgtEl><p:sldTgt/></p:tgtEl></p:cond></p:nextCondLst></p:seq>
+<p:video><p:cMediaNode vol="80000" showWhenStopped="0"><p:cTn id="7" fill="hold" display="0"><p:stCondLst><p:cond delay="indefinite"/></p:stCondLst><p:endCondLst><p:cond evt="onStopAudio" delay="0"><p:tgtEl><p:sldTgt/></p:tgtEl></p:cond></p:endCondLst></p:cTn><p:tgtEl><p:spTgt spid="{shape_id}"/></p:tgtEl></p:cMediaNode></p:video>
+</p:childTnLst></p:cTn></p:par></p:tnLst></p:timing>''')
+        slide._element.append(timing)
 
     def prepare_xuanzao_slides(self):
         title = [self.scripture_list[0][0], '', '宣  召']
@@ -302,17 +360,22 @@ class MakeWorkshipPpt(object):
         self.make_one_slide(blocks = [], bkg_img = os.path.join(self.src_folder,'report_2.jpg'))
         self.make_one_slide(blocks = [], bkg_img = os.path.join(self.src_folder,'report_3.jpg'))
 
+    @staticmethod
+    def _numbered_images(folder, prefix):
+        """Images <prefix><n>.jpg of a folder, sorted by n (numeric, names have no leading zeros)."""
+        files = [f for f in Path(folder).glob(f'{prefix}*.jpg') if re.fullmatch(rf'{prefix}\d+\.jpg', f.name)]
+        if not files:
+            print(f'no {prefix}*.jpg found in {folder}!')
+        return sorted(files, key=lambda f: int(re.search(r'\d+', f.name[len(prefix):]).group()))
+
     def prepare_end_slides(self):
         if self.holy_dinner:
-            if self.holy_dinner_song_v == '1':
-                for i in range(1,23):
-                    self.make_one_slide(blocks = [], bkg_img = os.path.join(self.src_folder.parent, 'holy_dinner_option1', f'end_{i}.jpg'))
-            elif self.holy_dinner_song_v == '2':
-                for i in range(1,21):
-                    self.make_one_slide(blocks = [], bkg_img = os.path.join(self.src_folder.parent, 'holy_dinner_option2', f'Slide{i}.jpg'))
-        else:
-            for i in range(16,23):
-                self.make_one_slide(blocks = [], bkg_img = os.path.join(self.src_folder,f'end_{i}.jpg'))
+            #slides of the chosen holy dinner flow (option1 or option2), followed by the standard ending
+            folder = self.src_folder.parent / f'holy_dinner_option{self.holy_dinner_song_v}'
+            for img in self._numbered_images(folder, 'holy_dinner_'):
+                self.make_one_slide(blocks = [], bkg_img = str(img))
+        for img in self._numbered_images(self.src_folder, 'end_'):
+            self.make_one_slide(blocks = [], bkg_img = str(img))
 
     def pepare_preach_slides(self):
         title, preacher, subtitle = self.preach_list[0]
@@ -383,8 +446,7 @@ class MakeWorkshipPpt(object):
                           'font_global':f'{self.font_type_kaiti}'+'+44+True',
                           'font_run':f'{self.font_type_kaiti}'+'+48+True',
                           'alignment':'LEFT+52+12+0+0',
-                          'textbox': ['Cm(0.5)','Cm(0.5)','Cm(25.4)','Cm(15.72)']}
-                        #   'textbox': ['Cm(1.44)','Cm(1.44)','Cm(22.91)','Cm(15.72)']}
+                          'textbox': ['Cm(1.44)','Cm(1.44)','Cm(22.91)','Cm(15.72)']}
         
         footnote_format = {'cont':'',
                            'font_global':f'{self.font_type_kaiti}'+'+24+True',
@@ -410,10 +472,7 @@ class MakeWorkshipPpt(object):
         for i in range(1, len(pray_items)):
             if sum([len(pray_items[j]) for j in range(previous_ix, i)])>max_chars_per_slide:
                 content_format['cont'] = pray_items[previous_ix: i]
-                if len(' '.join(content_format['cont']))<120:
-                    content_format['textbox'] = ['Cm(1.44)','Cm(1.44)','Cm(22.91)','Cm(15.72)']
-                else:
-                    content_format['textbox'] = ['Cm(0.5)','Cm(0.5)','Cm(24.9)','Cm(15.72)']
+                content_format['textbox'] = ['Cm(1.44)','Cm(1.44)','Cm(22.91)','Cm(15.72)']
                 slide = self.make_one_slide(blocks = [content_format, footnote_format], middle_vertical=False)
                 previous_ix = i
         #make one more slide at the end boundary
@@ -424,11 +483,10 @@ class MakeWorkshipPpt(object):
     def prepare_slides_for_one_song(self, title, scripts, lines_per_page = 5, include_title_page = True):
         
         title_format = {'cont':'',
-                            'font_global':f'{self.font_type_zhunyuan}'+'+80+True',
-                            'font_run':f'{self.font_type_zhunyuan}'+'+80+True',
+                            'font_global':f'{self.font_type_zhunyuan}'+'+80+False',
+                            'font_run':f'{self.font_type_zhunyuan}'+'+80+False',
                             'alignment':'CENTER+94+0+0+0',
                             'textbox': ['Cm(0)','Cm(5.24)','Cm(25.4)','Cm(3.68)']}
-                            # 'textbox': ['Cm(1.75)','Cm(5.24)','Cm(21.91)','Cm(3.68)']}
 
         subtitle_format = {'cont':'',
                             'font_global':f'{self.font_type_zhunyuan}'+'+40+False',
@@ -441,7 +499,6 @@ class MakeWorkshipPpt(object):
                             'font_run':f'{self.font_type_zhunyuan}'+'+48+False',
                             'alignment':'CENTER+70+0+0+0',
                             'textbox': ['Cm(0)','Cm(1.13)','Cm(25.4)','Cm(15.6)']}
-                            # 'textbox': ['Cm(1.03)','Cm(1.13)','Cm(23.87)','Cm(15.6)']}
 
         script_footnote_format = {'cont':'',
                             'font_global':f'{self.font_type_kaiti}'+'+24+False',
@@ -472,13 +529,13 @@ class MakeWorkshipPpt(object):
             pages = len(section_ix_pair)
             for i, pair in enumerate(section_ix_pair):
                 script_format['cont'] = script_items[pair[0]:pair[1]]
-                script_footnote_format['cont'] = [f'{tt}{i+1}/{pages}']
+                script_footnote_format['cont'] = [f'{tt} {i+1}/{pages}']
                 self.make_one_slide(blocks = [script_format, script_footnote_format])
         else:
             pages = int((len(script_items) - len(script_items)%lines_per_page)/lines_per_page) + int((len(script_items)%lines_per_page)!=0)
             for i in range(0, len(script_items), lines_per_page):
                 script_format['cont'] = script_items[i:(i+5)]
-                script_footnote_format['cont'] = [f'{tt}{int(i/5+1)}/{pages}']
+                script_footnote_format['cont'] = [f'{tt} {int(i/5+1)}/{pages}']
                 self.make_one_slide(blocks = [script_format, script_footnote_format])
 
     def prepare_slides_for_response_scripture(self):
@@ -584,7 +641,11 @@ class MakeWorkshipPpt(object):
             tf = txBox.text_frame
             text_pg = block['cont']
             tf.word_wrap = True
-            if middle_vertical:
+            # python-pptx textboxes default to spAutoFit (box grows with the text); keep the box at the designed size
+            tf.auto_size = MSO_AUTO_SIZE.NONE
+            if block.get('anchor_top'):
+                tf.vertical_anchor = MSO_ANCHOR.TOP
+            elif middle_vertical:
                 tf.vertical_anchor = MSO_ANCHOR.MIDDLE
             
             for i,txt in enumerate(text_pg):
@@ -612,9 +673,9 @@ class MakeWorkshipPpt(object):
                         else:
                             last_num_ix = last_num_ix + 1
                     if last_num_ix == 0:
-                        txt = txt[0]+'+'+txt[1:]
+                        txt = txt[0]+' +'+txt[1:]
                     else:
-                        txt = txt[0:last_num_ix]+'+'+txt[last_num_ix:]
+                        txt = txt[0:last_num_ix]+' +'+txt[last_num_ix:]
                 txt_runs = txt.rsplit('+')
                 for j,txt_run in enumerate(txt_runs):
                     run = p.add_run()
@@ -641,38 +702,33 @@ class MakeWorkshipPpt(object):
                 # set font typeface for asian characters
                 defrpr = p._element.pPr.defRPr
                 ea = etree.SubElement(defrpr, qn('a:ea'))
-                ea.set('typeface', nm)                        
+                ea.set('typeface', nm)
         return slide
 
-def main(date, v, content_folder):
-    ppt_worker = MakeWorkshipPpt(date, v, content_folder=content_folder)
-    ppt_worker.prepare_workship_slides()     
+def main(date, v='2', content_folder=None, include_video=True, force_holy_dinner=False):
+    ppt_worker = MakeWorkshipPpt(date, v, content_folder=content_folder, include_video=include_video, force_holy_dinner=force_holy_dinner)
+    ppt_worker.prepare_workship_slides()
 
 @click.command()
 @click.argument('date', required=1)
-@click.option('--v', default='2', help='song type: either 1 or 2')
-def ppt(date, v):
-    main(date, v)
-
-if __name__ == '__main__':
-    import sys
-    song_v = '2'
-    if len(sys.argv) == 2:
-        date = sys.argv[1]
-    elif len(sys.argv) == 3:
-        date, song_v= sys.argv[1:]
-    else:
-        print("请输入主日崇拜日期，格式为yyyy-mm-dd，比如2023-08-16:")
-        date = input()
-        print("如果是圣餐主日，请输入圣餐赞美诗歌\n1(靠近十架) or 2 (宝架清影), 输入1或者2:")
-        song_v = input()
-    missing_files = []
-    for each in ['pray_list_', 'preach_list_', 'song_list_', 'scripture_list_','report_list_','worker_list_']:
-        if not os.path.exists(root / 'src' / 'contents' / f'{each}{date}.txt'):
-            missing_files.append(root / 'src' / 'contents' / f'{each}{date}.txt')
-    if len(missing_files)!=0:
+@click.option('--v', default='2', type=click.Choice(['1', '2']), help='holy dinner song type: either 1 or 2')
+@click.option('--content-folder', default=None, type=click.Path(file_okay=False), help='folder with the *_list_<date>.txt files; the pptx is written there too')
+@click.option('--video/--no-video', default=True, help='include the bell video slide (default) or not')
+@click.option('--force-holy-dinner', is_flag=True, default=False, help='add the holy dinner flow even if the date is not in the first week of the month')
+def ppt(date, v, content_folder, video, force_holy_dinner):
+    folder = Path(content_folder) if content_folder else root / 'src' / 'contents'
+    missing_files = [folder / f'{each}{date}.txt' for each in ['pray_list_', 'preach_list_', 'song_list_', 'scripture_list_','report_list_','worker_list_'] if not (folder / f'{each}{date}.txt').exists()]
+    if missing_files:
         print('以下文件缺失，请加入后再运行程序。')
         for each in missing_files:
             print(each)
-    else:
-        ppt(date, song_v)
+        sys.exit(1)
+    main(date, v, Path(content_folder) if content_folder else None, video, force_holy_dinner)
+
+if __name__ == '__main__':
+    if len(sys.argv) == 1:
+        print("请输入主日崇拜日期，格式为yyyy-mm-dd，比如2023-08-16:")
+        date = input()
+        print("如果是圣餐主日，请输入圣餐赞美诗歌\n1(靠近十架) or 2 (宝架清影), 输入1或者2:")
+        sys.argv += [date, '--v', input()]
+    ppt()
